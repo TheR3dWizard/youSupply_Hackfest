@@ -52,7 +52,7 @@ def printCluster(nodes: list):
     print("Number of sinks:",len(sinks))
     
 #placeholder to simulate distance matrix from API
-def generateDistanceMatrix(nodes: list):
+def generateDistanceMatrix(nodes: list[node]):
     matrix = []
     for i in nodes:
         row = []
@@ -121,18 +121,6 @@ def getFeasible(nodes: list):
         if sinks == []:
             return (False,"No feasible solution possible")
 
-    def removeSource(sources,victim):
-        nodes.remove(victim)
-        sources.remove(victim)
-        if(feasibile(nodes)):
-            print(f"Moving {victim} to free pool")
-            freepool.append(victim)
-            return removeSource(sources,r.choice(sources))
-        else:
-            nodes.append(victim)
-            sources.append(victim)
-            return nodes
-
     
 
     #system to remove sources without random selection
@@ -156,6 +144,9 @@ def getFeasible(nodes: list):
             freepool.append(victim)
             nodes.remove(victim)
             sources.remove(victim)
+
+    if sources == []:
+        return (False,"No feasible solution possible, all sources removed")
 
     resources = {}
     deficits = []
@@ -247,19 +238,8 @@ def satisfaction(nodes):
         print(f"Unsatisfied sinks: {sinks}")
     print(f"Distance {distance}")
 
-
-    # # Find the remaining unsatisfied sinks
-    # unsatisfied_sinks = sinks
-
-    # # Find the nearest source for each unsatisfied sink
-    # for sink in unsatisfied_sinks:
-    #     nearest_source = min(sources, key=lambda source: dtMatrix[sources.index(source)][sinks.index(sink)])
-    #     distance += dtMatrix[sources.index(nearest_source)][sinks.index(sink)]
-    #     print("Satisfied", sink, "from", nearest_source)
-    #     sources.remove(nearest_source)
-
     return distance
-    # print("Total distance:",distance)
+
 
 #usable upto 15-20 nodes (7-9 sources)
 def satisfactionTSP(nodes):
@@ -512,6 +492,190 @@ def satisfactionMST(nodes):
 
     return distance
 
+def satisfaction_nocheck(nodes):
+
+    distance = 0
+    dtMatrix = generateDistanceMatrix(nodes)
+
+    sources = []
+    sinks = []
+    resGroup = {} #grouping resources by item
+
+    for i in nodes:
+        if i.quantity > 0:
+            sources.append(i)
+            if i.item not in resGroup:
+                resGroup[i.item] = []
+        else:
+            sinks.append(i)
+            if i.item in resGroup:
+                resGroup[i.item].append(i)
+            else:
+                resGroup[i.item] = [i]
+
+    #sort the resources by quantity
+    #TODO find a better way to score the nodes, based on all the factors such as distance, quantity, etc
+    for i in resGroup:
+        resGroup[i].sort(key=lambda x: x.quantity)
+    # sources.sort(key=lambda x: x.quantity,reverse=True)
+    available = {}
+
+    def check(node: node):
+        if node.item in available:
+            if available[node.item] >= abs(node.quantity):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+
+    #main logic
+    #gives one solution but there is no guarantee that it is the best solution
+    #maybe use backtracking or branch and bound to find the best solution
+
+    print("Solution:")
+    for i in sources:
+        if sinks == []:
+            break
+        if i.item in available:
+            available[i.item] += i.quantity
+        else:
+            available[i.item] = i.quantity
+        print("Taken from",i)
+        for j in resGroup[i.item][:]:
+            if check(j):      
+                available[j.item] -= abs(j.quantity)
+                distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
+                sinks.remove(j)
+                resGroup[i.item].remove(j)
+                print("Satisfied",j)
+
+    print()
+    for i in available:
+        print(f"Remaining {i} in available pool: {available[i]}")
+    print()
+    
+    if sinks == []:
+        print("All sinks satisfied")
+    else :
+        print(f"Unsatisfied sinks: {sinks}")
+    print(f"Distance {distance}")
+
+
+
+    return distance
+
+def satisfactionMST_nocheck(nodes):
+
+    distance = 0
+    dtMatrix = generateDistanceMatrix(nodes)
+
+    sources = []
+    sinks = []
+    resGroup = {} #grouping resources by item
+
+    for i in nodes:
+        if i.quantity > 0:
+            sources.append(i)
+            if i.item not in resGroup:
+                resGroup[i.item] = []
+        else:
+            sinks.append(i)
+            if i.item in resGroup:
+                resGroup[i.item].append(i)
+            else:
+                resGroup[i.item] = [i]
+
+    #sort the resources by quantity
+    #TODO find a better way to score the nodes, based on all the factors such as distance, quantity, etc
+    for i in resGroup:
+        resGroup[i].sort(key=lambda x: x.quantity)
+    # sources.sort(key=lambda x: x.quantity,reverse=True)
+    available = {}
+
+    def check(node):
+        if node.item in available:
+            if available[node.item] >= abs(node.quantity):
+                available[node.item] -= abs(node.quantity)
+                return True
+            else:
+                return False
+        else:
+            return False
+        
+    def minimumSpanningTree(nodes, dtMatrix, sources):
+        # Create a set to store the visited nodes
+        visited = set()
+
+        # Create a priority queue to store the edges
+        edges = []
+
+        # Add the first source node to the visited set
+        visited.add(sources[0])
+
+        # Add the edges connected to the first source node to the priority queue
+        for i in range(1, len(sources)):
+            heapq.heappush(edges, (dtMatrix[nodes.index(sources[0])][nodes.index(sources[i])], sources[0], sources[i]))
+
+        # Initialize variables to store the minimum spanning tree
+        mst = []
+        mst_distance = 0
+
+        # Iterate until all nodes are visited or all edges are processed
+        while len(visited) < len(sources) and edges:
+            # Pop the edge with the minimum weight from the priority queue
+            weight, source, sink = heapq.heappop(edges)
+
+            # Check if the sink node is already visited
+            if sink not in visited:
+                # Add the edge to the minimum spanning tree
+                mst.append((source, sink))
+                mst_distance += weight
+
+                # Add the sink node to the visited set
+                visited.add(sink)
+
+                # Add the edges connected to the sink node to the priority queue
+                for i in range(len(sources)):
+                    if sources[i] not in visited:
+                        heapq.heappush(edges, (dtMatrix[nodes.index(sink)][nodes.index(sources[i])], sink, sources[i]))
+
+        return mst, mst_distance
+
+    mst, mst_distance = minimumSpanningTree(nodes, dtMatrix, sources)
+
+    path = [mst[0][0]]
+    for i in mst:
+        path.append(i[1])
+
+    for i in path:
+        if sinks == []:
+            break
+        if i.item in available:
+            available[i.item] += i.quantity
+        else:
+            available[i.item] = i.quantity
+        print("Taken from",i)
+        for j in resGroup[i.item][:]:
+            if check(j):      
+                distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
+                sinks.remove(j)
+                resGroup[i.item].remove(j)
+                print("Satisfied",j)
+    
+    print("Excesses:",available)
+    if sinks == []:
+        print("All sinks satisfied")
+    else :
+        print(f"Unsatisfied sinks: {sinks}")
+    print(f"Distance {distance}")
+
+    return distance
+
+
+
+
 nodes = generateNodes(0.7,500)
 print("Initial Cluster:")
 printCluster(nodes)
@@ -524,3 +688,4 @@ disMST = satisfactionMST(nodes)
 print(f"\nBankers Algo: {distBankers}")
 # print(f"Djikstra Algo: {disTSP}")
 print(f"MST Algo: {disMST}")
+
