@@ -1,7 +1,8 @@
 import heapq
 from math import sqrt
-import random as r
+import random as random
 import itertools
+from typing import List
 
 class node:
     def __init__(self,x_pos: int, y_pos:int ,item: str,quantity:int):
@@ -31,17 +32,18 @@ freepool = []
 def generateNodes(p = 0.3,num = 10):
     nodes = []
     for i in range(0,num):
-        x = r.randint(0,5000)
-        y = r.randint(0,5000)
-        item = r.choice(itemList)
-        if r.random() < p:
-            quantity = r.randint(-10,-1)
+        x = random.randint(0,5000)
+        y = random.randint(0,5000)
+        item = random.choice(itemList)
+        if random.random() < p:
+            quantity = random.randint(-10,-1)
         else:
-            quantity = r.randint(1,10)
+            quantity = random.randint(1,10)
         nodes.append(node(x,y,item,quantity))
     return nodes
 
 # print number of source and sink nodes
+#TODO use a counter variable rather than lists
 def printCluster(nodes: list):
     totalsinks = 0
     totalsources = 0
@@ -67,7 +69,9 @@ def generateDistanceMatrix(nodes: list[node]):
 def distance(node1: node,node2: node,dtMatrix: list):
     return dtMatrix[node1][node2]
 
-def feasibile(nodes: list):
+# returns True if all the sinks in a cluster can be satisfied
+# by all sources in a cluster
+def isfeasible(nodes: List[node]):
     resources = {}
     for i in nodes:
         if i.item in resources:
@@ -79,88 +83,109 @@ def feasibile(nodes: list):
         if resources[i] < 0:
             return False
 
-    # print("feasible")
     return True
 
-def getFeasible(nodes: list):
+class getFeasible:
+    def __init__(self, nodeslist: List[node]):
+        self.sinks = list()
+        self.sources = list()
+        
+        self.inventory = dict()
+        
+        self.deficits = list()
+        self.excesses = list()
+        
+        self.listofnodes = nodeslist
+        self.seperatesinksandsources()
 
-    sinks = []
-    sources = []
-    for i in nodes:
-        if i.quantity < 0:
-            sinks.append(i)
-        else:
-            sources.append(i)
-
-
-    resources = {}
-    deficits = []
-    excesses = []
-    def getClusterState():
-
-        for i in nodes:
-            if i.item in resources:
-                resources[i.item] += i.quantity
+    def seperatesinksandsources(self):
+        for node in self.listofnodes:
+            if node.quantity < 0:
+                self.sinks.append(node)
             else:
-                resources[i.item] = i.quantity
+                self.sources.append(node)
 
-        for i in resources:
-            if resources[i] < 0:
-                deficits.extend([x for x in nodes if x.item == i and x.quantity < 0])
-            else :
-                excesses.append((i,resources[i]))
-    getClusterState()
+    # TODO: Understand this function
+    def getClusterState(self):
+        for node in self.listofnodes:
+            self.inventory[node.item] = self.inventory.get(node.item, 0) + node.quantity
 
+        
+        for resource, quantity in self.inventory.items():
+            if quantity < 0:
+                self.deficits.extend([node for node in self.listofnodes if node.item == resource and node.quantity < 0])
+                        
+            elif quantity == 0:
+                # TODO: Implement this part
+                pass
+            else:
+                # Append resource and its quantity to excesses
+                self.excesses.append((resource, quantity))
 
-    print("Deficits:",deficits)
-    print("Removing sinks to get feasible cluster")
-    while(not feasibile(nodes)):
-        victim = r.choice(deficits)
-        print(f"Moving {victim} to free pool")
-        freepool.append(victim)
-        deficits.remove(victim)
-        nodes.remove(victim)
-        sinks.remove(victim)
-        if sinks == []:
-            return (False,"No feasible solution possible")
+    def getFeasiblesolution(self):
+        self.getClusterState()
 
-
-
-    #system to remove sources without random selection
-    #maybe based on the difference between sum of sources and sinks in each resource type
-    print("Removing sources to get optimal cluster")
-    resources = {}
-    deficits = []
-    excesses = []
-    getClusterState()
-    print(f"Excesses: {excesses}")
-    for i in excesses:
-        group = [x for x in nodes if x.item == i[0] and x.quantity > 0]
-        group.sort(key=lambda x: x.quantity,reverse=True)
-        excess = i[1]
-        while excess > 0 and group != []:
-            victim = group.pop()
-            if excess - victim.quantity < 0:
-                continue
-            excess -= victim.quantity
+        print("Deficits:",deficits)
+        print("Removing sinks to get feasible cluster")
+        
+        while(not isfeasible(self.listofnodes)):
+            victim = random.choice(deficits)
             print(f"Moving {victim} to free pool")
+            
+            # ? What is a free pool? 
             freepool.append(victim)
-            nodes.remove(victim)
-            sources.remove(victim)
+            self.deficits.remove(victim)
+            
+            # ? why are we removing the node from list of nodes
+            self.listofnodes.remove(victim)
+            self.sinks.remove(victim)
+            
+            if self.sinks == []:
+                return (False,"No feasible solution possible")
 
-    if sources == []:
-        return (False,"No feasible solution possible, all sources removed")
+            # instead cant we do:
+            # <not remove node from sinks and listofnodes>
+            # if len(sinks) == len(freepool):
+            #       return (False,"No feasible solution possible")
+            
+            
+        #system to remove sources without random selection
+        #maybe based on the difference between sum of sources and sinks in each resource type
+        print("Removing sources to get optimal cluster")
+        
+        self.deficits = list()
+        self.excesses = list()
+        
+        self.getClusterState()
+        print(f"Excesses: {excesses}")
+        
+        for excessresource, quantityexcess in self.excesses:
+            surplusnodes = [node for node in nodes if node.item == excessresource and node.quantity > 0]
+            surplusnodes.sort(key=lambda x: x.quantity, reverse=True)
+            while quantityexcess > 0 and surplusnodes:
+                victim = surplusnodes.pop()
+                if quantityexcess - victim.quantity < 0:
+                    continue
+                quantityexcess -= victim.quantity
+                print(f"Moving {victim} to free pool")
+                freepool.append(victim)
+                nodes.remove(victim)
+                self.sources.remove(victim)
+                
+        if self.sources == []:
+            return (False,"No feasible solution possible, all sources removed")
+        
+        # --------------------------------
+        deficits = []
+        excesses = []
+        getClusterState()
+        print("Excesses:",excesses)
+        # --------------------------------
+        #! Why this code? What does this do?
 
-    resources = {}
-    deficits = []
-    excesses = []
-    getClusterState()
-    print("Excesses:",excesses)
+        return (True,nodes)
 
-
-    return (True,nodes)
-
-
+# nested
 def satisfaction(nodes):
 
     distance = 0
@@ -243,7 +268,7 @@ def satisfaction(nodes):
 
     return distance
 
-
+# nested
 #usable upto 15-20 nodes (7-9 sources)
 def satisfactionTSP(nodes):
 
@@ -377,7 +402,7 @@ def satisfactionTSP(nodes):
     print(f"Distance {distance}")
 
     return distance
-
+# nested
 def satisfactionMST(nodes):
 
     distance = 0
@@ -495,6 +520,7 @@ def satisfactionMST(nodes):
 
     return distance
 
+# nested
 def satisfaction_nocheck(nodes):
 
     distance = 0
@@ -569,6 +595,7 @@ def satisfaction_nocheck(nodes):
 
     return distance
 
+# nested
 def satisfactionMST_nocheck(nodes):
 
     distance = 0
@@ -647,7 +674,7 @@ def satisfactionMST_nocheck(nodes):
         return mst, mst_distance
 
     mst, mst_distance = minimumSpanningTree(nodes, dtMatrix, sources)
-
+    #TODO: Error, ref SR
     path = [mst[0][0]]
     for i in mst:
         path.append(i[1])
