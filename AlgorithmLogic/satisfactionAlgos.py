@@ -15,17 +15,19 @@ class node:
 
     def __repr__(self):
         return self.__str__()
-    
+
     def __gtr__(self,other):
         return self.quantity > other.quantity
-    
+
     def __lt__(self,other):
         return self.quantity < other.quantity
 
-       
+
 itemList = ["Water Bottle","Flashlight","Canned Food"]
 freepool = []
 
+# function that intializes a list of nodes, both source and sync
+# with any one item from the above item list
 def generateNodes(p = 0.3,num = 10):
     nodes = []
     for i in range(0,num):
@@ -39,18 +41,19 @@ def generateNodes(p = 0.3,num = 10):
         nodes.append(node(x,y,item,quantity))
     return nodes
 
+# print number of source and sink nodes
 def printCluster(nodes: list):
-    sinks = []
-    sources = []
+    totalsinks = 0
+    totalsources = 0
     for i in nodes:
         print(i)
         if i.quantity < 0:
-            sinks.append(i)
+            totalsinks += 1
         else:
-            sources.append(i)
-    print("Number of sources:",len(sources))
-    print("Number of sinks:",len(sinks))
-    
+            totalsources += 1
+    print("Number of sources:",totalsources)
+    print("Number of sinks:",totalsinks)
+
 #placeholder to simulate distance matrix from API
 def generateDistanceMatrix(nodes: list[node]):
     matrix = []
@@ -94,7 +97,7 @@ def getFeasible(nodes: list):
     deficits = []
     excesses = []
     def getClusterState():
-        
+
         for i in nodes:
             if i.item in resources:
                 resources[i.item] += i.quantity
@@ -107,8 +110,8 @@ def getFeasible(nodes: list):
             else :
                 excesses.append((i,resources[i]))
     getClusterState()
-    
-        
+
+
     print("Deficits:",deficits)
     print("Removing sinks to get feasible cluster")
     while(not feasibile(nodes)):
@@ -121,7 +124,7 @@ def getFeasible(nodes: list):
         if sinks == []:
             return (False,"No feasible solution possible")
 
-    
+
 
     #system to remove sources without random selection
     #maybe based on the difference between sum of sources and sinks in each resource type
@@ -164,7 +167,7 @@ def satisfaction(nodes):
     dtMatrix = generateDistanceMatrix(nodes)
 
     nodes = getFeasible(nodes)
-    
+
     if(not nodes[0]):
         print(nodes[1])
         return
@@ -220,7 +223,7 @@ def satisfaction(nodes):
             available[i.item] = i.quantity
         print("Taken from",i)
         for j in resGroup[i.item][:]:
-            if check(j):      
+            if check(j):
                 available[j.item] -= abs(j.quantity)
                 distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
                 sinks.remove(j)
@@ -231,7 +234,7 @@ def satisfaction(nodes):
     for i in available:
         print(f"Remaining {i} in available pool: {available[i]}")
     print()
-    
+
     if sinks == []:
         print("All sinks satisfied")
     else :
@@ -248,7 +251,7 @@ def satisfactionTSP(nodes):
     dtMatrix = generateDistanceMatrix(nodes)
 
     nodes = getFeasible(nodes)
-    
+
     if(not nodes[0]):
         print(nodes[1])
         return
@@ -289,7 +292,7 @@ def satisfactionTSP(nodes):
                 return False
         else:
             return False
-        
+
     #15 nodes is about 1 trillion calculations
     def tsp(nodes:list, dtMatrix, sources):
         # Create a list of all possible permutations of the sources
@@ -361,12 +364,12 @@ def satisfactionTSP(nodes):
             available[i.item] = i.quantity
         print("Taken from",i)
         for j in resGroup[i.item][:]:
-            if check(j):      
+            if check(j):
                 distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
                 sinks.remove(j)
                 resGroup[i.item].remove(j)
                 print("Satisfied",j)
-    
+
     if sinks == []:
         print("All sinks satisfied")
     else :
@@ -381,7 +384,7 @@ def satisfactionMST(nodes):
     dtMatrix = generateDistanceMatrix(nodes)
 
     nodes = getFeasible(nodes)
-    
+
     if(not nodes[0]):
         print(nodes[1])
         return
@@ -422,7 +425,7 @@ def satisfactionMST(nodes):
                 return False
         else:
             return False
-        
+
     def minimumSpanningTree(nodes, dtMatrix, sources):
         # Create a set to store the visited nodes
         visited = set()
@@ -477,12 +480,12 @@ def satisfactionMST(nodes):
             available[i.item] = i.quantity
         print("Taken from",i)
         for j in resGroup[i.item][:]:
-            if check(j):      
+            if check(j):
                 distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
                 sinks.remove(j)
                 resGroup[i.item].remove(j)
                 print("Satisfied",j)
-    
+
     print("Excesses:",available)
     if sinks == []:
         print("All sinks satisfied")
@@ -544,7 +547,7 @@ def satisfaction_nocheck(nodes):
             available[i.item] = i.quantity
         print("Taken from",i)
         for j in resGroup[i.item][:]:
-            if check(j):      
+            if check(j):
                 available[j.item] -= abs(j.quantity)
                 distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
                 sinks.remove(j)
@@ -555,7 +558,7 @@ def satisfaction_nocheck(nodes):
     for i in available:
         print(f"Remaining {i} in available pool: {available[i]}")
     print()
-    
+
     if sinks == []:
         print("All sinks satisfied")
     else :
@@ -603,7 +606,7 @@ def satisfactionMST_nocheck(nodes):
                 return False
         else:
             return False
-        
+
     def minimumSpanningTree(nodes, dtMatrix, sources):
         # Create a set to store the visited nodes
         visited = set()
@@ -658,12 +661,12 @@ def satisfactionMST_nocheck(nodes):
             available[i.item] = i.quantity
         print("Taken from",i)
         for j in resGroup[i.item][:]:
-            if check(j):      
+            if check(j):
                 distance += dtMatrix[sources.index(i)][resGroup[i.item].index(j)]
                 sinks.remove(j)
                 resGroup[i.item].remove(j)
                 print("Satisfied",j)
-    
+
     print("Excesses:",available)
     if sinks == []:
         print("All sinks satisfied")
@@ -688,4 +691,3 @@ disMST = satisfactionMST(nodes)
 print(f"\nBankers Algo: {distBankers}")
 # print(f"Djikstra Algo: {disTSP}")
 print(f"MST Algo: {disMST}")
-
