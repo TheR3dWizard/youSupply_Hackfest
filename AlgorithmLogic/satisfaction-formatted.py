@@ -11,11 +11,11 @@ class node:
         self.item = item
         self.quantity = quantity
 
-    def __str__(self):
-        return "Node at: " + str(self.x_pos) + "," + str(self.y_pos) + " with " + str(self.quantity) + " " + self.item
+    # def __str__(self):
+    #     return "Node at: " + str(self.x_pos) + "," + str(self.y_pos) + " with " + str(self.quantity) + " " + self.item
 
     def __repr__(self):
-        return self.__str__()
+        return (self.item, self.quantity, self.x_pos, self.y_pos)
 
     def __gtr__(self,other):
         return self.quantity > other.quantity
@@ -99,6 +99,7 @@ class getFeasible:
         self.seperatesinksandsources()
 
     def seperatesinksandsources(self):
+        # TODO what if quantity is 0
         for node in self.listofnodes:
             if node.quantity < 0:
                 self.sinks.append(node)
