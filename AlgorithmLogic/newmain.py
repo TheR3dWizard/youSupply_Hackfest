@@ -1,25 +1,23 @@
 import random
+import uuid
 from typing import List
 from collections import defaultdict
 
 
 class Node:
     """
-    One request per item
-    if one person asks for more than one items
-    He/She will be associated with more than one nodes
+    represents a request from a user for one item type
+    if user a needs more than one item type, then there will be multiple nodes
     """
 
     def __init__(
-        self, x_pos: int = 0, y_pos: int = 0, item: str = '', quantity: int = 1
+        self, x_pos: int = 0, y_pos: int = 0, item: str = "", quantity: int = 1
     ):
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.itemtype = item
         self.quantity = quantity
         self.nodetype = ""
-        self.associatedsinks = list()
-        self.associatedsource = None
 
         if quantity < 0:
             self.nodetype = "Sink"
@@ -27,18 +25,6 @@ class Node:
             self.nodetype = "Source"
         else:
             raise TypeError("Quantity cannot be zero")
-
-    def setsink(self, nodeobject):
-        if self.nodetype == "Sink":
-            raise TypeError("Cannot associate a sink with other sinks")
-        # if self.itemtype == nodeobject.itemtype:
-        #     self.associatedsinks.append(nodeobject)
-
-    def setsource(self, sourceobject):
-        if self.nodetype == "Source":
-            raise TypeError("Cannot associate a source with other sources")
-        if self.itemtype == sourceobject.itemtype:
-            self.associatedsource = sourceobject
 
     def __str__(self):
         return (
@@ -62,99 +48,214 @@ class Node:
         return self.quantity < other.quantity
 
 
-def generateNodes(p=0.3, num=5):
-    nodes = []
+class Cluster:
+    """
+    represents a group of nodes with one or more source and multiple sinks
+    maintains a list of sources and sinks, and a metric to evaluate the cluster
+    parameters centerxpos, centerypos represent some common 'center' while having multiple sources
+    contains methods to
+        - add sinks and sources
+        - compute distance between provided node and centroid of the cluster
+        - getter functions for class attributes
+        - print function
 
-    itemList = ["Water Bottle", "Flashlight", "Canned Food"]
+    TODO: Finalize centerxpos and centerypos
+    TODO: Implement a metric to evaluate the cluster
 
-    sinkcounter, sourcecounter = 0, 0
+    """
 
-    for _ in range(0, num):
-        x = random.randint(0, 5000)
-        y = random.randint(0, 5000)
-        item = random.choice(itemList)
-        if random.random() < p:
-            sinkcounter += 1
-            quantity = random.randint(-10, -1)
-            nodes.append(Node(x, y, item, quantity))
+    def __init__(self, sourcenode: Node, identifier: str = None) -> None:
+        if not identifier:
+            self.identifier = str(uuid.uuid4())
+
+        self.centerxpos = sourcenode.x_pos
+        self.centerypos = sourcenode.y_pos
+        self.sourcenodes = [sourcenode]
+        self.associatedsinknodes = []
+        self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
+
+    def addsink(self, sinknode: Node):
+        if sinknode.nodetype != "Sink":
+            raise TypeError("Invalid Sink Node")
+        self.associatedsinknodes.append(sinknode)
+
+    def addsource(
+        self, sourcenode: Node
+    ):  # TODO: Update centerxpos, centerypos after adding a source, center -> centroid
+        if sourcenode.nodetype != "Source":
+            raise TypeError("Invalid Source Node")
+        self.sourcenodes.append(sourcenode)
+
+    def tolist(self):
+        return self.sourcenodes + self.associatedsinknodes
+
+    def getsinklist(self):
+        return self.associatedsinknodes
+
+    def getsourcelist(self):
+        return self.sourcenodes
+
+    def getdistance(self, nodeobject: Node) -> int:
+        return (
+            abs(nodeobject.x_pos - self.centerxpos) ** 2
+            + abs(nodeobject.y_pos - self.centerypos) ** 2
+        ) ** 0.5
+
+    def printcluster(self) -> None:
+        print(f"Cluster Identifier: {self.identifier}")
+        print(f"Cluster centered at {self.centerxpos}, {self.centerypos}")
+        print(f"Number of Source Nodes: {len(self.sourcenodes)}")
+        print(f"Number of Sink Nodes: {len(self.associatedsinknodes)}")
+
+
+class System:
+    """
+    represents the whole list of requests raised
+    currently generates a list of requests of length totalnodes based on some pfactor and given list of items
+    additionally this class also contains getter functions for class attributes
+    plus two print methods:
+        - print() : prints concise information about the system
+        - clumsyprint() : prints extra information about the system
+
+    TODO: getfeasible can be modification of print function, check itemcounter, offer and request hashmaps
+    """
+
+    def __init__(
+        self, totalnodes: int, pfactor: float, itemlist: List[str] = None
+    ) -> None:
+        self.numberofnodes = totalnodes
+        self.probabilityfactor = pfactor
+        if not itemlist:
+            self.listofitems = ["Water Bottle", "Flashlight", "Canned Food"]
         else:
-            sourcecounter += 1
-            quantity = random.randint(1, 10)
-            nodes.append(Node(x, y, item, quantity))
+            self.listofitems = itemlist
 
-    return nodes
+        self.listofnodes = []
+        self.numberofsinknodes = 0
+        self.numberofsourcenodes = 0
 
+        self.generatenodes()
 
-def createDistanceMatrix(sinks: int, sources: int) -> List[List[int]]:
-    distanceMatrix = []
-    for _ in range(sinks):
-        row = []
-        for _ in range(sources):
-            row.append(random.randint(1, 10))
-        distanceMatrix.append(row)
-    return distanceMatrix
+    def generatenodes(self) -> None:
+        for _ in range(0, self.numberofnodes):
+            x = random.randint(0, 5000)
+            y = random.randint(0, 5000)
+            item = random.choice(self.listofitems)
+            if random.random() < self.probabilityfactor:
+                self.numberofsinknodes += 1
+                quantity = random.randint(-10, -1)
+                self.listofnodes.append(Node(x, y, item, quantity))
+            else:
+                self.numberofsourcenodes += 1
+                quantity = random.randint(1, 10)
+                self.listofnodes.append(Node(x, y, item, quantity))
+
+    def getnodes(self):
+        return self.listofnodes
+
+    def getnumberofsinknodes(self):
+        return self.numberofsinknodes
+
+    def getnumberofsourcenodes(self):
+        return self.numberofsourcenodes
+
+    def print(self):
+        itemcounter = dict()
+        offer = dict()
+        request = dict()
+
+        for node in self.listofnodes:
+            if node.nodetype == "Sink":
+                request[node.itemtype] = request.get(node.itemtype, 0) + node.quantity
+
+            if node.nodetype == "Source":
+                offer[node.itemtype] = offer.get(node.itemtype, 0) + node.quantity
+
+            itemcounter[node.itemtype] = itemcounter.get(node.itemtype, 0) + 1
+
+        print(f"Total Source Nodes: {self.numberofsourcenodes}")
+        print(f"Total Sink Nodes: {self.numberofsinknodes}")
+
+        for item in itemcounter:
+            print(
+                f"{item}: Requested {request[item]}, Offered {offer[item]}, all concerning nodes {itemcounter[item]}"
+            )
+
+    def clumsyprint(self):
+        itemcounter = dict()
+        offer = dict()
+        request = dict()
+
+        for node in self.listofnodes:
+            if node.nodetype == "Sink":
+                request[node.itemtype] = request.get(node.itemtype, 0) + node.quantity
+
+            if node.nodetype == "Source":
+                offer[node.itemtype] = offer.get(node.itemtype, 0) + node.quantity
+
+            itemcounter[node.itemtype] = itemcounter.get(node.itemtype, 0) + 1
+
+        print(f"Total Source Nodes: {self.numberofsourcenodes}")
+        print(f"Total Sink Nodes: {self.numberofsinknodes}")
+
+        for item in itemcounter:
+            print(
+                f"{item}: Requested {request[item]}, Offered {offer[item]}, all concerning nodes {itemcounter[item]}"
+            )
+            print(f"Total number of nodes related to {item} is {itemcounter[item]}")
+            print(f"Request total for {item} is {request[item]}")
+            print(f"Offer total for {item} is {offer[item]}")
 
 
 class ClusteringObject:
     """
-    creates a list of clusters and associates sinks with nearest source
+    represents the class that performs clustering on a list of nodes (system)
+    (flawed) clustering logic is contained in the .mapsinkstosource()
+    .getclusterlist() to return the list after clustering
+
+    TODO: Need logic for grouping clusters together
+    TODO: New method that returns avg cluster size to measure cluster efficiency?
+    TODO: Do we really need a class for this? or can this be inside the Cluster class itself?
     """
 
-    def __init__(self, system: List[Node]) -> None:
-        self.systemofnodes = system
-        self.distancematrix = []
-        self.extras = []
-        self.deficits = []
-        self.sourcenodes = [
-            node for node in self.systemofnodes if node.nodetype == "Source"
-        ]
-        self.sinknodes = [
-            node for node in self.systemofnodes if node.nodetype == "Sink"
-        ]
-        self.clusterobject = []
+    def __init__(self, systemofnodes: System) -> None:
+        self.clusterlist = []
+        self.sinknodes = []
+        self.sourcenodes = []
 
-    def getdistance(self, nodeobject1: Node, nodeobject2: Node):
-        return (
-            (nodeobject1.x_pos - nodeobject2.x_pos) ** 2
-            + (nodeobject1.y_pos - nodeobject2.y_pos) ** 2
-        ) ** 0.5
+        for node in systemofnodes.getnodes():
+            if node.nodetype == "Sink":
+                self.sinknodes.append(node)
+            else:
+                self.sourcenodes.append(node)
 
-    def Cluster(self) -> List[List[Node]]:
-        # for sink in self.sinknodes:
-        #     mindistance = float('inf')
-        #     nearestsource = Node()
-        #     for source in self.sourcenodes:
-        #         newdistance = self.getdistance(sink,source)
-        #         if newdistance < mindistance:
-        #             mindistance = newdistance
-        #             nearestsource = source
+        for sourcenode in self.sourcenodes:
+            self.clusterlist.append(Cluster(sourcenode))
 
-        #     sink.setsink(nearestsource)
+        self.mapsinkstosource()
 
-        # sourcesinkmap has a list of sinks [values] associated with a source [key]
-        sourcesinkmap = defaultdict(list)
-
-        for sink in self.sinknodes:
+    def mapsinkstosource(self):
+        for sinknode in self.sinknodes:
             mindistance = float("inf")
-            nearestsource = Node()
-            for source in self.sourcenodes:
-                newdistance = self.getdistance(sink, source)
+            nearestsource = None
+            for clusterobject in self.clusterlist:
+                newdistance = clusterobject.getdistance(sinknode)
                 if newdistance < mindistance:
                     mindistance = newdistance
-                    nearestsource = source
+                    nearestsource = clusterobject
 
-            sink.setsource(nearestsource)
+            nearestsource.associatedsinknodes.append(sinknode)
 
-            sourcesinkmap[nearestsource].append(sink)
+    def getclusterlist(self):
+        return self.clusterlist
 
-        return sourcesinkmap
 
+systemobject = System(totalnodes=100, pfactor=0.8)
+systemobject.print()
 
-# class SystemObject:
-#     def __init__(self, listofnodes: List[Node]) -> None:
-#         matrixsize
+print("\n\n")
 
-system = generateNodes(p=0.6, num=100)
-cluster = ClusteringObject(system)
+co = ClusteringObject(systemobject)
+clusterlist = co.getclusterlist()
 
-print(cluster.Cluster())
+print("Total number of clusters: ", len(clusterlist))
