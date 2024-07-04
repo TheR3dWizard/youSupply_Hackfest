@@ -18,7 +18,10 @@
 10. Perfect Cluster - Subset of a cluster that is Feasible and minimum excess(es)
 11. Free Pool - Set of Deficits and Extras in a system
 12. Feasibility Score - A score that evaluates a (something) taking distance and feasibility
-
+13. Client - An account type that creates sources and sinks
+14. Delivery Agent(Agent) - An account type that satisfies sources and sinks
+15. Route - A path through a cluster that satisfies all the nodes
+16. Delivery - A route is built of individual deliveries
 
 ## Functional Requirements
 
@@ -118,3 +121,19 @@ DFD for Delivery Agent
 ### Level 3:
 
 ![WhatsApp Image 2024-07-04 at 14 28 14](https://github.com/akashShanmugraj/programming-notes/assets/65720968/e6d348cc-b745-40fa-a1d1-d794e1db057d)
+
+#  System Requirements
+
+## Functional Requirements
+
+### 1 Users can register an account as a client or delievery agent
+
+### 2 Clients can post items they require or items they wish to donate
+
+### 3 Delivery Agents can view available routes
+
+### 4 Delivery Agents can accept available routes
+
+### 5 Delivery Agents will be able to partially fulfill a route
+
+
