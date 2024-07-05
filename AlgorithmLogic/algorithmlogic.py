@@ -2,6 +2,8 @@ import random
 import uuid
 from typing import List
 from collections import defaultdict
+from sklearn.cluster import KMeans, SpectralClustering
+import matplotlib.pyplot as plt
 
 
 class Node:
@@ -129,12 +131,13 @@ class System:
             self.listofitems = ["Water Bottle", "Flashlight", "Canned Food"]
         else:
             self.listofitems = itemlist
-
+        self.listofpositions = []
         self.listofnodes = []
         self.numberofsinknodes = 0
         self.numberofsourcenodes = 0
-
+        self.clusterlist = []
         self.generatenodes()
+        self.createclusters()
 
     def generatenodes(self) -> None:
         for _ in range(0, self.numberofnodes):
@@ -149,6 +152,35 @@ class System:
                 self.numberofsourcenodes += 1
                 quantity = random.randint(1, 10)
                 self.listofnodes.append(Node(x, y, item, quantity))
+            self.listofpositions.append((x,y))
+
+    def createclusters(self):
+        spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
+        spc.fit(self.listofpositions)
+        cluster_labels = spc.labels_
+        clusters = defaultdict(list)
+
+        for i, label in enumerate(cluster_labels):
+            clusters[label].append(self.getnodes()[i])
+
+        for cluster_nodes in clusters.values():
+            sourcenode = cluster_nodes[0]
+            cluster = Cluster(sourcenode)
+            for node in cluster_nodes[1:]:
+                if node.nodetype == "Sink":
+                    cluster.addsink(node)
+                else:
+                    cluster.addsource(node)
+            self.clusterlist.append(cluster)
+
+    def plotclusters(self):
+        plt.figure(figsize=(10, 10))
+        for cluster in self.clusterlist:
+    
+            x = [node.x_pos for node in cluster.tolist()]
+            y = [node.y_pos for node in cluster.tolist()]
+            plt.scatter(x, y)
+        plt.show()
 
     def getnodes(self):
         return self.listofnodes
@@ -158,6 +190,9 @@ class System:
 
     def getnumberofsourcenodes(self):
         return self.numberofsourcenodes
+
+    def getclusterlist(self):
+        return self.clusterlist
 
     def print(self):
         itemcounter = dict()
@@ -255,7 +290,18 @@ systemobject.print()
 
 print("\n\n")
 
-co = ClusteringObject(systemobject)
-clusterlist = co.getclusterlist()
+# co = ClusteringObject(systemobject)
+# clusterlist = co.getclusterlist()
+
+clusterlist = systemobject.getclusterlist()
+
 
 print("Total number of clusters: ", len(clusterlist))
+size = 0
+for i in clusterlist:
+    size += len(clusterlist)
+    i.printcluster()
+    print()
+
+print("Total number of nodes",size)
+systemobject.plotclusters()
