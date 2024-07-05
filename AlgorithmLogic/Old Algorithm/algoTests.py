@@ -1,4 +1,4 @@
-import satisfactionAlgos as sa
+import AlgorithmLogic.oldsatisfactionalgorithm as sa
 from random import randint,random
 import matplotlib.pyplot as plt
 
