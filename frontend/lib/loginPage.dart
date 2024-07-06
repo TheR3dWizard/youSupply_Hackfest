@@ -22,9 +22,9 @@ class LoginPage extends StatelessWidget {
             child: Text(
               "YouSupply",
               style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                  ),
+                fontSize: 42,
+                fontWeight: FontWeight.bold,
+              ),
             )),
         Column(
           children: [
@@ -38,23 +38,27 @@ class LoginPage extends StatelessWidget {
             ),
           ],
         ),
-        ToggleSwitch(
-          minWidth: 175,
-          minHeight: 50,
-              initialLabelIndex: 0,
-              totalSwitches: 2,
-              labels: const ['Client','Delivery Agent'],
-              activeBgColor: const [Colors.blueAccent],
-              inactiveBgColor: Colors.grey,
-              onToggle: (index) {
-                if (index == 0) {
-                  typeNotifier.value = "Client";
-                } else {
-                  typeNotifier.value = "Delivery Agent";
-                }
-              },
-            ),
-          
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ToggleSwitch(
+            borderColor: [Colors.black45],
+            borderWidth: 1.5,
+            minWidth: 140,
+            minHeight: 50,
+            initialLabelIndex: 0,
+            totalSwitches: 2,
+            labels: const ['Client', 'Delivery Agent'],
+            activeBgColor: const [Colors.blueAccent],
+            inactiveBgColor: Colors.white10,
+            onToggle: (index) {
+              if (index == 0) {
+                typeNotifier.value = "Client";
+              } else {
+                typeNotifier.value = "Delivery Agent";
+              }
+            },
+          ),
+        ),
         OutlinedButton(
           onPressed: () {
             authenticateUser(context, usernameController, passwordController);
@@ -73,6 +77,5 @@ class LoginPage extends StatelessWidget {
   void authenticateUser(BuildContext context, TextEditingController username,
       TextEditingController password) {
     //TODO authentication
-
   }
 }

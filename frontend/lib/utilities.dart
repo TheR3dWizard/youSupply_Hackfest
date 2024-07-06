@@ -44,7 +44,7 @@ class LabelledTextField extends StatelessWidget {
       child: SizedBox(
         width: 350,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextField(
             obscureText: hidden ?? false,
             decoration: InputDecoration(
@@ -186,4 +186,3 @@ class _PillState extends State<Pill> {
         ));
   }
 }
-
