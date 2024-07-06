@@ -33,7 +33,9 @@ class LoginPage extends StatelessWidget {
               controller: usernameController,
             ),
             PasswordField(
-              controller: passwordController,),
+              label1: "Password",
+              controller: passwordController,
+            ),
           ],
         ),
         Padding(
@@ -68,6 +70,15 @@ class LoginPage extends StatelessWidget {
           ),
           child: const Text('Login'),
         ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/signupGU');
+            },
+            child: const Text('Sign Up'),
+          ),
+        ),
       ],
     )));
   }
@@ -77,3 +88,7 @@ class LoginPage extends StatelessWidget {
     //TODO authentication
   }
 }
+
+
+// Background theme
+// Sign up underline

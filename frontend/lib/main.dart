@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loginPage.dart';
+import 'signUpPageGU.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -11,6 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) => LoginPage(),
+        '/signupGU': (context) => SignUpPageGU(),
+      },
       title: 'youSupply',
       theme: ThemeData(
         // This is the theme of your application.

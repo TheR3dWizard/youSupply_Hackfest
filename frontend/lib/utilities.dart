@@ -66,18 +66,26 @@ class LabelledTextField extends StatelessWidget {
 }
 
 class PasswordField extends StatefulWidget {
-
-  PasswordField({super.key,this.obscureText = true,required this.controller});
+  final String label1;
+  PasswordField(
+      {super.key,
+      this.obscureText = true,
+      required this.controller,
+      required this.label1});
   TextEditingController controller;
   bool obscureText = true;
 
   @override
-  _PasswordFieldState createState() => _PasswordFieldState(obscureText: obscureText,controller: controller);
+  _PasswordFieldState createState() => _PasswordFieldState(
+      obscureText: obscureText, controller: controller, label1: label1);
 }
 
 class _PasswordFieldState extends State<PasswordField> {
-
-  _PasswordFieldState({required this.obscureText,required this.controller});
+  final String label1;
+  _PasswordFieldState(
+      {required this.obscureText,
+      required this.controller,
+      required this.label1});
   bool obscureText;
   TextEditingController controller;
 
@@ -88,35 +96,32 @@ class _PasswordFieldState extends State<PasswordField> {
       child: SizedBox(
         width: 350,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextField(
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            gapPadding: 5.0,
-          ),
-          labelText: 'Password',
-          suffixIcon: IconButton(
-            icon: Icon(
-              obscureText ? Icons.visibility_off : Icons.visibility,
+            obscureText: obscureText,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                gapPadding: 5.0,
+              ),
+              labelText: label1,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  obscureText ? Icons.visibility_off : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    obscureText = !obscureText;
+                  });
+                },
+              ),
             ),
-            onPressed: () {
-              setState(() {
-                obscureText = !obscureText;
-              });
-            },
           ),
-        ),
-      ),
         ),
       ),
     );
   }
-
-
 }
-
 
 class Bet extends StatefulWidget {
   final String name;
