@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 class LabelledTextField extends StatelessWidget {
   final String label;
@@ -63,6 +64,47 @@ class LabelledTextField extends StatelessWidget {
     );
   }
 }
+
+class PasswordField extends StatefulWidget {
+
+  PasswordField({super.key,this.obscureText = true,required this.controller});
+  TextEditingController controller;
+  bool obscureText = true;
+
+  @override
+  _PasswordFieldState createState() => _PasswordFieldState(obscureText: obscureText,controller: controller);
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+
+  _PasswordFieldState({required this.obscureText,required this.controller});
+  bool obscureText;
+  TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: TextField(
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: 'Password',
+          suffixIcon: IconButton(
+            icon: Icon(
+              obscureText ? Icons.visibility : Icons.visibility_off,
+            ),
+            onPressed: () {
+              setState(() {
+                obscureText = !obscureText;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 
 class Bet extends StatefulWidget {
   final String name;

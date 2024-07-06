@@ -32,10 +32,8 @@ class LoginPage extends StatelessWidget {
               label: "Username",
               controller: usernameController,
             ),
-            LabelledTextField.hidden(
-              label: "Password",
-              controller: passwordController,
-            ),
+            PasswordField(
+              controller: passwordController,),
           ],
         ),
         ToggleSwitch(
