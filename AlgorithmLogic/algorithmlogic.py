@@ -73,13 +73,14 @@ class Cluster:
         self.centerxpos = sourcenode.x_pos
         self.centerypos = sourcenode.y_pos
         self.sourcenodes = [sourcenode]
-        self.associatedsinknodes = []
+        self.sinknodes = []
+        self.inventory = defaultdict(int)
         self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
 
     def addsink(self, sinknode: Node):
         if sinknode.nodetype != "Sink":
             raise TypeError("Invalid Sink Node")
-        self.associatedsinknodes.append(sinknode)
+        self.sinknodes.append(sinknode)
 
     def addsource(
         self, sourcenode: Node
@@ -88,11 +89,68 @@ class Cluster:
             raise TypeError("Invalid Source Node")
         self.sourcenodes.append(sourcenode)
 
+    def removesource(self, sourcenode: Node):
+        if sourcenode in self.sourcenodes:
+            self.sourcenodes.remove(sourcenode)
+        else:
+            raise ValueError("Node not in cluster")
+    
+    def removesink(self, sinknode: Node):
+        if sinknode in self.sinknodes:
+            self.sinknodes.remove(sinknode)
+        else:
+            raise ValueError("Node not in cluster")
+
+    def getinventory(self):
+        for i in self.sourcenodes:
+            self.inventory[i.itemtype] += i.quantity
+        for i in self.sinknodes:
+            self.inventory[i.itemtype] += i.quantity
+
+    def getfeasible(self):
+        inventory = self.getinventory()
+        freepool = []
+        deficits = []
+        excesses = []
+        for i in inventory:
+            if inventory[i] < 0:
+                # TYPE: (QUANTITY, [NODES])
+                deficits.append((inventory[i],[_ for _ in self.sinknodes if _.itemtype == i]))
+            elif inventory[i] > 0:
+                excesses.append((inventory[i],[_ for _ in self.sourcenodes if _.itemtype == i]))
+
+        for deficit,nodes in deficits:
+            while deficit < 0:
+                node = max(nodes,key=lambda x: x.quantity)
+                if deficit + node.quantity <= 0:
+                    deficit += node.quantity
+                    nodes.remove(node)
+                    self.removesource(node)
+                    freepool.append(node)
+        
+        for excess,nodes in excesses:
+            while excess > 0:
+                node = max(nodes,key=lambda x: x.quantity)
+                if excess - node.quantity >= 0:
+                    excess -= node.quantity
+                    nodes.remove(node)
+                    self.removesink(node)
+                    freepool.append(node)
+
+        self.getinventory()
+        print(self.inventory)
+        return freepool
+        
+
+
     def tolist(self):
-        return self.sourcenodes + self.associatedsinknodes
+        return self.sourcenodes + self.sinknodes
+
+    def getnumberofnodes(self):
+        return len(self.sourcenodes) + len(self.sinknodes)
 
     def getsinklist(self):
-        return self.associatedsinknodes
+        return self.sinknodes
 
     def getsourcelist(self):
         return self.sourcenodes
@@ -107,7 +165,7 @@ class Cluster:
         print(f"Cluster Identifier: {self.identifier}")
         print(f"Cluster centered at {self.centerxpos}, {self.centerypos}")
         print(f"Number of Source Nodes: {len(self.sourcenodes)}")
-        print(f"Number of Sink Nodes: {len(self.associatedsinknodes)}")
+        print(f"Number of Sink Nodes: {len(self.sinknodes)}")
 
 
 class System:
@@ -137,7 +195,13 @@ class System:
         self.numberofsourcenodes = 0
         self.clusterlist = []
         self.generatenodes()
-        self.createclusters()
+
+    def __init__(self,listofnodes:List[Node]) -> None:
+        self.listofnodes = listofnodes
+        self.listofpositions = [(x,y) for x,y in zip([node.x_pos for node in listofnodes],[node.y_pos for node in listofnodes])]
+        self.numberofsinknodes = len([_ for _ in listofnodes if _.nodetype == "Sink"])
+        self.numberofsourcenodes = len([_ for _ in listofnodes if _.nodetype == "Source"])
+        self.clusterlist = []
 
     def generatenodes(self) -> None:
         for _ in range(0, self.numberofnodes):
@@ -154,24 +218,7 @@ class System:
                 self.listofnodes.append(Node(x, y, item, quantity))
             self.listofpositions.append((x,y))
 
-    def createclusters(self):
-        spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
-        spc.fit(self.listofpositions)
-        cluster_labels = spc.labels_
-        clusters = defaultdict(list)
-
-        for i, label in enumerate(cluster_labels):
-            clusters[label].append(self.getnodes()[i])
-
-        for cluster_nodes in clusters.values():
-            sourcenode = cluster_nodes[0]
-            cluster = Cluster(sourcenode)
-            for node in cluster_nodes[1:]:
-                if node.nodetype == "Sink":
-                    cluster.addsink(node)
-                else:
-                    cluster.addsource(node)
-            self.clusterlist.append(cluster)
+    
 
     def plotclusters(self):
         plt.figure(figsize=(10, 10))
@@ -191,7 +238,7 @@ class System:
     def getnumberofsourcenodes(self):
         return self.numberofsourcenodes
 
-    def getclusterlist(self):
+    def getclusterslist(self):
         return self.clusterlist
 
     def print(self):
@@ -246,29 +293,34 @@ class ClusteringObject:
     """
     represents the class that performs clustering on a list of nodes (system)
     (flawed) clustering logic is contained in the .mapsinkstosource()
-    .getclusterlist() to return the list after clustering
+    .getclusterslist() to return the list after clustering
 
     TODO: Need logic for grouping clusters together
     TODO: New method that returns avg cluster size to measure cluster efficiency?
     TODO: Do we really need a class for this? or can this be inside the Cluster class itself?
     """
 
+    def categorizenodes(self, nodes: List[Node]):
+        
+        for node in nodes:
+            if node.nodetype == "Sink":
+                self.inknodes.append(node)
+            else:
+                self.sourcenodes.append(node)
+
+
     def __init__(self, systemofnodes: System) -> None:
         self.clusterlist = []
         self.sinknodes = []
         self.sourcenodes = []
+        self.freepool = []
+        self.categorizenodes(systemofnodes.getnodes())
+        # for sourcenode in self.sourcenodes:
+        #     self.clusterlist.append(Cluster(sourcenode))
 
-        for node in systemofnodes.getnodes():
-            if node.nodetype == "Sink":
-                self.sinknodes.append(node)
-            else:
-                self.sourcenodes.append(node)
+        # self.mapsinkstosource()
 
-        for sourcenode in self.sourcenodes:
-            self.clusterlist.append(Cluster(sourcenode))
-
-        self.mapsinkstosource()
-
+    # This function is flawed, it just maps the nearest source to a sink, @Akash remove it if its not needed
     def mapsinkstosource(self):
         for sinknode in self.sinknodes:
             mindistance = float("inf")
@@ -279,28 +331,58 @@ class ClusteringObject:
                     mindistance = newdistance
                     nearestsource = clusterobject
 
-            nearestsource.associatedsinknodes.append(sinknode)
+            nearestsource.sinknodes.append(sinknode)
 
-    def getclusterlist(self):
-        return self.clusterlist
+    def spectralclustering(self):
+        spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
+        spc.fit(self.listofpositions)
+        cluster_labels = spc.labels_
+        clusters = defaultdict(list)
+
+        for i, label in enumerate(cluster_labels):
+            clusters[label].append(self.getnodes()[i])
+
+        for cluster_nodes in clusters.values():
+            sourcenode = cluster_nodes[0]
+            cluster = Cluster(sourcenode)
+            for node in cluster_nodes[1:]:
+                if node.nodetype == "Sink":
+                    #remove nodes from clusteringobject when theyre added to a cluster
+                    self.sinknodes.remove(node)
+                    cluster.addsink(node)
+                else:
+                    self.sourcenodes.remove(node)
+                    cluster.addsource(node)
+            self.clusterlist.append(cluster)
+
+    def createfreepool(self):
+        for cluster in self.clusterlist:
+            self.freepool += cluster.getfeasible()
+        newsystem = System(self.freepool)
 
 
-systemobject = System(totalnodes=100, pfactor=0.8)
+    def getclusterslist(self):
+        return self.clusterslist
+
+
+systemobject = System(totalnodes=1000, pfactor=0.8)
 systemobject.print()
 
 print("\n\n")
 
 # co = ClusteringObject(systemobject)
-# clusterlist = co.getclusterlist()
+# clusterlist = co.getclusterslist()
 
-clusterlist = systemobject.getclusterlist()
+clusterlist = systemobject.getclusterslist()
 
 
 print("Total number of clusters: ", len(clusterlist))
 size = 0
 for i in clusterlist:
-    size += len(clusterlist)
+    size += i.getnumberofnodes()
     i.printcluster()
+    print(i.getfeasible())
+
     print()
 
 print("Total number of nodes",size)
