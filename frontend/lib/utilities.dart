@@ -84,14 +84,22 @@ class _PasswordFieldState extends State<PasswordField> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
+      padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+      child: SizedBox(
+        width: 350,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+          child: TextField(
         obscureText: obscureText,
         decoration: InputDecoration(
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            gapPadding: 5.0,
+          ),
           labelText: 'Password',
           suffixIcon: IconButton(
             icon: Icon(
-              obscureText ? Icons.visibility : Icons.visibility_off,
+              obscureText ? Icons.visibility_off : Icons.visibility,
             ),
             onPressed: () {
               setState(() {
@@ -101,8 +109,12 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
         ),
       ),
+        ),
+      ),
     );
   }
+
+
 }
 
 
