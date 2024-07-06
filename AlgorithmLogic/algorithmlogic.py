@@ -1,6 +1,6 @@
 import random
 import uuid
-from typing import List
+from typing import List, Optional
 from collections import defaultdict
 from sklearn.cluster import KMeans, SpectralClustering
 import matplotlib.pyplot as plt
@@ -41,7 +41,7 @@ class Node:
         )
 
     def __repr__(self):
-        return self.__str__()
+        return f"{self.x_pos},{self.y_pos},{self.itemtype},{self.quantity};"
 
     def __gtr__(self, other):
         return self.quantity > other.quantity
@@ -65,6 +65,12 @@ class Cluster:
     TODO: Implement a metric to evaluate the cluster
 
     """
+
+    def __str__(self):
+        return f"Cluster with the nodes {self.sourcenodes + self.sinknodes}"
+    
+    def __repr__(self):
+        return self.__str__()
 
     def __init__(self, sourcenode: Node, identifier: str = None) -> None:
         if not identifier:
@@ -101,43 +107,54 @@ class Cluster:
         else:
             raise ValueError("Node not in cluster")
 
-    def getinventory(self):
+    def updateinventory(self):
         for i in self.sourcenodes:
             self.inventory[i.itemtype] += i.quantity
         for i in self.sinknodes:
             self.inventory[i.itemtype] += i.quantity
 
     def getfeasible(self):
-        inventory = self.getinventory()
+        self.updateinventory()
         freepool = []
         deficits = []
         excesses = []
-        for i in inventory:
-            if inventory[i] < 0:
+        for i in self.inventory:
+            if self.inventory[i] < 0:
                 # TYPE: (QUANTITY, [NODES])
-                deficits.append((inventory[i],[_ for _ in self.sinknodes if _.itemtype == i]))
-            elif inventory[i] > 0:
-                excesses.append((inventory[i],[_ for _ in self.sourcenodes if _.itemtype == i]))
+                deficits.append([self.inventory[i],[_ for _ in self.sinknodes if _.itemtype == i]])
+            elif self.inventory[i] > 0:
+                excesses.append([self.inventory[i],[_ for _ in self.sourcenodes if _.itemtype == i]])
+
 
         for deficit,nodes in deficits:
             while deficit < 0:
-                node = max(nodes,key=lambda x: x.quantity)
+
+                node = min(nodes,key=lambda x: x.quantity)
                 if deficit + node.quantity <= 0:
                     deficit += node.quantity
                     nodes.remove(node)
-                    self.removesource(node)
+                    self.removesink(node)
                     freepool.append(node)
         
+        # for value in deficits:
+        #     while value[0] < 0:
+        #         node = min(value[1],key=lambda x: x.quantity)
+        #         if value[0] + node.quantity <= 0:
+        #             value[0] += node.quantity
+        #             value[1].remove(node)
+        #             self.removesink(node)
+        #             freepool.append(node)
+
         for excess,nodes in excesses:
             while excess > 0:
                 node = max(nodes,key=lambda x: x.quantity)
                 if excess - node.quantity >= 0:
                     excess -= node.quantity
                     nodes.remove(node)
-                    self.removesink(node)
+                    self.removesource(node)
                     freepool.append(node)
 
-        self.getinventory()
+        self.updateinventory()
         print(self.inventory)
         return freepool
         
@@ -180,8 +197,15 @@ class System:
     TODO: getfeasible can be modification of print function, check itemcounter, offer and request hashmaps
     """
 
+    def __str__(self):
+        return f"System with {self.numberofnodes} nodes"
+    
+    def __repr__(self):
+        return self.__str__()
+
+    #can be initialized with a list of nodes or generate based on a probability factor
     def __init__(
-        self, totalnodes: int, pfactor: float, itemlist: List[str] = None
+        self, totalnodes: int, pfactor: Optional[float], itemlist: List[str] = None,listofnodes:List[Node] = None
     ) -> None:
         self.numberofnodes = totalnodes
         self.probabilityfactor = pfactor
@@ -189,19 +213,15 @@ class System:
             self.listofitems = ["Water Bottle", "Flashlight", "Canned Food"]
         else:
             self.listofitems = itemlist
-        self.listofpositions = []
-        self.listofnodes = []
-        self.numberofsinknodes = 0
-        self.numberofsourcenodes = 0
+        self.listofpositions = [(x,y) for x,y in zip([node.x_pos for node in listofnodes],[node.y_pos for node in listofnodes])] if listofnodes else []
+        self.listofnodes = listofnodes if listofnodes else []
+        self.numberofsinknodes = len([_ for _ in listofnodes if _.nodetype == "Sink"]) if listofnodes else 0
+        self.numberofsourcenodes = len([_ for _ in listofnodes if _.nodetype == "Source"]) if listofnodes else 0
         self.clusterlist = []
-        self.generatenodes()
+        if not listofnodes:
+            self.generatenodes()
 
-    def __init__(self,listofnodes:List[Node]) -> None:
-        self.listofnodes = listofnodes
-        self.listofpositions = [(x,y) for x,y in zip([node.x_pos for node in listofnodes],[node.y_pos for node in listofnodes])]
-        self.numberofsinknodes = len([_ for _ in listofnodes if _.nodetype == "Sink"])
-        self.numberofsourcenodes = len([_ for _ in listofnodes if _.nodetype == "Source"])
-        self.clusterlist = []
+    
 
     def generatenodes(self) -> None:
         for _ in range(0, self.numberofnodes):
@@ -223,7 +243,6 @@ class System:
     def plotclusters(self):
         plt.figure(figsize=(10, 10))
         for cluster in self.clusterlist:
-    
             x = [node.x_pos for node in cluster.tolist()]
             y = [node.y_pos for node in cluster.tolist()]
             plt.scatter(x, y)
@@ -304,16 +323,17 @@ class ClusteringObject:
         
         for node in nodes:
             if node.nodetype == "Sink":
-                self.inknodes.append(node)
+                self.sinknodes.append(node)
             else:
                 self.sourcenodes.append(node)
 
 
     def __init__(self, systemofnodes: System) -> None:
-        self.clusterlist = []
+        self.clusterlist:List[Cluster] = [] 
         self.sinknodes = []
         self.sourcenodes = []
         self.freepool = []
+        self.systemofnodes = systemofnodes
         self.categorizenodes(systemofnodes.getnodes())
         # for sourcenode in self.sourcenodes:
         #     self.clusterlist.append(Cluster(sourcenode))
@@ -333,14 +353,15 @@ class ClusteringObject:
 
             nearestsource.sinknodes.append(sinknode)
 
+    #creates clusters based on spectral clustering and adds nodes to the clusters
     def spectralclustering(self):
         spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
-        spc.fit(self.listofpositions)
+        spc.fit(self.systemofnodes.listofpositions)
         cluster_labels = spc.labels_
         clusters = defaultdict(list)
 
         for i, label in enumerate(cluster_labels):
-            clusters[label].append(self.getnodes()[i])
+            clusters[label].append(self.systemofnodes.getnodes()[i])
 
         for cluster_nodes in clusters.values():
             sourcenode = cluster_nodes[0]
@@ -355,35 +376,44 @@ class ClusteringObject:
                     cluster.addsource(node)
             self.clusterlist.append(cluster)
 
-    def createfreepool(self):
+    def createfreepool(self) -> System:
         for cluster in self.clusterlist:
             self.freepool += cluster.getfeasible()
-        newsystem = System(self.freepool)
+        return System(self.freepool)
 
 
     def getclusterslist(self):
         return self.clusterslist
 
 
-systemobject = System(totalnodes=1000, pfactor=0.8)
-systemobject.print()
+# systemobject = System(totalnodes=1000, pfactor=0.8)
+# systemobject.print()
 
-print("\n\n")
+# print("\n\n")
 
 # co = ClusteringObject(systemobject)
-# clusterlist = co.getclusterslist()
-
-clusterlist = systemobject.getclusterslist()
+# co.spectralclustering()
 
 
-print("Total number of clusters: ", len(clusterlist))
-size = 0
-for i in clusterlist:
-    size += i.getnumberofnodes()
-    i.printcluster()
-    print(i.getfeasible())
+# clusterlist = systemobject.getclusterslist()
 
-    print()
 
-print("Total number of nodes",size)
-systemobject.plotclusters()
+# print("Total number of clusters: ", len(clusterlist))
+# size = 0
+# for i in clusterlist:
+#     size += i.getnumberofnodes()
+#     i.printcluster()
+#     print()
+
+# print("Total number of nodes",size)
+# systemobject.plotclusters()
+
+class Solution:
+    def __init__(self) -> None:
+        self.system = System(totalnodes=100, pfactor=0.8)
+        self.clusteringobject = ClusteringObject(self.system)
+        self.clusteringobject.spectralclustering()
+        # self.system.plotclusters()
+        self.freepool = self.clusteringobject.createfreepool()
+
+sol = Solution()
