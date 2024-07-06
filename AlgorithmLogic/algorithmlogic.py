@@ -113,7 +113,7 @@ class Cluster:
         for i in self.sinknodes:
             self.inventory[i.itemtype] += i.quantity
 
-    def getfeasible(self):
+    def getfeasible(self)->List[Node]:
         self.updateinventory()
         freepool = []
         deficits = []
@@ -215,13 +215,15 @@ class System:
             self.listofitems = itemlist
         self.listofpositions = [(x,y) for x,y in zip([node.x_pos for node in listofnodes],[node.y_pos for node in listofnodes])] if listofnodes else []
         self.listofnodes = listofnodes if listofnodes else []
+        self.sourcenodes = [_ for _ in listofnodes if _.nodetype == "Source"]
+        self.sinknodes = [_ for _ in listofnodes if _.nodetype == "Sink"]
         self.numberofsinknodes = len([_ for _ in listofnodes if _.nodetype == "Sink"]) if listofnodes else 0
         self.numberofsourcenodes = len([_ for _ in listofnodes if _.nodetype == "Source"]) if listofnodes else 0
-        self.clusterlist = []
+        self.clusterlist:List[Node] = []
+        self.freepool:List[Node] = []
         if not listofnodes:
             self.generatenodes()
 
-    
 
     def generatenodes(self) -> None:
         for _ in range(0, self.numberofnodes):
@@ -238,7 +240,33 @@ class System:
                 self.listofnodes.append(Node(x, y, item, quantity))
             self.listofpositions.append((x,y))
 
-    
+    def spectralclustering(self):
+        spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
+        spc.fit(self.systemofnodes.listofpositions)
+        cluster_labels = spc.labels_
+        clusters = defaultdict(list)
+
+        for i, label in enumerate(cluster_labels):
+            clusters[label].append(self.systemofnodes.getnodes()[i])
+
+        for cluster_nodes in clusters.values():
+            sourcenode = cluster_nodes[0]
+            cluster = Cluster(sourcenode)
+            for node in cluster_nodes[1:]:
+                if node.nodetype == "Sink":
+                    #remove nodes from clusteringobject when theyre added to a cluster
+                    self.sinknodes.remove(node)
+                    cluster.addsink(node)
+                else:
+                    self.sourcenodes.remove(node)
+                    cluster.addsource(node)
+            self.clusterlist.append(cluster)
+
+    def createfreepool(self):
+        for cluster in self.clusterlist:
+            self.freepool += cluster.getfeasible()
+        return System(self.freepool)
+
 
     def plotclusters(self):
         plt.figure(figsize=(10, 10))
@@ -308,82 +336,6 @@ class System:
             print(f"Offer total for {item} is {offer[item]}")
 
 
-class ClusteringObject:
-    """
-    represents the class that performs clustering on a list of nodes (system)
-    (flawed) clustering logic is contained in the .mapsinkstosource()
-    .getclusterslist() to return the list after clustering
-
-    TODO: Need logic for grouping clusters together
-    TODO: New method that returns avg cluster size to measure cluster efficiency?
-    TODO: Do we really need a class for this? or can this be inside the Cluster class itself?
-    """
-
-    def categorizenodes(self, nodes: List[Node]):
-        
-        for node in nodes:
-            if node.nodetype == "Sink":
-                self.sinknodes.append(node)
-            else:
-                self.sourcenodes.append(node)
-
-
-    def __init__(self, systemofnodes: System) -> None:
-        self.clusterlist:List[Cluster] = [] 
-        self.sinknodes = []
-        self.sourcenodes = []
-        self.freepool = []
-        self.systemofnodes = systemofnodes
-        self.categorizenodes(systemofnodes.getnodes())
-        # for sourcenode in self.sourcenodes:
-        #     self.clusterlist.append(Cluster(sourcenode))
-
-        # self.mapsinkstosource()
-
-    # This function is flawed, it just maps the nearest source to a sink, @Akash remove it if its not needed
-    def mapsinkstosource(self):
-        for sinknode in self.sinknodes:
-            mindistance = float("inf")
-            nearestsource = None
-            for clusterobject in self.clusterlist:
-                newdistance = clusterobject.getdistance(sinknode)
-                if newdistance < mindistance:
-                    mindistance = newdistance
-                    nearestsource = clusterobject
-
-            nearestsource.sinknodes.append(sinknode)
-
-    #creates clusters based on spectral clustering and adds nodes to the clusters
-    def spectralclustering(self):
-        spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
-        spc.fit(self.systemofnodes.listofpositions)
-        cluster_labels = spc.labels_
-        clusters = defaultdict(list)
-
-        for i, label in enumerate(cluster_labels):
-            clusters[label].append(self.systemofnodes.getnodes()[i])
-
-        for cluster_nodes in clusters.values():
-            sourcenode = cluster_nodes[0]
-            cluster = Cluster(sourcenode)
-            for node in cluster_nodes[1:]:
-                if node.nodetype == "Sink":
-                    #remove nodes from clusteringobject when theyre added to a cluster
-                    self.sinknodes.remove(node)
-                    cluster.addsink(node)
-                else:
-                    self.sourcenodes.remove(node)
-                    cluster.addsource(node)
-            self.clusterlist.append(cluster)
-
-    def createfreepool(self) -> System:
-        for cluster in self.clusterlist:
-            self.freepool += cluster.getfeasible()
-        return System(self.freepool)
-
-
-    def getclusterslist(self):
-        return self.clusterslist
 
 
 # systemobject = System(totalnodes=1000, pfactor=0.8)
@@ -411,9 +363,7 @@ class ClusteringObject:
 class Solution:
     def __init__(self) -> None:
         self.system = System(totalnodes=100, pfactor=0.8)
-        self.clusteringobject = ClusteringObject(self.system)
-        self.clusteringobject.spectralclustering()
-        # self.system.plotclusters()
-        self.freepool = self.clusteringobject.createfreepool()
+        self.system.spectralclustering()
+        
 
 sol = Solution()
