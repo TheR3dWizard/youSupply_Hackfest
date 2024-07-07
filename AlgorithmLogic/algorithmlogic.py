@@ -4,7 +4,7 @@ from typing import List, Optional
 from collections import defaultdict
 from sklearn.cluster import KMeans, SpectralClustering
 import matplotlib.pyplot as plt
-
+import pprint
 
 class Node:
     """
@@ -64,7 +64,7 @@ class Path:
         return self.distance
 
     def plotpath(self):
-        
+        pprint.pprint(self.path)
         x = [node.x_pos for node in self.path]
         y = [node.y_pos for node in self.path]
         start_node = self.path[0]
@@ -459,7 +459,6 @@ class Solution:
         self.system = System(totalnodes=500, pfactor=0.8)
         self.system.spectralclustering(num_points=100)
         self.system.print()
-        # self.system.plotclusters()
         self.system.createfreepool()
         for cluster in self.system.clusterlist:
             cluster.plot_subpaths()
