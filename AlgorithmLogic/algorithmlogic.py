@@ -57,6 +57,12 @@ class Path:
         self.path = path
         self.distance = distance
 
+    def getPath(self): 
+        return self.path
+
+    def getDistance(self):
+        return self.distance
+
     def plotpath(self):
         
         x = [node.x_pos for node in self.path]
@@ -191,9 +197,7 @@ class Cluster:
         visited = set()
         available = defaultdict(int)
         path = []
-
-
-
+        
         #function to get the closest node
         closest = lambda node,possibilities: min([(node.getdistance(_),_) for _ in possibilities if _ not in visited],key = lambda x: x[0])
         
@@ -211,16 +215,24 @@ class Cluster:
                   return False     
             return False
         
+        previndex = 0
+        prevdistance = 0
+
         def createsubpath():
+            nonlocal previndex, prevdistance  # Add nonlocal keyword to access outer scope variables
             for i in available:
                 if available[i] != 0:
                     return
-            self.subpaths.append(Path(path,distance))
+            print("Creating subpath")
+            self.subpaths.append(Path(path[previndex:], distance - prevdistance))
+            self.subpaths[-1].plotpath()
+            previndex = len(path)
+            prevdistance = distance
                     
 
         while len(visited) < self.getnumberofnodes():
             available[current.itemtype] += current.quantity
-                
+            createsubpath()
             possiblesinks = [node for node in self.sinknodes if node not in visited and check(node)]
             if not possiblesinks:
                 possiblesources = [node for node in self.sourcenodes if node not in visited]
@@ -234,21 +246,29 @@ class Cluster:
         
         self.path = Path(path,distance)
     
+    def plot_subpaths(self):
+        self.getpath()
+        self.path.plotpath()
+        for subpath in self.subpaths:
+            subpath.plotpath()
+
     def plotpath(self):
-        path,distance = self.path.path,self.path.distance
-        x = [node.x_pos for node in path]
-        y = [node.y_pos for node in path]
-        start_node = path[0]
-        end_node = path[-1]
-        plt.plot(x, y, '-o')
-        plt.plot(start_node.x_pos, start_node.y_pos, 'go', label='Start Node')
-        plt.plot(end_node.x_pos, end_node.y_pos, 'ro', label='End Node')
-        plt.xlabel('X Position')
-        plt.ylabel('Y Position')
-        plt.title('Path')
-        plt.legend()
-        print(f"Number of nodes in path: {len(path)}")
-        plt.show()
+        self.getpath()
+        self.path.plotpath()
+        # path,distance = self.path.getPath(),self.path.getDistance()
+        # x = [node.x_pos for node in path]
+        # y = [node.y_pos for node in path]
+        # start_node = path[0]
+        # end_node = path[-1]
+        # plt.plot(x, y, '-o')
+        # plt.plot(start_node.x_pos, start_node.y_pos, 'go', label='Start Node')
+        # plt.plot(end_node.x_pos, end_node.y_pos, 'ro', label='End Node')
+        # plt.xlabel('X Position')
+        # plt.ylabel('Y Position')
+        # plt.title('Path')
+        # plt.legend()
+        # print(f"Number of nodes in path: {len(path)}")
+        # plt.show()
         
     def tolist(self):
         return self.sourcenodes + self.sinknodes
@@ -312,7 +332,7 @@ class System:
         self.sinknodes = [_ for _ in listofnodes if _.nodetype == "Sink"] if listofnodes else []
         self.numberofsinknodes = len([_ for _ in listofnodes if _.nodetype == "Sink"]) if listofnodes else 0
         self.numberofsourcenodes = len([_ for _ in listofnodes if _.nodetype == "Source"]) if listofnodes else 0
-        self.clusterlist:List[Node] = []
+        self.clusterlist:List[Cluster] = []
         self.freepool:List[Node] = []
         if not listofnodes:
             self.generatenodes()
@@ -437,10 +457,10 @@ class System:
 class Solution:
     def __init__(self) -> None:
         self.system = System(totalnodes=500, pfactor=0.8)
-        self.system.spectralclustering(num_points=50)
+        self.system.spectralclustering(num_points=100)
         self.system.print()
         # self.system.plotclusters()
         self.system.createfreepool()
         for cluster in self.system.clusterlist:
-            cluster.plotpath()
+            cluster.plot_subpaths()
 sol = Solution()
