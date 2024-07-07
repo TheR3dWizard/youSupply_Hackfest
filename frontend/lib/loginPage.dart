@@ -12,7 +12,10 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.black12,
         body: Center(
+
+            
             child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       // crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,6 +27,7 @@ class LoginPage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 42,
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             )),
         Column(
@@ -41,7 +45,10 @@ class LoginPage extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: ToggleSwitch(
+            activeFgColor: Colors.white,
+            inactiveFgColor: Colors.white,
             borderColor: [Colors.black45],
+          
             borderWidth: 1.5,
             minWidth: 140,
             minHeight: 50,
@@ -49,7 +56,7 @@ class LoginPage extends StatelessWidget {
             totalSwitches: 2,
             labels: const ['Client', 'Delivery Agent'],
             activeBgColor: const [Colors.blueAccent],
-            inactiveBgColor: Colors.white10,
+            inactiveBgColor: Colors.grey[850],
             onToggle: (index) {
               if (index == 0) {
                 typeNotifier.value = "Client";
@@ -71,12 +78,17 @@ class LoginPage extends StatelessWidget {
           child: const Text('Login'),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical:1.0),
           child: TextButton(
             onPressed: () {
               Navigator.pushNamed(context, '/signupGU');
             },
-            child: const Text('Sign Up'),
+            child: const Text('Sign Up',
+
+            style: TextStyle(decoration: TextDecoration.underline,
+           color: Colors.blue,
+            decorationColor: Colors.blue),
+                ),
           ),
         ),
       ],

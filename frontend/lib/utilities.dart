@@ -41,12 +41,14 @@ class LabelledTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
+      
       padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
       child: SizedBox(
         width: 350,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextField(
+
             obscureText: hidden ?? false,
             decoration: InputDecoration(
               border: const OutlineInputBorder(
@@ -54,6 +56,9 @@ class LabelledTextField extends StatelessWidget {
                 gapPadding: 5.0,
               ),
               labelText: label,
+              labelStyle: TextStyle(
+                color: Colors.white70, 
+              ),
             ),
             controller: controller,
             enabled: enabled,
@@ -105,8 +110,12 @@ class _PasswordFieldState extends State<PasswordField> {
                 gapPadding: 5.0,
               ),
               labelText: label1,
+              labelStyle: TextStyle(
+                color: Colors.white70, // White label text color
+              ),
               suffixIcon: IconButton(
                 icon: Icon(
+                  color: Colors.white70,
                   obscureText ? Icons.visibility_off : Icons.visibility,
                 ),
                 onPressed: () {
