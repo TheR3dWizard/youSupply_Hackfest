@@ -40,6 +40,9 @@ class Node:
             + self.itemtype
         )
 
+    def getdistance(self,other:'Node')->float:
+        return ((self.x_pos-other.x_pos)**2+(self.y_pos-other.y_pos)**2)**0.5
+
     def __repr__(self):
         return f"{self.x_pos},{self.y_pos},{self.itemtype},{self.quantity};"
 
@@ -49,6 +52,26 @@ class Node:
     def __lt__(self, other):
         return self.quantity < other.quantity
 
+class Path:
+    def __init__(self,path:List[Node],distance:float)->None:   
+        self.path = path
+        self.distance = distance
+
+    def plotpath(self):
+        
+        x = [node.x_pos for node in self.path]
+        y = [node.y_pos for node in self.path]
+        start_node = self.path[0]
+        end_node = self.path[-1]
+        plt.plot(x, y, '-o')
+        plt.plot(start_node.x_pos, start_node.y_pos, 'go', label='Start Node')
+        plt.plot(end_node.x_pos, end_node.y_pos, 'ro', label='End Node')
+        plt.xlabel('X Position')
+        plt.ylabel('Y Position')
+        plt.title('Path')
+        plt.legend()
+        print(f"Number of nodes in path: {len(self.path)}")
+        plt.show()
 
 class Cluster:
     """
@@ -72,14 +95,17 @@ class Cluster:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, sourcenode: Node, identifier: str = None) -> None:
+    def __init__(self, identifier: str = None) -> None:
         if not identifier:
             self.identifier = str(uuid.uuid4())
 
-        self.centerxpos = sourcenode.x_pos
-        self.centerypos = sourcenode.y_pos
-        self.sourcenodes = [sourcenode]
+        #TODO: figure out some way to get center of the cluste
+        self.centerxpos = 0
+        self.centerypos = 0
+        self.sourcenodes = []
         self.sinknodes = []
+        self.path:Path = None
+        self.subpaths:List[Path] = []
         self.inventory = defaultdict(int)
         self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
 
@@ -108,12 +134,17 @@ class Cluster:
             raise ValueError("Node not in cluster")
 
     def updateinventory(self):
+        self.inventory = defaultdict(int)
         for i in self.sourcenodes:
             self.inventory[i.itemtype] += i.quantity
         for i in self.sinknodes:
             self.inventory[i.itemtype] += i.quantity
 
     def getfeasible(self)->List[Node]:
+
+        if self.sinknodes == [] or self.sourcenodes == []:
+            return self.getallnodes()
+
         self.updateinventory()
         freepool = []
         deficits = []
@@ -125,25 +156,20 @@ class Cluster:
             elif self.inventory[i] > 0:
                 excesses.append([self.inventory[i],[_ for _ in self.sourcenodes if _.itemtype == i]])
 
+        
 
         for deficit,nodes in deficits:
             while deficit < 0:
 
                 node = min(nodes,key=lambda x: x.quantity)
-                if deficit + node.quantity <= 0:
-                    deficit += node.quantity
-                    nodes.remove(node)
-                    self.removesink(node)
-                    freepool.append(node)
+                
+                deficit -= node.quantity
+                nodes.remove(node)
+                self.removesink(node)
+                freepool.append(node)
         
-        # for value in deficits:
-        #     while value[0] < 0:
-        #         node = min(value[1],key=lambda x: x.quantity)
-        #         if value[0] + node.quantity <= 0:
-        #             value[0] += node.quantity
-        #             value[1].remove(node)
-        #             self.removesink(node)
-        #             freepool.append(node)
+        
+    
 
         for excess,nodes in excesses:
             while excess > 0:
@@ -153,13 +179,77 @@ class Cluster:
                     nodes.remove(node)
                     self.removesource(node)
                     freepool.append(node)
+        #TODO: write functionality to change a half excess node into a full excess and fitting node
+        #if deficit is -3, and sink is -5, then sink should be converted to a -2 node and freepool should have a -3 node
+
 
         self.updateinventory()
-        print(self.inventory)
         return freepool
+    
+    def getpath(self,curpos:Node = None)->List[Node]:
+        distance = 0
+        visited = set()
+        available = defaultdict(int)
+        path = []
+
+
+
+        #function to get the closest node
+        closest = lambda node,possibilities: min([(node.getdistance(_),_) for _ in possibilities if _ not in visited],key = lambda x: x[0])
         
+        #TODO: make the first node the closest source node to the curpos
+        current = self.sourcenodes[0]
+        visited.add(current)
+        path.append(current)
 
+        #function to check if a node can be satisfied
+        def check(node: Node):
+            if node.itemtype in available:
+                if available[node.itemtype] >= abs(node.quantity):
+                    return True
+                else:
+                  return False     
+            return False
+        
+        def createsubpath():
+            for i in available:
+                if available[i] != 0:
+                    return
+            self.subpaths.append(Path(path,distance))
+                    
 
+        while len(visited) < self.getnumberofnodes():
+            available[current.itemtype] += current.quantity
+                
+            possiblesinks = [node for node in self.sinknodes if node not in visited and check(node)]
+            if not possiblesinks:
+                possiblesources = [node for node in self.sourcenodes if node not in visited]
+                nextdistance,next = closest(current,possiblesources)
+            else:    
+                nextdistance,next = closest(current,possiblesinks)
+            distance += nextdistance
+            visited.add(next)
+            path.append(next)
+            current = next
+        
+        self.path = Path(path,distance)
+    
+    def plotpath(self):
+        path,distance = self.path.path,self.path.distance
+        x = [node.x_pos for node in path]
+        y = [node.y_pos for node in path]
+        start_node = path[0]
+        end_node = path[-1]
+        plt.plot(x, y, '-o')
+        plt.plot(start_node.x_pos, start_node.y_pos, 'go', label='Start Node')
+        plt.plot(end_node.x_pos, end_node.y_pos, 'ro', label='End Node')
+        plt.xlabel('X Position')
+        plt.ylabel('Y Position')
+        plt.title('Path')
+        plt.legend()
+        print(f"Number of nodes in path: {len(path)}")
+        plt.show()
+        
     def tolist(self):
         return self.sourcenodes + self.sinknodes
 
@@ -168,6 +258,9 @@ class Cluster:
 
     def getsinklist(self):
         return self.sinknodes
+
+    def getallnodes(self):
+        return self.sourcenodes + self.sinknodes
 
     def getsourcelist(self):
         return self.sourcenodes
@@ -182,7 +275,7 @@ class Cluster:
         print(f"Cluster Identifier: {self.identifier}")
         print(f"Cluster centered at {self.centerxpos}, {self.centerypos}")
         print(f"Number of Source Nodes: {len(self.sourcenodes)}")
-        print(f"Number of Sink Nodes: {len(self.sinknodes)}")
+        print(f"Number of Sink Nodes: {len(self.sinknodes)}\n")
 
 
 class System:
@@ -205,18 +298,18 @@ class System:
 
     #can be initialized with a list of nodes or generate based on a probability factor
     def __init__(
-        self, totalnodes: int, pfactor: Optional[float], itemlist: List[str] = None,listofnodes:List[Node] = None
+        self, totalnodes: int=100, pfactor: float=0.5, itemlist: List[str] = None,listofnodes:List[Node] = None
     ) -> None:
-        self.numberofnodes = totalnodes
-        self.probabilityfactor = pfactor
+        self.numberofnodes = len(listofnodes) if listofnodes else totalnodes
+        self.probabilityfactor = pfactor 
         if not itemlist:
             self.listofitems = ["Water Bottle", "Flashlight", "Canned Food"]
         else:
             self.listofitems = itemlist
         self.listofpositions = [(x,y) for x,y in zip([node.x_pos for node in listofnodes],[node.y_pos for node in listofnodes])] if listofnodes else []
         self.listofnodes = listofnodes if listofnodes else []
-        self.sourcenodes = [_ for _ in listofnodes if _.nodetype == "Source"]
-        self.sinknodes = [_ for _ in listofnodes if _.nodetype == "Sink"]
+        self.sourcenodes = [_ for _ in listofnodes if _.nodetype == "Source"] if listofnodes else []
+        self.sinknodes = [_ for _ in listofnodes if _.nodetype == "Sink"] if listofnodes else []
         self.numberofsinknodes = len([_ for _ in listofnodes if _.nodetype == "Sink"]) if listofnodes else 0
         self.numberofsourcenodes = len([_ for _ in listofnodes if _.nodetype == "Source"]) if listofnodes else 0
         self.clusterlist:List[Node] = []
@@ -240,32 +333,28 @@ class System:
                 self.listofnodes.append(Node(x, y, item, quantity))
             self.listofpositions.append((x,y))
 
-    def spectralclustering(self):
-        spc = SpectralClustering(n_clusters=8, random_state=42, affinity='nearest_neighbors')
-        spc.fit(self.systemofnodes.listofpositions)
+    def spectralclustering(self,num_points:int=50):
+        spc = SpectralClustering(n_clusters=self.getnumberofnodes()//num_points, random_state=42, affinity='nearest_neighbors')
+        spc.fit(self.listofpositions)
         cluster_labels = spc.labels_
         clusters = defaultdict(list)
 
         for i, label in enumerate(cluster_labels):
-            clusters[label].append(self.systemofnodes.getnodes()[i])
-
+            clusters[label].append(self.getnodes()[i])
+        print()
         for cluster_nodes in clusters.values():
-            sourcenode = cluster_nodes[0]
-            cluster = Cluster(sourcenode)
-            for node in cluster_nodes[1:]:
+            cluster = Cluster()
+            for node in cluster_nodes:
                 if node.nodetype == "Sink":
-                    #remove nodes from clusteringobject when theyre added to a cluster
-                    self.sinknodes.remove(node)
                     cluster.addsink(node)
                 else:
-                    self.sourcenodes.remove(node)
                     cluster.addsource(node)
             self.clusterlist.append(cluster)
 
     def createfreepool(self):
         for cluster in self.clusterlist:
             self.freepool += cluster.getfeasible()
-        return System(self.freepool)
+        return System(listofnodes=self.freepool)
 
 
     def plotclusters(self):
@@ -285,8 +374,14 @@ class System:
     def getnumberofsourcenodes(self):
         return self.numberofsourcenodes
 
+    def getnumberofnodes(self):
+        return self.getnumberofsinknodes() + self.getnumberofsourcenodes()
+
     def getclusterslist(self):
         return self.clusterlist
+
+    def getfreepool(self):
+        return self.freepool
 
     def print(self):
         itemcounter = dict()
@@ -309,6 +404,9 @@ class System:
             print(
                 f"{item}: Requested {request[item]}, Offered {offer[item]}, all concerning nodes {itemcounter[item]}"
             )
+
+        for cluster in self.clusterlist:
+            cluster.printcluster()
 
     def clumsyprint(self):
         itemcounter = dict()
@@ -336,34 +434,13 @@ class System:
             print(f"Offer total for {item} is {offer[item]}")
 
 
-
-
-# systemobject = System(totalnodes=1000, pfactor=0.8)
-# systemobject.print()
-
-# print("\n\n")
-
-# co = ClusteringObject(systemobject)
-# co.spectralclustering()
-
-
-# clusterlist = systemobject.getclusterslist()
-
-
-# print("Total number of clusters: ", len(clusterlist))
-# size = 0
-# for i in clusterlist:
-#     size += i.getnumberofnodes()
-#     i.printcluster()
-#     print()
-
-# print("Total number of nodes",size)
-# systemobject.plotclusters()
-
 class Solution:
     def __init__(self) -> None:
-        self.system = System(totalnodes=100, pfactor=0.8)
-        self.system.spectralclustering()
-        
-
+        self.system = System(totalnodes=500, pfactor=0.8)
+        self.system.spectralclustering(num_points=50)
+        self.system.print()
+        # self.system.plotclusters()
+        self.system.createfreepool()
+        for cluster in self.system.clusterlist:
+            cluster.plotpath()
 sol = Solution()
