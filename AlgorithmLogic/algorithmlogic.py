@@ -225,7 +225,7 @@ class Cluster:
                     return
             print("Creating subpath")
             self.subpaths.append(Path(path[previndex:], distance - prevdistance))
-            self.subpaths[-1].plotpath()
+            # self.subpaths[-1].plotpath()
             previndex = len(path)
             prevdistance = distance
                     
@@ -246,29 +246,17 @@ class Cluster:
         
         self.path = Path(path,distance)
     
-    def plot_subpaths(self):
+    def plotallpaths(self):
         self.getpath()
+        print("Main Path")
         self.path.plotpath()
+        print("Subpaths")
         for subpath in self.subpaths:
             subpath.plotpath()
 
     def plotpath(self):
         self.getpath()
         self.path.plotpath()
-        # path,distance = self.path.getPath(),self.path.getDistance()
-        # x = [node.x_pos for node in path]
-        # y = [node.y_pos for node in path]
-        # start_node = path[0]
-        # end_node = path[-1]
-        # plt.plot(x, y, '-o')
-        # plt.plot(start_node.x_pos, start_node.y_pos, 'go', label='Start Node')
-        # plt.plot(end_node.x_pos, end_node.y_pos, 'ro', label='End Node')
-        # plt.xlabel('X Position')
-        # plt.ylabel('Y Position')
-        # plt.title('Path')
-        # plt.legend()
-        # print(f"Number of nodes in path: {len(path)}")
-        # plt.show()
         
     def tolist(self):
         return self.sourcenodes + self.sinknodes
@@ -376,6 +364,9 @@ class System:
             self.freepool += cluster.getfeasible()
         return System(listofnodes=self.freepool)
 
+    def isfeasiblesystem(self):
+        return self.numberofsinknodes != 0 and self.numberofsourcenodes != 0
+
 
     def plotclusters(self):
         plt.figure(figsize=(10, 10))
@@ -421,9 +412,13 @@ class System:
         print(f"Total Sink Nodes: {self.numberofsinknodes}")
 
         for item in itemcounter:
-            print(
+            try:
+                print(
                 f"{item}: Requested {request[item]}, Offered {offer[item]}, all concerning nodes {itemcounter[item]}"
-            )
+                )
+            except KeyError:
+                print(f"{item}: Requested {request[item]}, Offered 0, all concerning nodes {itemcounter[item]}")
+            
 
         for cluster in self.clusterlist:
             cluster.printcluster()
@@ -455,11 +450,16 @@ class System:
 
 
 class Solution:
-    def __init__(self) -> None:
-        self.system = System(totalnodes=500, pfactor=0.8)
+    def __init__(self,system:System = None) -> None:
+        self.system = system if system else System(totalnodes=500, pfactor=0.8)
         self.system.spectralclustering(num_points=100)
         self.system.print()
-        self.system.createfreepool()
+        self.freepoolsystem = self.system.createfreepool()
+        #TODO: write functions to check if there are no sinks or sources in the freepool and if so, stop the algorithm
+        self.system.plotclusters()
+        if self.freepoolsystem.isfeasiblesystem():
+            self.nextSol = Solution(self.freepoolsystem)
         for cluster in self.system.clusterlist:
-            cluster.plot_subpaths()
+            cluster.plotallpaths()
+
 sol = Solution()
