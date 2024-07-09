@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'homePage.dart';
 
 class SignUpPageGU extends StatelessWidget {
   SignUpPageGU({super.key});
@@ -107,7 +108,7 @@ class SignUpPageGU extends StatelessWidget {
           
               ),
         ),
-      ],
+      ]
     )));
   }
 
@@ -117,6 +118,12 @@ class SignUpPageGU extends StatelessWidget {
       TextEditingController setPassword,
       TextEditingController confirmPassword) {
     //TODO authentication
+    if (setPassword.text == confirmPassword.text) {
+      print('User Authenticated');
+      Navigator.pushNamed(context, '/home');
+    } else {
+      print('Passwords do not match');
+    }
   }
 }
 
