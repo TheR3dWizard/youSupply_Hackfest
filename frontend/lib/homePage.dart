@@ -6,14 +6,24 @@ class homePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black12,
       appBar: AppBar(
-        title: Row(
-          children: const <Widget>[
-          Image(image: AssetImage('frontend/assets/icons/menu2.jpeg')),
-            
-            
-          ],
-        
+        backgroundColor: Colors.grey[850],
+        title: Padding(
+          padding: const EdgeInsets.all(9.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children:  <Widget>[
+              TextButton(
+                onPressed: () {},
+                child: Icon(
+                  Icons.menu,
+                  size: 40,
+                  color: Color.fromRGBO(0, 224, 255, 1),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       body: Center(
@@ -28,4 +38,10 @@ class homePage extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() {
+  runApp(const MaterialApp(
+    home: homePage(),
+  ));
 }
