@@ -41,14 +41,12 @@ class LabelledTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      
       padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
       child: SizedBox(
         width: 350,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextField(
-
             obscureText: hidden ?? false,
             decoration: InputDecoration(
               border: const OutlineInputBorder(
@@ -57,7 +55,7 @@ class LabelledTextField extends StatelessWidget {
               ),
               labelText: label,
               labelStyle: TextStyle(
-                color: Colors.white70, 
+                color: Colors.white70,
               ),
             ),
             controller: controller,
