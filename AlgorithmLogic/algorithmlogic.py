@@ -105,7 +105,7 @@ class Cluster:
         if not identifier:
             self.identifier = str(uuid.uuid4())
 
-        #TODO: figure out some way to get center of the cluste
+        #TODO: figure out some way to get center of the cluster @OKeerthiKuttan
         self.centerxpos = 0
         self.centerypos = 0
         self.sourcenodes = []
