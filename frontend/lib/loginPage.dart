@@ -75,7 +75,8 @@ class LoginPage extends StatelessWidget {
             foregroundColor: Colors.white,
             backgroundColor: Colors.black,
           ),
-          child: const Text('Login'),
+          child: const Text('Login'
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical:1.0),
@@ -98,6 +99,9 @@ class LoginPage extends StatelessWidget {
   void authenticateUser(BuildContext context, TextEditingController username,
       TextEditingController password) {
     //TODO authentication
+    if (username.text == "abc" && password.text == "abc") {
+      Navigator.pushNamed(context, '/home');
+    } 
   }
 }
 
