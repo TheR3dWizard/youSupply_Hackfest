@@ -2,7 +2,7 @@
 
 ## Preface
 
-​When a disaster strikes, the main bottleneck for recovery is resources, or the lack thereof. However, this is not a problem that can be solved by simply adding more money and resources, the real problem is inefficient distribution. This is a problem that can even affect centralized organizations like NGOs and is a major prohibitor of recovery for decentralized systems. Each household possesses resources, yet faces needs. If these providers and consumers are made aware of each other, they can help each other with their deficits.
+When a disaster strikes, the main bottleneck for recovery is resources, or the lack thereof. However, this is not a problem that can be solved by simply adding more money and resources, the real problem is inefficient distribution. This is a problem that can even affect centralized organizations like NGOs and is a major prohibitor of recovery for decentralized systems. Each household possesses resources, yet faces needs. If these providers and consumers are made aware of each other, they can help each other with their deficits.
 
 ## Glossary
 
