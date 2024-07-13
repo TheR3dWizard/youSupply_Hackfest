@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'loginPage.dart';
-import 'signUpPageGU.dart';
+import 'signUpPage.dart';
 import 'homePage.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginPage(),
         '/signupGU': (context) => SignUpPageGU(),
-        '/home': (context) => homePage(),
+        '/home': (context) => const homePage(),
       },
       title: 'youSupply',
       theme: ThemeData(
