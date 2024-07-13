@@ -5,7 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'homePage.dart';
 
 class SignUpPageGU extends StatelessWidget {
-  SignUpPageGU({super.key});
+  SignUpPageGU({super.key,}){location = _determinePosition();}
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController setPasswordController = TextEditingController();
