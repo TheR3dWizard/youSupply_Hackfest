@@ -252,3 +252,67 @@ class _PillState extends State<Pill> {
         ));
   }
 }
+
+
+class Option extends StatelessWidget{
+  final String label;
+  final String route;
+  
+  Option({super.key, required this.label, required this.route});
+  @override
+  Widget build(BuildContext context){
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+      child: Container(
+        width: 450,
+        height: 75,
+        decoration: const BoxDecoration(
+            color: Colors.white54,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 4.0,
+                offset: Offset(0.0, 2.0),
+              ),
+              BoxShadow(
+                color: Colors.white,
+                offset: Offset(0.0, 0.0),
+              )
+            ]
+            ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(label,
+                style: TextStyle(
+                  fontSize: 17,
+                  //fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                  color: Colors.black,
+                ),
+                ),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: IconButton(
+                  icon: Icon(
+                    size: 30,
+                    Icons.arrow_right_outlined,
+                    color: Colors.grey[700],
+                  ),
+                  onPressed: () {
+                  },
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

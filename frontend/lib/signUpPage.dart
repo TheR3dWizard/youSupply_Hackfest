@@ -177,7 +177,11 @@ class SignUpPageGU extends StatelessWidget {
     //TODO authentication
     if (setPassword.text == confirmPassword.text) {
       print('User Authenticated');
-      Navigator.pushNamed(context, '/home');
+      if(typeNotifier.value=='Client'){
+        Navigator.pushNamed(context, '/homegu');
+      } else {
+        Navigator.pushNamed(context, '/homedel');
+      }
     } else {
       print('Passwords do not match');
     }

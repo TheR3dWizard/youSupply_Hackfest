@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class homePage extends StatelessWidget {
-  const homePage({super.key});
+class homePageGU extends StatelessWidget {
+  const homePageGU({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +42,6 @@ class homePage extends StatelessWidget {
 
 void main() {
   runApp(const MaterialApp(
-    home: homePage(),
+    home: homePageGU(),
   ));
 }
