@@ -92,26 +92,30 @@ class homePageDel extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                width: 450,
-                height: 200,
-                color: Colors.yellow,
-                child: Padding(padding: EdgeInsets.all(10),
-                child: Center(child: Text('map')),),
-              ),
-              SizedBox(height: 10),
-              Option(label: 'Available Deliveries', route: '/'),
-              Option(label: 'Accepted Deliveries', route: '/'),
-              Option(label: 'Claimed Deliveries', route: '/'),
-              Option(label: 'Completed Deliveries', route: '/'),
-              SizedBox(height: 7),
-            ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  width: 450,
+                  height: 200,
+                  color: Colors.yellow,
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Center(child: Text('map')),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Option(label: 'Available Deliveries', route: '/'),
+                Option(label: 'Accepted Deliveries', route: '/'),
+                Option(label: 'Claimed Deliveries', route: '/'),
+                Option(label: 'Completed Deliveries', route: '/'),
+                SizedBox(height: 7),
+              ],
+            ),
           ),
         ),
       ),

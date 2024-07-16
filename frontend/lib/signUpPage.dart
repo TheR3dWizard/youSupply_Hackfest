@@ -5,7 +5,11 @@ import 'package:geolocator/geolocator.dart';
 import 'homePage.dart';
 
 class SignUpPageGU extends StatelessWidget {
-  SignUpPageGU({super.key,}){location = _determinePosition();}
+  SignUpPageGU({
+    super.key,
+  }) {
+    location = _determinePosition();
+  }
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController setPasswordController = TextEditingController();
@@ -65,108 +69,110 @@ class SignUpPageGU extends StatelessWidget {
           title: const Text('Sign Up'),
         ),
         backgroundColor: Colors.black12,
-        body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                // crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-              const Padding(
-                  padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
-                  child: Text(
-                    "YouSupply",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 42,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ToggleSwitch(
-                  activeFgColor: Colors.white,
-                  inactiveFgColor: Colors.white,
-                  borderColor: [Colors.black45],
-                  borderWidth: 1.5,
-                  minWidth: 140,
-                  minHeight: 50,
-                  initialLabelIndex: 0,
-                  totalSwitches: 2,
-                  labels: const ['Client', 'Delivery Agent'],
-                  activeBgColor: const [Colors.blueAccent],
-                  inactiveBgColor: Colors.grey[850],
-                  onToggle: (index) {
-                    if (index == 0) {
-                      typeNotifier.value = "Client";
-                    } else {
-                      typeNotifier.value = "Delivery Agent";
-                    }
-                  },
-                ),
-              ),
-              Column(
-                children: [
-                  LabelledTextField.readable(
-                    label: "Username",
-                    controller: usernameController,
-                  ),
-                  FutureBuilder<Position>(
-                    future: location,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return LabelledTextField.offOn(
-                          enabled: false,
-                          label:
-                              "Latitude: ${snapshot.data!.latitude}, Longitude: ${snapshot.data!.longitude}",
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text("Error: ${snapshot.error}");
+        body: SingleChildScrollView(
+          child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                const Padding(
+                    padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+                    child: Text(
+                      "YouSupply",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 42,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ToggleSwitch(
+                    activeFgColor: Colors.white,
+                    inactiveFgColor: Colors.white,
+                    borderColor: [Colors.black45],
+                    borderWidth: 1.5,
+                    minWidth: 140,
+                    minHeight: 50,
+                    initialLabelIndex: 0,
+                    totalSwitches: 2,
+                    labels: const ['Client', 'Delivery Agent'],
+                    activeBgColor: const [Colors.blueAccent],
+                    inactiveBgColor: Colors.grey[850],
+                    onToggle: (index) {
+                      if (index == 0) {
+                        typeNotifier.value = "Client";
                       } else {
-                        return CircularProgressIndicator();
+                        typeNotifier.value = "Delivery Agent";
                       }
                     },
                   ),
-                  LabelledTextField.readable(
-                    label: "Contact Number",
-                    controller: contactController,
-                  ),
-                  PasswordField(
-                    label1: "Set Password",
-                    controller: setPasswordController,
-                  ),
-                  PasswordField(
-                    label1: "Confirm Password",
-                    controller: confirmPasswordController,
-                  ),
-                  // LabelledTextField.readable(
-                  //   label: "Address",
-                  //   controller: addressController,
-                  // ),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                    IconButton(
-                        onPressed: () {
-                          print('pressed');
-                        },
-                        icon: Icon(Icons.photo),
-                        color: Colors.grey),
-                    const Text('Upload Profile Picture'),
-                  ]),
-                ],
-              ),
-              OutlinedButton(
-                onPressed: () {
-                  authenticateUser(context, usernameController,
-                      setPasswordController, confirmPasswordController);
-                },
-                style: OutlinedButton.styleFrom(
-                  shadowColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.black,
                 ),
-                child: const Text(
-                  'Sign Up',
+                Column(
+                  children: [
+                    LabelledTextField.readable(
+                      label: "Username",
+                      controller: usernameController,
+                    ),
+                    FutureBuilder<Position>(
+                      future: location,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return LabelledTextField.offOn(
+                            enabled: false,
+                            label:
+                                "Latitude: ${snapshot.data!.latitude}, Longitude: ${snapshot.data!.longitude}",
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text("Error: ${snapshot.error}");
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                    LabelledTextField.readable(
+                      label: "Contact Number",
+                      controller: contactController,
+                    ),
+                    PasswordField(
+                      label1: "Set Password",
+                      controller: setPasswordController,
+                    ),
+                    PasswordField(
+                      label1: "Confirm Password",
+                      controller: confirmPasswordController,
+                    ),
+                    // LabelledTextField.readable(
+                    //   label: "Address",
+                    //   controller: addressController,
+                    // ),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      IconButton(
+                          onPressed: () {
+                            print('pressed');
+                          },
+                          icon: Icon(Icons.photo),
+                          color: Colors.grey),
+                      const Text('Upload Profile Picture'),
+                    ]),
+                  ],
                 ),
-              ),
-            ])));
+                OutlinedButton(
+                  onPressed: () {
+                    authenticateUser(context, usernameController,
+                        setPasswordController, confirmPasswordController);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    shadowColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.black,
+                  ),
+                  child: const Text(
+                    'Sign Up',
+                  ),
+                ),
+              ])),
+        ));
   }
 
   void authenticateUser(
@@ -177,7 +183,7 @@ class SignUpPageGU extends StatelessWidget {
     //TODO authentication
     if (setPassword.text == confirmPassword.text) {
       print('User Authenticated');
-      if(typeNotifier.value=='Client'){
+      if (typeNotifier.value == 'Client') {
         Navigator.pushNamed(context, '/homegu');
       } else {
         Navigator.pushNamed(context, '/homedel');

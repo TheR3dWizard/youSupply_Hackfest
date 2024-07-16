@@ -253,14 +253,13 @@ class _PillState extends State<Pill> {
   }
 }
 
-
-class Option extends StatelessWidget{
+class Option extends StatelessWidget {
   final String label;
   final String route;
-  
+
   Option({super.key, required this.label, required this.route});
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
@@ -279,8 +278,7 @@ class Option extends StatelessWidget{
                 color: Colors.white,
                 offset: Offset(0.0, 0.0),
               )
-            ]
-            ),
+            ]),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -288,13 +286,14 @@ class Option extends StatelessWidget{
               padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(label,
-                style: TextStyle(
-                  fontSize: 17,
-                  //fontWeight: FontWeight.bold,
-                  letterSpacing: 1.5,
-                  color: Colors.black,
-                ),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 17,
+                    //fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                    color: Colors.black,
+                  ),
                 ),
               ),
             ),
@@ -306,8 +305,7 @@ class Option extends StatelessWidget{
                     Icons.arrow_right_outlined,
                     color: Colors.grey[700],
                   ),
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                 )),
           ],
         ),
@@ -316,3 +314,67 @@ class Option extends StatelessWidget{
   }
 }
 
+class Select extends StatelessWidget {
+  final String label;
+  final String route;
+  final IconData icon;
+
+  Select(
+      {super.key,
+      required this.label,
+      required this.route,
+      required this.icon});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+      child: Container(
+        width: 200,
+        height: 200,
+        decoration: const BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 4.0,
+                offset: Offset(0.0, 2.0),
+              ),
+              BoxShadow(
+                color: Colors.white,
+                offset: Offset(0.0, 0.0),
+              )
+            ]),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 20, 5, 20),
+                  child: IconButton(
+                    icon: Icon(
+                      icon,
+                      size: 70,
+                      color: Colors.lightBlue[400],
+                    ),
+                    onPressed: () {},
+                  )),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(5, 10, 5, 30),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 25,
+                    //fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: Colors.lightBlue[400],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
