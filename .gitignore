@@ -2,3 +2,5 @@
 /Hackfest Abstract.pdf
 /youSupply_SRS_DFD.docx
 /youSupply_SRS_DFD.pdf
+/backend/node_modules
+/backend/.env
