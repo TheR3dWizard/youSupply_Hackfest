@@ -19,6 +19,21 @@ app.get('/', (req, res) => {
     res.send('yousupply backend is running');
 });
 
+app.get('/suprise', (req, res) => {
+    // uses this API to show a cat image 
+    // https://api.thecatapi.com/v1/images/search
+
+    fetch('https://meme-api.com/gimme')
+        .then(response => response.json())
+        .then(data => {
+            res.send(`<img src="${data.url}" alt="cat image" />`);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+});
+
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
     db.connect((err) => {
