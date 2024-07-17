@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-    console.log(process.env.UNAME,process.env.PASSWORD);
     db.connect((err) => {
         if (err) {
             console.log(err);
