@@ -120,18 +120,24 @@ class homePageGU extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 430, vertical: 10),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Select(
                           label: 'Request',
-                          route: '/',
                           icon: Icons.add_shopping_cart_rounded,
+                          onpressed: () {
+                            Navigator.pushNamed(context, '/request');
+                          },
+                          route: '/request',
                         ),
                         SizedBox(width: 20),
                         Select(
-                            label: 'Provide',
-                            route: '/',
-                            icon: Icons.volunteer_activism_rounded),
-                        // Add more Select widgets as needed
+                            label: 'Provide', // Navigate to provide page
+                            icon: Icons.volunteer_activism_rounded,
+                            route: '/provide',
+                            onpressed: () {
+                              Navigator.pushNamed(context, '/provide');
+                            }),
                       ],
                     ),
                   ),

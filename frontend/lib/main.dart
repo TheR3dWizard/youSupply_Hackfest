@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/delAgents.dart/homePageDel.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
+import 'generalUsers.dart/providePage.dart';
+import 'generalUsers.dart/requestPage.dart';
 import 'generalUsers.dart/homePageGU.dart';
 
 void main() {
@@ -19,8 +21,10 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginPage(),
         '/signupGU': (context) => SignUpPageGU(),
-        '/homegu': (context) =>  homePageGU(),
-        '/homedel':(context) =>  homePageDel(),
+        '/homegu': (context) => homePageGU(),
+        '/homedel': (context) => homePageDel(),
+        '/provide': (context) => providePage(),
+        '/request': (context) => requestPage(),
       },
       title: 'youSupply',
       theme: ThemeData(
@@ -31,4 +35,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

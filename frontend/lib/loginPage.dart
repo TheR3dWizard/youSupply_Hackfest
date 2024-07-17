@@ -58,7 +58,8 @@ class LoginPage extends StatelessWidget {
                     activeBgColor: const [Colors.blueAccent],
                     inactiveBgColor: Colors.grey[850],
                     onToggle: (index) {
-                      typeNotifier.value = index == 0 ? "Client" : "Delivery Agent";
+                      typeNotifier.value =
+                          index == 0 ? "Client" : "Delivery Agent";
                     },
                   );
                 },
@@ -66,7 +67,7 @@ class LoginPage extends StatelessWidget {
             ),
             OutlinedButton(
               onPressed: () {
-                authenticateUser(context, usernameController, passwordController, typeNotifier);
+                Navigator.pushNamed(context, '/signupGU');
               },
               style: OutlinedButton.styleFrom(
                 shadowColor: Colors.black,
@@ -97,7 +98,8 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void authenticateUser(BuildContext context, TextEditingController username, TextEditingController password, ValueNotifier<String> typeNotifier) {
+  void authenticateUser(BuildContext context, TextEditingController username,
+      TextEditingController password, ValueNotifier<String> typeNotifier) {
     //TODO authentication
     if (username.text == "abc" && password.text == "abc") {
       if (typeNotifier.value == "Client") {
@@ -105,6 +107,6 @@ class LoginPage extends StatelessWidget {
       } else {
         Navigator.pushNamed(context, '/homedel');
       }
-    } 
+    }
   }
 }

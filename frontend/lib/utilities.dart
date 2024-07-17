@@ -318,12 +318,14 @@ class Select extends StatelessWidget {
   final String label;
   final String route;
   final IconData icon;
+  final Function onpressed;
 
   Select(
       {super.key,
       required this.label,
       required this.route,
-      required this.icon});
+      required this.icon,
+      required this.onpressed});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -357,7 +359,9 @@ class Select extends StatelessWidget {
                       size: 70,
                       color: Colors.lightBlue[400],
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, route);
+                    },
                   )),
               Padding(
                 padding: const EdgeInsets.fromLTRB(5, 10, 5, 30),
@@ -373,6 +377,84 @@ class Select extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class Item extends StatelessWidget {
+  final String label1;
+  final String label2;
+  final String route;
+
+  Item({
+    super.key,
+    required this.label1,
+    required this.label2,
+    required this.route,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+      child: Container(
+        width: 450,
+        height: 100,
+        decoration: const BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 4.0,
+                offset: Offset(0.0, 2.0),
+              ),
+              BoxShadow(
+                color: Colors.white,
+                offset: Offset(0.0, 0.0),
+              )
+            ]),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      label1,
+                      style: TextStyle(
+                        fontSize: 17,
+                        letterSpacing: 1,
+                        color: Colors.lightBlue,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      label2,
+                      style: TextStyle(
+                        fontSize: 13,
+                        letterSpacing: 1,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
+                child: Icon(
+                  size: 30,
+                  Icons.arrow_right_outlined,
+                  color: Colors.grey[700],
+                )),
+          ],
         ),
       ),
     );
