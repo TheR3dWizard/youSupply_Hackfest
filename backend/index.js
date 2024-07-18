@@ -5,6 +5,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+app.use(express.json());
 
 const db = mysql.createConnection({
     host: process.env.HOST,
@@ -33,6 +34,15 @@ app.get('/suprise', (req, res) => {
         });
 });
 
+app.post('/authenticate',(req,res) => {
+    console.log(req.body)
+    var credentials = req.body
+    if (credentials.username == 'abc' && credentials.password == 'abc'){
+        res.status(200).send('authorized')
+    }
+    res.status(418).send('unauthorized')
+
+})
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
