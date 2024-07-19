@@ -101,8 +101,7 @@ class homePageGU extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    width:
-                        200, // Both width and height should be the same to form a circle
+                    width:200, // Both width and height should be the same to form a circle
                     height: 200,
                     decoration: BoxDecoration(
                       color: Colors.lightBlue[400],

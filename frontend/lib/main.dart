@@ -6,7 +6,7 @@ import 'loginPage.dart';
 import 'signUpPage.dart';
 import 'generalUsers/providePage.dart';
 import 'generalUsers/requestPage.dart';
-import 'generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/homePageGU.dart';
 import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
