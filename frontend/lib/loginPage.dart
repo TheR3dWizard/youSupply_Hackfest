@@ -67,7 +67,7 @@ class LoginPage extends StatelessWidget {
             ),
             OutlinedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signupGU');
+                authenticateUser(context);
               },
               style: OutlinedButton.styleFrom(
                 shadowColor: Colors.black,
@@ -98,10 +98,16 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void authenticateUser(BuildContext context, TextEditingController username,
-      TextEditingController password, ValueNotifier<String> typeNotifier) {
+  void authenticateUser(BuildContext context) {
     //TODO authentication
-    if (username.text == "abc" && password.text == "abc") {
+    if (usernameController.text == "abc" && passwordController.text == "abc") {
+      if (typeNotifier.value == "Client") {
+        Navigator.pushNamed(context, '/homegu');
+      } else {
+        Navigator.pushNamed(context, '/homedel');
+      }
+    }
+    else{
       if (typeNotifier.value == "Client") {
         Navigator.pushNamed(context, '/homegu');
       } else {

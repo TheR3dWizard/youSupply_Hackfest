@@ -92,59 +92,53 @@ class homePageGU extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Center(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width:200, // Both width and height should be the same to form a circle
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.lightBlue[400],
-                      shape: BoxShape.circle, // Makes the container circular
-                    ),
-                    child: ClipOval(
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Center(child: Text('profile picture')),
-                      ),
-                    ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: Container(
+                width:200, // Both width and height should be the same to form a circle
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue[400],
+                  shape: BoxShape.circle, // Makes the container circular
+                ),
+                child: const ClipOval(
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Center(child: Text('profile picture',style: TextStyle(color: Colors.white),)),
                   ),
-                  SizedBox(height: 20),
-                  Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 430, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Select(
-                          label: 'Request',
-                          icon: Icons.add_shopping_cart_rounded,
-                          onpressed: () {
-                            Navigator.pushNamed(context, '/request');
-                          },
-                          route: '/request',
-                        ),
-                        SizedBox(width: 20),
-                        Select(
-                            label: 'Provide', // Navigate to provide page
-                            icon: Icons.volunteer_activism_rounded,
-                            route: '/provide',
-                            onpressed: () {
-                              Navigator.pushNamed(context, '/provide');
-                            }),
-                      ],
-                    ),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Container(
+              
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Select(
+                    label: 'Request',
+                    icon: Icons.add_shopping_cart_rounded,
+                    onpressed: () {
+                      Navigator.pushNamed(context, '/request');
+                    },
+                    route: '/request',
                   ),
-                  SizedBox(height: 7),
+                  SizedBox(width: 20),
+                  Select(
+                      label: 'Provide', // Navigate to provide page
+                      icon: Icons.volunteer_activism_rounded,
+                      route: '/provide',
+                      onpressed: () {
+                        Navigator.pushNamed(context, '/provide');
+                      }),
                 ],
               ),
             ),
-          ),
+            SizedBox(height: 7),
+          ],
         ),
       ),
     );
@@ -156,3 +150,4 @@ void main() {
     home: homePageGU(),
   ));
 }
+ 

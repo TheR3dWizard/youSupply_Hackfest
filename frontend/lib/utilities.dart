@@ -330,11 +330,9 @@ class Select extends StatelessWidget {
       required this.onpressed});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+    return Expanded(
       child: Container(
-        width: 200,
-        height: 200,
+        
         decoration: const BoxDecoration(
             color: Colors.black,
             borderRadius: BorderRadius.all(Radius.circular(10)),
