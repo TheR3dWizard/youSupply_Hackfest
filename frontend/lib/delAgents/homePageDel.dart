@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/settings.dart';
 import 'package:frontend/utilities.dart';
 
 // This is the type used by the popup menu below.
@@ -26,19 +27,18 @@ class homePageDel extends StatelessWidget {
                   // Handle navigation or other actions based on the selected menu item
                   switch (selectedMenu) {
                     case DeliveryMenu.History:
-                      // Navigate to '/history' or perform related action
+                      
                       break;
                     case DeliveryMenu.Settings:
-                      // Navigate to '/settings' or perform related action
-                      break;
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => settings()));
                     case DeliveryMenu.ProfileView:
-                      // Navigate to '/profile' or perform related action
+                      Navigator.pushNamed(context, '/profile');
                       break;
                     case DeliveryMenu.SwitchAccount:
                       // Navigate to '/switch_account' or perform related action
                       break;
                     case DeliveryMenu.Logout:
-                      // Navigate to '/logout' or perform related action
+                      Navigator.pushNamed(context, '/');
                       break;
                     default:
                       break;
@@ -100,7 +100,7 @@ class homePageDel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  width: 450,
+                  width: 390,
                   height: 200,
                   color: Colors.yellow,
                   child: Padding(
@@ -109,10 +109,10 @@ class homePageDel extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                Option(label: 'Available Deliveries', route: '/'),
-                Option(label: 'Accepted Deliveries', route: '/'),
-                Option(label: 'Claimed Deliveries', route: '/'),
-                Option(label: 'Completed Deliveries', route: '/'),
+                Option(label: 'Available Deliveries', route: '/available'),
+                Option(label: 'Accepted Deliveries', route: '/accepted'),
+                Option(label: 'Claimed Deliveries', route: '/claimed'),
+                Option(label: 'Completed Deliveries', route: '/completed'),
                 SizedBox(height: 7),
               ],
             ),

@@ -263,10 +263,10 @@ class Option extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        width: 450,
-        height: 75,
+        width: 390,
+        height: 80,
         decoration: const BoxDecoration(
-            color: Colors.white54,
+            color: Color.fromARGB(1, 3, 218, 246),
             borderRadius: BorderRadius.all(Radius.circular(10)),
             boxShadow: [
               BoxShadow(
