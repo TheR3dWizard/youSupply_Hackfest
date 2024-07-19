@@ -100,7 +100,7 @@ class homePageDel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  width: 390,
+                  width: 380,
                   height: 200,
                   color: Colors.yellow,
                   child: Padding(
@@ -113,7 +113,7 @@ class homePageDel extends StatelessWidget {
                 Option(label: 'Accepted Deliveries', route: '/accepted'),
                 Option(label: 'Claimed Deliveries', route: '/claimed'),
                 Option(label: 'Completed Deliveries', route: '/completed'),
-                SizedBox(height: 7),
+                //SizedBox(height: 7),
               ],
             ),
           ),

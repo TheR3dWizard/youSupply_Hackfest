@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/delAgents/accepted.dart';
+import 'package:frontend/delAgents/available.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
@@ -8,7 +10,7 @@ import 'generalUsers/homePageGU.dart';
 import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
-
+//import 'frontend/lib/delAgents/available.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +34,9 @@ class MyApp extends StatelessWidget {
         'history' : (context) => history(),
         '/settings': (context) => settings(),
         '/profile': (context) => profile(),
+        '/accepted': (context) => accepted(),
+       '/available':(context)=> available()
+
       },
       title: 'youSupply',
       theme: ThemeData(

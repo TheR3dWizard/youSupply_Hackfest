@@ -263,11 +263,11 @@ class Option extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        width: 390,
+        width: 380,
         height: 80,
         decoration: const BoxDecoration(
-            color: Color.fromARGB(1, 3, 218, 246),
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color:  Colors.cyan,
+            borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black26,
@@ -289,10 +289,10 @@ class Option extends StatelessWidget {
                 child: Text(
                   label,
                   style: TextStyle(
-                    fontSize: 17,
-                    //fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 20,
                     letterSpacing: 1.5,
-                    color: Colors.black,
+                    color: Colors.black87,
                   ),
                 ),
               ),
@@ -303,9 +303,11 @@ class Option extends StatelessWidget {
                   icon: Icon(
                     size: 30,
                     Icons.arrow_right_outlined,
-                    color: Colors.grey[700],
+                    color: Colors.black87,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                  Navigator.pushNamed(context, route);
+                },
                 )),
           ],
         ),
