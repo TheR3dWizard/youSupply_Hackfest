@@ -5,3 +5,5 @@
 /backend/node_modules
 /backend/.env
 /frontend/.env
+frontend/windows/flutter/generated_plugins.cmake
+frontend/windows/flutter/generated_plugin_registrant.cc
