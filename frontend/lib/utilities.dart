@@ -1,10 +1,10 @@
 // ignore_for_file: must_be_immutable, avoid_print, no_logic_in_create_state
 
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
 
 class LabelledTextField extends StatelessWidget {
   final String label;
@@ -101,6 +101,7 @@ class _PasswordFieldState extends State<PasswordField> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextField(
+            controller: controller,
             obscureText: obscureText,
             decoration: InputDecoration(
               border: const OutlineInputBorder(
@@ -459,4 +460,49 @@ class Item extends StatelessWidget {
       ),
     );
   }
+}
+
+
+// Backend Functions
+
+String baseUrl = 'https://hackfest.akashshanmugaraj.com';
+
+Future<bool> authenticate(String username, String password) async {
+  print("USERNAME: $username, PASSWORD: $password");
+  var url = Uri.parse('$baseUrl/authenticate');
+  var response = await http.post(url, body: json.encode({
+    'username': username,
+    'password': password
+  },),headers: {
+  "Content-Type": "application/json"
+});
+  print(response.body);
+  return response.statusCode == 200;
+}
+
+
+//TODO change everything once we get the actual API
+Future<bool> register(String username, String password, String email, String phone, String role) async {
+  var url = Uri.parse('$baseUrl/register');
+  var response = await http.post(url,body: {
+    'username': username,
+    'password': password,
+    'email': email,
+    'phone': phone,
+    'role': role,
+  });
+
+  return response.statusCode == 200;
+}
+
+Future<bool> addnode(Float xpos,Float ypos,String itemtype,int quantity) async {
+  var url = Uri.parse('$baseUrl/add/request');
+  var response = await http.post(url,body: {
+    'xpos': xpos,
+    'ypos': ypos,
+    'itemtype': itemtype,
+    'quantity': quantity,
+  });
+
+  return response.statusCode == 200;
 }

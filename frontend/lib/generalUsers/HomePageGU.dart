@@ -107,7 +107,11 @@ class homePageGU extends StatelessWidget {
                 child: const ClipOval(
                   child: Padding(
                     padding: EdgeInsets.all(10),
-                    child: Center(child: Text('profile picture',style: TextStyle(color: Colors.white),)),
+                    child: Image(
+                      image: AssetImage('assets/profile.png'),
+                      width: 150,
+                      height: 150,
+                    )
                   ),
                 ),
               ),

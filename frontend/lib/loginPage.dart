@@ -7,6 +7,8 @@ class LoginPage extends StatelessWidget {
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  // final ValueNotifier<String> usernameNotifier = ValueNotifier<String>("");
+  // final ValueNotifier<String> passwordNotifier = ValueNotifier<String>("");
   final ValueNotifier<String> typeNotifier = ValueNotifier<String>("Client");
 
   @override
@@ -98,21 +100,42 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void authenticateUser(BuildContext context) {
+  void authenticateUser(BuildContext context) async {
     //TODO authentication
-    if (usernameController.text == "abc" && passwordController.text == "abc") {
+
+    if (await authenticate(
+        usernameController.text, passwordController.text)) {
       if (typeNotifier.value == "Client") {
         Navigator.pushNamed(context, '/homegu');
       } else {
         Navigator.pushNamed(context, '/homedel');
       }
     }
+    // else{
+    //   if (typeNotifier.value == "Client") {
+    //     Navigator.pushNamed(context, '/homegu');
+    //   } else {
+    //     Navigator.pushNamed(context, '/homedel');
+    //   }
+    // }
     else{
-      if (typeNotifier.value == "Client") {
-        Navigator.pushNamed(context, '/homegu');
-      } else {
-        Navigator.pushNamed(context, '/homedel');
-      }
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Invalid Credentials"),
+            content: const Text("Please enter valid credentials"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }

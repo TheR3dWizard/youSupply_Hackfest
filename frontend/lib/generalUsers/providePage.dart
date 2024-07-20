@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
 class providePage extends StatelessWidget {
-  const providePage({Key? key}) : super(key: key);
+  providePage({Key? key}) : super(key: key);
+
+
+  //should be takenb from the backend
+  final List<String> items = [
+    'Drinking Water',
+    'Rice',
+    'Milk',
+    'Wheat',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +45,7 @@ class providePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -46,7 +55,7 @@ class providePage extends StatelessWidget {
                     'Add all the resources you wish to provide',
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -105,10 +114,9 @@ class _ItemState extends State<Item> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        width: 450,
-        height: 150,
+        constraints: const BoxConstraints(minHeight: 100),
         decoration: const BoxDecoration(
-            color: Colors.black,
+            color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [
               BoxShadow(
@@ -121,88 +129,105 @@ class _ItemState extends State<Item> {
                 offset: Offset(0.0, 0.0),
               )
             ]),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.label1,
-                  style: TextStyle(
-                    fontSize: 17,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.lightBlue[400],
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.label1,
+                style: TextStyle(
+                  fontSize: 17,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lightBlue[400],
                 ),
-                SizedBox(height: 3),
-                Text(
-                  widget.label2,
-                  style: TextStyle(
-                    fontSize: 12,
+              ),
+              SizedBox(height: 3),
+              Text(
+                widget.label2,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 60,
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: _decrement,
+                      color: Colors.white),
+                  Text(
+                    '$_count',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.lightBlue,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: _increment,
                     color: Colors.white,
                   ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 60,
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      if (_count == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please select quantity'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                        return;
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Added to cart'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      fixedSize: const Size(100, 30),
+                      shadowColor: Colors.black,
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.lightBlue[400],
                     ),
-                    IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: _decrement,
-                        color: Colors.white),
-                    Text(
-                      '$_count',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.lightBlue,
-                      ),
+                    child: const Text('Provide'),
+                  ),
+                  SizedBox(width: 10),
+                  OutlinedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Removed from cart'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      fixedSize: const Size(100, 30),
+                      shadowColor: Colors.black,
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.grey,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: _increment,
-                      color: Colors.white,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signupGU');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(100, 30),
-                        shadowColor: Colors.black,
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.lightBlue[400],
-                      ),
-                      child: const Text('Provide'),
-                    ),
-                    SizedBox(width: 10),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signupGU');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(100, 30),
-                        shadowColor: Colors.black,
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.grey,
-                      ),
-                      child: const Text('Clear'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    child: const Text('Clear'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -211,7 +236,7 @@ class _ItemState extends State<Item> {
 }
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     home: providePage(),
   ));
 }
