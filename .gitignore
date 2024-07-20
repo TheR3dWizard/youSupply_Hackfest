@@ -7,3 +7,5 @@
 /frontend/.env
 /frontend/windows/flutter/generated_plugins.cmake
 /frontend/windows/flutter/generated_plugin_registrant.cc
+AlgorithmLogic/hackfest
+AlgorithmLogic/__pycache__
