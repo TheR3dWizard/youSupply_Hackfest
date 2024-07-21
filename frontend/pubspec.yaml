@@ -66,6 +66,8 @@ flutter:
   assets:
     - assets/icons/menu2.jpeg
     - assets/profile.png
+    - assets/water_bottle.jpg
+    - assets/rice.jpg
     #- .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
