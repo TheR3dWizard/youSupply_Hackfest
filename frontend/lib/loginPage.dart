@@ -57,7 +57,7 @@ class LoginPage extends StatelessWidget {
                     initialLabelIndex: value == "Client" ? 0 : 1,
                     totalSwitches: 2,
                     labels: const ['Client', 'Delivery Agent'],
-                    activeBgColor: const [Colors.blueAccent],
+                    activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
                     inactiveBgColor: Colors.grey[850],
                     onToggle: (index) {
                       typeNotifier.value =
@@ -88,7 +88,7 @@ class LoginPage extends StatelessWidget {
                   'Sign Up',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
-                    color: Colors.blue,
+                    color: Color.fromARGB(255, 0, 225, 255),
                     decorationColor: Colors.blue,
                   ),
                 ),
@@ -103,8 +103,8 @@ class LoginPage extends StatelessWidget {
   void authenticateUser(BuildContext context) async {
     //TODO authentication
 
-    if (await authenticate(
-        usernameController.text, passwordController.text)) {
+    if (await login(usernameController.text, passwordController.text)) {
+      setLoggedIn(true, usernameController.text);
       if (typeNotifier.value == "Client") {
         Navigator.pushNamed(context, '/homegu');
       } else {
@@ -118,7 +118,7 @@ class LoginPage extends StatelessWidget {
     //     Navigator.pushNamed(context, '/homedel');
     //   }
     // }
-    else{
+    else {
       showDialog(
         context: context,
         builder: (BuildContext context) {

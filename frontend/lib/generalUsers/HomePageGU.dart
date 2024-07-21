@@ -98,27 +98,26 @@ class homePageGU extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Container(
-                width:200, // Both width and height should be the same to form a circle
+                width:
+                    200, // Both width and height should be the same to form a circle
                 height: 200,
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue[400],
+                  color: Color.fromARGB(255, 0, 225, 255),
                   shape: BoxShape.circle, // Makes the container circular
                 ),
                 child: const ClipOval(
                   child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Image(
-                      image: AssetImage('assets/profile.png'),
-                      width: 150,
-                      height: 150,
-                    )
-                  ),
+                      padding: EdgeInsets.all(10),
+                      child: Image(
+                        image: AssetImage('assets/profile.png'),
+                        width: 150,
+                        height: 150,
+                      )),
                 ),
               ),
             ),
             SizedBox(height: 20),
             Container(
-              
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -154,4 +153,3 @@ void main() {
     home: homePageGU(),
   ));
 }
- 

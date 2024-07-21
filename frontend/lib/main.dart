@@ -12,16 +12,25 @@ import 'package:frontend/generalUsers/homePageGU.dart';
 import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
+import 'utilities.dart';
 //import 'frontend/lib/delAgents/available.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  bool loggedIn = false;
+
+
+  MyApp.initState() {
+    isLoggedIn().then((value) {
+      loggedIn = value;
+    });
+  }
 
   // This widget is the root of your application.
   @override
@@ -49,7 +58,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: LoginPage(),
+      home: (){
+        if(loggedIn){
+          return homePageGU();
+        }
+        else{
+          return LoginPage();
+        }
+      }(),
     );
   }
 }

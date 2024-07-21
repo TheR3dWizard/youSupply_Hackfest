@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,7 +18,6 @@ class SignUpPageGU extends StatelessWidget {
       TextEditingController();
   final TextEditingController contactController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
-
   final ValueNotifier<String> typeNotifier = ValueNotifier<String>("Client");
   late Future<Position> location;
 
@@ -97,7 +97,7 @@ class SignUpPageGU extends StatelessWidget {
                     initialLabelIndex: 0,
                     totalSwitches: 2,
                     labels: const ['Client', 'Delivery Agent'],
-                    activeBgColor: const [Colors.blueAccent],
+                    activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
                     inactiveBgColor: Colors.grey[850],
                     onToggle: (index) {
                       if (index == 0) {
@@ -124,7 +124,19 @@ class SignUpPageGU extends StatelessWidget {
                                 "Latitude: ${snapshot.data!.latitude}, Longitude: ${snapshot.data!.longitude}",
                           );
                         } else if (snapshot.hasError) {
-                          return Text("Error: ${snapshot.error}");
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: Text(
+                                '${snapshot.error} \n Please enable location services and restart the app'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  SystemNavigator.pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
                         } else {
                           return CircularProgressIndicator();
                         }

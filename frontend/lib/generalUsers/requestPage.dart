@@ -166,7 +166,7 @@ class _ItemState extends State<Item> {
                       fontSize: 17,
                       letterSpacing: 1.5,
                       fontWeight: FontWeight.bold,
-                      color: Colors.lightBlue[400],
+                      color: Color.fromARGB(255, 0, 225, 255),
                     ),
                   ),
                   SizedBox(height: 3),
@@ -193,7 +193,7 @@ class _ItemState extends State<Item> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.lightBlue,
+                          color: Color.fromARGB(255, 0, 225, 255),
                         ),
                       ),
                       IconButton(
@@ -228,7 +228,7 @@ class _ItemState extends State<Item> {
                           fixedSize: const Size(100, 30),
                           shadowColor: Colors.black,
                           foregroundColor: Colors.black,
-                          backgroundColor: Colors.lightBlue[400],
+                          backgroundColor: Color.fromARGB(255, 0, 225, 255),
                         ),
                         child: const Text('Request'),
                       ),
