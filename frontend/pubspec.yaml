@@ -67,8 +67,9 @@ flutter:
   assets:
     - assets/icons/menu2.jpeg
     - assets/profile.png
-    - .env
-    - assets/account.json
+    - assets/water_bottle.jpg
+    - assets/rice.jpg
+    #- .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
