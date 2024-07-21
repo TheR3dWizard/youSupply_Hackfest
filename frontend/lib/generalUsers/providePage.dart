@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class providePage extends StatelessWidget {
   providePage({Key? key}) : super(key: key);
 
-
   //should be takenb from the backend
   final List<String> items = [
     'Drinking Water',
@@ -63,11 +62,19 @@ class providePage extends StatelessWidget {
                 Item(
                   label1: 'Drinking Water',
                   label2: 'In stock',
-                  route: '/',
                 ),
-                Item(label1: 'Rice', label2: 'In stock', route: '/'),
-                Item(label1: 'Milk', label2: 'In stock', route: '/'),
-                Item(label1: 'Wheat', label2: 'In stock', route: '/'),
+                Item(
+                  label1: 'Rice',
+                  label2: 'In stock',
+                ),
+                Item(
+                  label1: 'Milk',
+                  label2: 'In stock',
+                ),
+                Item(
+                  label1: 'Wheat',
+                  label2: 'In stock',
+                ),
                 SizedBox(height: 7),
               ],
             ),
@@ -81,13 +88,11 @@ class providePage extends StatelessWidget {
 class Item extends StatefulWidget {
   final String label1;
   final String label2;
-  final String route;
 
   const Item({
     Key? key,
     required this.label1,
     required this.label2,
-    required this.route,
   }) : super(key: key);
 
   @override
@@ -106,6 +111,12 @@ class _ItemState extends State<Item> {
   void _decrement() {
     setState(() {
       if (_count > 0) _count--;
+    });
+  }
+
+  void _clear() {
+    setState(() {
+      _count = 0;
     });
   }
 
@@ -210,9 +221,10 @@ class _ItemState extends State<Item> {
                   SizedBox(width: 10),
                   OutlinedButton(
                     onPressed: () {
+                      _clear();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Removed from cart'),
+                          content: Text('Cleared'),
                           duration: Duration(seconds: 3),
                         ),
                       );
