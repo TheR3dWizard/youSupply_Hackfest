@@ -10,6 +10,9 @@ class accepted extends StatefulWidget {
 class _MyWidgetState extends State<accepted> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Placeholder(
+      fallbackHeight: 100,
+      fallbackWidth: 100,
+    );
   }
 }
