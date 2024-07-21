@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_patch.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -268,7 +267,7 @@ class Option extends StatelessWidget {
         width: 380,
         height: 80,
         decoration: const BoxDecoration(
-            color:  Colors.cyanAccent,
+            color:  Color.fromARGB(255, 0, 225, 255),
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [
               BoxShadow(
@@ -463,6 +462,140 @@ class Item extends StatelessWidget {
   }
 }
 
+class Deliveries extends StatelessWidget {
+  final String fromLoc;
+  final String toLoc;
+  final String item;
+  final String quantity;
+  final String status;
+
+  Deliveries({
+    required this.fromLoc,
+    required this.toLoc,
+    required this.item,
+    required this.quantity,
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 2),
+      child: Container(
+        width: 410,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4.0,
+              offset: Offset(0.0, 2.0),
+            ),
+            BoxShadow(
+              color: Colors.white,
+              offset: Offset(0.0, 0.0),
+            )
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(7, 8, 7, 3),
+          child: Column(
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      Icon(Icons.location_pin, color: Colors.red),
+                      SizedBox(width: 2,),
+                      Text(
+                        fromLoc,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 20),
+                  Row(
+                    children: [
+                      Icon(Icons.location_pin, color: Colors.green),
+                      SizedBox(width: 2,),
+                      Text(
+                        toLoc,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(7.0,0,0,0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Text(
+                          "$item :",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.2,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          quantity,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    OutlinedButton(
+                      onPressed: () {},
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 0, 225, 255),//color refff
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        "View",
+                        style: TextStyle(
+                          fontSize: 15,
+                          letterSpacing: 1,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w700
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 // Backend Functions
 
@@ -509,119 +642,3 @@ Future<bool> addnode(Float xpos,Float ypos,String itemtype,int quantity) async {
 }
 
 
-class Deliveries extends StatelessWidget {
-  final String fromLoc;
-  final String toLoc;
-  final String item;
-  final String quantity;
-  final String status;
-
-  Deliveries({
-    required this.fromLoc,
-    required this.toLoc,
-    required this.item,
-    required this.quantity,
-    required this.status,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 7,horizontal: 4),
-      child: Container(
-        width: 410,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.grey[850],
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 4.0,
-                offset: Offset(0.0, 2.0),
-              ),
-              BoxShadow(
-                color: Colors.white,
-                offset: Offset(0.0, 0.0),
-              )]
-
-        ),
-        child:Padding(padding: EdgeInsets.all(7),
-        child:Column(
-          children: <Widget>[
-            Row(
-             crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: [
-                    Icon(Icons.location_pin,color: Colors.red,),
-                    Text(fromLoc,style: TextStyle(
-                  fontSize: 20,
-                  letterSpacing: 1,
-                  color: Colors.white,
-                ),),
-                  ],
-                ),
-                SizedBox(width: 20,),
-                Row(
-                  children: [
-                    Icon(Icons.location_pin,color: Colors.green,),
-                    Text(toLoc,style: TextStyle(
-                  fontSize: 20,
-                  letterSpacing: 1,
-                  color: Colors.white,
-                ),),
-                  ],
-                ),
-                
-                
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text("item:"+item,style: TextStyle(
-                  fontSize: 15,
-                  letterSpacing: 1,
-                  color: Colors.white,
-                ),),
-                Text(quantity,style: TextStyle(
-                  fontSize: 15,
-                  letterSpacing: 1,
-                  color: Colors.white,
-                ),),
-              ],
-            ),
-            // Row(
-            //   mainAxisAlignment: ̦MainAxisAlignment.end,
-            //   children: <Widget>[
-            //     OutlinedButton(onPressed: (){}, 
-            //     style: OutlinedButton.styleFrom(
-            //       backgroundColor: Colors.blue,
-            //       shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(20),
-            //       ),
-
-                  
-            //     ),
-            //     child: Text("View",
-                
-                
-            //     style: TextStyle(
-            //       fontSize: 15,
-            //       letterSpacing: 1,
-            //       color: Colors.white,
-            //     ),)
-                
-            //     ),
-
-            //   ],
-            // )
-
-          ],
-        ))
-        
-      )
-    
-    );
-  }}
