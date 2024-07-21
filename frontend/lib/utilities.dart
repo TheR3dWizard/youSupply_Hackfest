@@ -1,13 +1,11 @@
 // ignore_for_file: must_be_immutable, avoid_print, no_logic_in_create_state
 
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-
 
 class LabelledTextField extends StatelessWidget {
   final String label;
@@ -270,7 +268,7 @@ class Option extends StatelessWidget {
         width: 380,
         height: 80,
         decoration: const BoxDecoration(
-            color:  Color.fromARGB(255, 0, 225, 255),
+            color: Color.fromARGB(255, 0, 225, 255),
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [
               BoxShadow(
@@ -310,8 +308,8 @@ class Option extends StatelessWidget {
                     color: Colors.black87,
                   ),
                   onPressed: () {
-                  Navigator.pushNamed(context, route);
-                },
+                    Navigator.pushNamed(context, route);
+                  },
                 )),
           ],
         ),
@@ -336,7 +334,6 @@ class Select extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        
         decoration: const BoxDecoration(
             color: Colors.black,
             borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -361,7 +358,7 @@ class Select extends StatelessWidget {
                     icon: Icon(
                       icon,
                       size: 70,
-                      color: Colors.lightBlue[400],
+                      color: Color.fromARGB(255, 0, 225, 255),
                     ),
                     onPressed: () {
                       Navigator.pushNamed(context, route);
@@ -375,7 +372,7 @@ class Select extends StatelessWidget {
                     fontSize: 25,
                     //fontWeight: FontWeight.bold,
                     letterSpacing: 1,
-                    color: Colors.lightBlue[400],
+                    color: Color.fromARGB(255, 0, 225, 255),
                   ),
                 ),
               ),
@@ -433,7 +430,7 @@ class Item extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 17,
                         letterSpacing: 1,
-                        color: Colors.lightBlue,
+                        color: Color.fromARGB(255, 0, 225, 255),
                       ),
                     ),
                   ),
@@ -512,7 +509,9 @@ class Deliveries extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.location_pin, color: Colors.red),
-                      SizedBox(width: 2,),
+                      SizedBox(
+                        width: 2,
+                      ),
                       Text(
                         fromLoc,
                         style: TextStyle(
@@ -528,7 +527,9 @@ class Deliveries extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.location_pin, color: Colors.green),
-                      SizedBox(width: 2,),
+                      SizedBox(
+                        width: 2,
+                      ),
                       Text(
                         toLoc,
                         style: TextStyle(
@@ -544,7 +545,7 @@ class Deliveries extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Padding(
-                padding: const EdgeInsets.fromLTRB(7.0,0,0,0),
+                padding: const EdgeInsets.fromLTRB(7.0, 0, 0, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -574,7 +575,8 @@ class Deliveries extends StatelessWidget {
                     OutlinedButton(
                       onPressed: () {},
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 0, 225, 255),//color refff
+                        backgroundColor:
+                            Color.fromARGB(255, 0, 225, 255), //color refff
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -582,11 +584,10 @@ class Deliveries extends StatelessWidget {
                       child: Text(
                         "View",
                         style: TextStyle(
-                          fontSize: 15,
-                          letterSpacing: 1,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w700
-                        ),
+                            fontSize: 15,
+                            letterSpacing: 1,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w700),
                       ),
                     ),
                   ],
@@ -629,7 +630,6 @@ Future<void> setUserDetails(String username, double xpos, double ypos) async {
   json['location']['xpos'] = xpos.toString();
   json['location']['ypos'] = ypos.toString();
 
-
   await file.writeAsString(jsonEncode(json));
 }
 
@@ -646,10 +646,7 @@ Future<void> addToCart(String item, int quantity) async {
   });
 
   if (!found) {
-    json['cart'].add({
-      'item': item,
-      'quantity': quantity
-    });
+    json['cart'].add({'item': item, 'quantity': quantity});
   }
 
   await file.writeAsString(jsonEncode(json));
@@ -666,10 +663,10 @@ Future<void> removeFromCart(String item) async {
 Future<bool> isLoggedIn() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  return json['loggedin'] ;
+  return json['loggedin'];
 }
 
-Future<void> setLoggedIn(bool value,String username) async {
+Future<void> setLoggedIn(bool value, String username) async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
   json['loggedin'] = value;
@@ -684,21 +681,20 @@ String baseUrl = 'https://hackfest.akashshanmugaraj.com';
 Future<bool> login(String username, String password) async {
   print("USERNAME: $username, PASSWORD: $password");
   var url = Uri.parse('$baseUrl/authenticate/login');
-  var response = await http.post(url, body: json.encode({
-    'username': username,
-    'password': password
-  },),headers: {
-  "Content-Type": "application/json"
-});
+  var response = await http.post(url,
+      body: json.encode(
+        {'username': username, 'password': password},
+      ),
+      headers: {"Content-Type": "application/json"});
   print(response.body);
   return response.statusCode == 200;
 }
 
-
 //TODO change everything once we get the actual API
-Future<bool> register(String username, String password,String phone, String role,double longitude, double latitude) async {
+Future<bool> register(String username, String password, String phone,
+    String role, double longitude, double latitude) async {
   var url = Uri.parse('$baseUrl/register');
-  var response = await http.post(url,body: {
+  var response = await http.post(url, body: {
     'username': username,
     'password': password,
     'phone': phone,
@@ -708,9 +704,10 @@ Future<bool> register(String username, String password,String phone, String role
   return response.statusCode == 200;
 }
 
-Future<bool> addnode(double xpos,double ypos,String itemtype,int quantity) async {
+Future<bool> addnode(
+    double xpos, double ypos, String itemtype, int quantity) async {
   var url = Uri.parse('$baseUrl/add/request');
-  var response = await http.post(url,body: {
+  var response = await http.post(url, body: {
     'xpos': xpos,
     'ypos': ypos,
     'itemtype': itemtype,
@@ -719,5 +716,3 @@ Future<bool> addnode(double xpos,double ypos,String itemtype,int quantity) async
 
   return response.statusCode == 200;
 }
-
-

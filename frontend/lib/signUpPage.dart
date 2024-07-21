@@ -97,7 +97,7 @@ class SignUpPageGU extends StatelessWidget {
                     initialLabelIndex: 0,
                     totalSwitches: 2,
                     labels: const ['Client', 'Delivery Agent'],
-                    activeBgColor: const [Colors.blueAccent],
+                    activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
                     inactiveBgColor: Colors.grey[850],
                     onToggle: (index) {
                       if (index == 0) {
@@ -118,7 +118,6 @@ class SignUpPageGU extends StatelessWidget {
                       future: location,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          
                           return LabelledTextField.offOn(
                             enabled: false,
                             label:
@@ -127,7 +126,8 @@ class SignUpPageGU extends StatelessWidget {
                         } else if (snapshot.hasError) {
                           return AlertDialog(
                             title: const Text('Error'),
-                            content: Text('${snapshot.error} \n Please enable location services and restart the app'),
+                            content: Text(
+                                '${snapshot.error} \n Please enable location services and restart the app'),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () {
