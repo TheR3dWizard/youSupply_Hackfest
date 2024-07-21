@@ -36,8 +36,12 @@ class LoginPage extends StatelessWidget {
                   label: "Username",
                   controller: usernameController,
                 ),
-                PasswordField(
-                  label1: "Password",
+                // PasswordField(
+                //   label1: "Password",
+                //   controller: passwordController,
+                // ),
+                LabelledTextField.readable(
+                  label: "Password",
                   controller: passwordController,
                 ),
               ],
@@ -61,7 +65,7 @@ class LoginPage extends StatelessWidget {
                     inactiveBgColor: Colors.grey[850],
                     onToggle: (index) {
                       typeNotifier.value =
-                          index == 0 ? "Client" : "Delivery Agent";
+                          index == 0 ? "client" : "delagent";
                     },
                   );
                 },
@@ -102,11 +106,13 @@ class LoginPage extends StatelessWidget {
 
   void authenticateUser(BuildContext context) async {
     //TODO authentication
-
+    String username = usernameController.text;
+    String password = passwordController.text;
+    String role = typeNotifier.value;
     if (await login(
-        usernameController.text, passwordController.text)) {
+        username, password,role)) {
       setLoggedIn(true,usernameController.text);
-      if (typeNotifier.value == "Client") {
+      if (role == "client") {
         Navigator.pushNamed(context, '/homegu');
       } else {
         Navigator.pushNamed(context, '/homedel');

@@ -1,7 +1,6 @@
 // ignore_for_file: must_be_immutable, avoid_print, no_logic_in_create_state
 
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -602,6 +601,12 @@ class Deliveries extends StatelessWidget {
 
 //Cart Functions using localFile
 
+Future<void> printFile() async{
+  final file = await _localFile;
+  print(await file.readAsString());
+
+}
+
 Future<String> get _localPath async {
   final directory = await getApplicationDocumentsDirectory();
 
@@ -621,14 +626,14 @@ Future<File> get _localFile async {
   return file;
 }
 
-Future<void> setUserDetails(String username, double xpos, double ypos) async {
+Future<void> setUserDetails(String username, String xpos, String ypos,String role) async {
   final file = await _localFile;
 
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
   json['username'] = username;
-  json['location']['xpos'] = xpos.toString();
-  json['location']['ypos'] = ypos.toString();
-
+  json['location']['xpos'] = xpos;
+  json['location']['ypos'] = ypos;
+  json['userrole'] = role;
 
   await file.writeAsString(jsonEncode(json));
 }
@@ -637,6 +642,8 @@ Future<void> addToCart(String item, int quantity) async {
   final file = await _localFile;
   bool found = false;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
+
+  print("File before adding: ${printFile()}");
   json['cart'].forEach((element) {
     if (element['item'] == item) {
       found = true;
@@ -653,6 +660,8 @@ Future<void> addToCart(String item, int quantity) async {
   }
 
   await file.writeAsString(jsonEncode(json));
+  print("File after adding: ${printFile()}");
+
 }
 
 Future<void> removeFromCart(String item) async {
@@ -681,17 +690,24 @@ Future<void> setLoggedIn(bool value,String username) async {
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
 
-Future<bool> login(String username, String password) async {
-  print("USERNAME: $username, PASSWORD: $password");
+Future<bool> login(String username, String password,String role) async {
+  print("USERNAME: $username, PASSWORD: $password, ROLE: $role");
   var url = Uri.parse('$baseUrl/authenticate/login');
   var response = await http.post(url, body: json.encode({
     'username': username,
-    'password': password
+    'password': password,
+    "userrole":role
   },),headers: {
   "Content-Type": "application/json"
 });
   print(response.body);
-  return response.statusCode == 200;
+  if(response.statusCode == 200) {
+    var json = jsonDecode(response.body);
+    await setUserDetails(username, json['latitude'], json['longitude'],json['userrole']);
+    await setLoggedIn(true, username);
+    return true;
+  }
+  return false;
 }
 
 
