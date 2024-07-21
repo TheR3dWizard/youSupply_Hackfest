@@ -21,10 +21,17 @@ class providePage extends StatelessWidget {
           padding: const EdgeInsets.all(9.0),
           child: Row(
             children: [
-              Icon(
-                Icons.home,
-                size: 40,
-                color: Color.fromRGBO(0, 224, 255, 1),
+              Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.home,
+                    size: 40,
+                    color: Color.fromRGBO(0, 224, 255, 1),
+                  ),
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/homegu'), // Navigate to home page
+                ),
               ),
             ],
           ),
