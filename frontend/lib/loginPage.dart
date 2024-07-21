@@ -48,6 +48,11 @@ class LoginPage extends StatelessWidget {
                 valueListenable: typeNotifier,
                 builder: (context, value, child) {
                   return ToggleSwitch(
+                    customTextStyles: [
+                      TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )
+                    ],
                     activeFgColor: Colors.black,
                     inactiveFgColor: Colors.black,
                     borderColor: [Colors.black45],
