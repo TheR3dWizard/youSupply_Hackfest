@@ -1,10 +1,9 @@
-import random
 import uuid
-from typing import List, Optional
+from typing import List
 from collections import defaultdict
-from sklearn.cluster import KMeans, SpectralClustering
 import matplotlib.pyplot as plt
 import pprint
+from services import GoogleAPI
 
 
 class Node:
@@ -22,7 +21,7 @@ class Node:
         self.itemtype = item
         self.quantity = quantity
         self.nodetype = ""
-        
+
         if quantity < 0:
             self.nodetype = "Sink"
         elif quantity > 0:
@@ -97,7 +96,6 @@ class Cluster:
         - getter functions for class attributes
         - print function
 
-    TODO: Finalize centerxpos and centerypos
     TODO: Implement a metric to evaluate the cluster
 
     """
@@ -108,7 +106,7 @@ class Cluster:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, centerx=0, centery=0) -> None:
+    def __init__(self, centerx=0, centery=0, usegooglemapsapi=False) -> None:
         self.identifier = str(uuid.uuid4())
         self.centerxpos = centerx
         self.centerypos = centery
@@ -117,19 +115,20 @@ class Cluster:
         self.path: Path = None
         self.subpaths: List[Path] = []
         self.inventory = defaultdict(int)
-        self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
-    
+        self.usegooglemapsapi = usegooglemapsapi
+        self.clustermetric = 0
+
     def addnode(self, newnode: Node):
         self.centerxpos = (self.centerxpos + newnode.x_pos) / 2
         self.centerypos = (self.centerypos + newnode.y_pos) / 2
-        
+
         if newnode.nodetype == "Source":
             self.sourcenodes.append(newnode)
         elif newnode.nodetype == "Sink":
             self.sinknodes.append(newnode)
         else:
             raise TypeError("Invalid Node Type")
-        
+
     def removesource(self, sourcenode: Node):
         if sourcenode in self.sourcenodes:
             self.sourcenodes.remove(sourcenode)
@@ -282,6 +281,12 @@ class Cluster:
         return self.sourcenodes
 
     def getdistance(self, nodeobject: Node) -> int:
+        if self.usegooglemapsapi:
+            googleapi = GoogleAPI()
+            return googleapi.returndistancebetweentwopoints(
+                [self.centerxpos, self.centerypos], [nodeobject.x_pos, nodeobject.y_pos]
+            )
+
         return (
             abs(nodeobject.x_pos - self.centerxpos) ** 2
             + abs(nodeobject.y_pos - self.centerypos) ** 2
@@ -289,7 +294,7 @@ class Cluster:
 
     def getcenter(self):
         return self.centerxpos, self.centerypos
-    
+
     def printcluster(self) -> None:
         print(f"Cluster Identifier: {self.identifier}")
         print(f"Cluster centered at {self.centerxpos}, {self.centerypos}")
@@ -302,8 +307,10 @@ class Cluster:
         statslist["Number of Source Nodes"] = len(self.sourcenodes)
         statslist["Number of Sink Nodes"] = len(self.sinknodes)
         statslist["Center"] = (self.centerxpos, self.centerypos)
-        
+
         return statslist
+
+
 class System:
     """
     represents the whole list of requests raised
@@ -324,54 +331,56 @@ class System:
 
     # can be initialized with a list of nodes or generate based on a probability factor
     def __init__(self, distancelimit) -> None:
-        # TODO: think if sourcenode list and sinknode list are necessary for a system
         self.identifier = str(uuid.uuid4())
         self.threshold = distancelimit
         self.listofitems = set()
 
         self.numberofnodes: int = 0
         self.listofnodes: List[Node] = []
-        
+
         self.clusterlist: List[Cluster] = []
         self.numberofclusters: int = 0
-        
+
         self.freepool: List[Node] = []
-        
-    def addrequest(self, node: Node) -> None:
+
+    def addrequest(self, node: Node) -> Cluster:
         self.listofitems.add(node.itemtype)
         self.listofnodes.append(node)
         self.numberofnodes = 0
-        
+
         if not self.numberofclusters:
             newcluster = Cluster(centerx=node.x_pos, centery=node.y_pos)
             newcluster.addnode(node)
             self.clusterlist.append(newcluster)
             self.numberofclusters += 1
-            return 
-    
+            return newcluster
+
         distances = [cluster.getdistance(node) for cluster in self.clusterlist]
         minindex = distances.index(min(distances))
         if min(distances) <= self.threshold:
             self.clusterlist[minindex].addnode(node)
+            return self.clusterlist[minindex]
         else:
             newcluster = Cluster(centerx=node.x_pos, centery=node.y_pos)
             newcluster.addnode(node)
             self.clusterlist.append(newcluster)
             self.numberofclusters += 1
-    
+            print(f"New Cluster Created: {newcluster.identifier}")
+            return newcluster
+
     def stats(self) -> dict:
         statslist = dict()
-        
+
         statslist["Number of Nodes"] = self.numberofnodes
         statslist["Number of Clusters"] = self.numberofclusters
         statslist["Number of Items"] = len(self.listofitems)
-        
+
         ClusterStats = []
         for cluster in self.clusterlist:
             ClusterStats.append(cluster.getstats())
         statslist["Cluster Stats"] = ClusterStats
         return statslist
-        
+
     def createfreepool(self):
         for cluster in self.clusterlist:
             self.freepool += cluster.getfeasible()
@@ -460,5 +469,3 @@ class System:
             print(f"Total number of nodes related to {item} is {itemcounter[item]}")
             print(f"Request total for {item} is {request[item]}")
             print(f"Offer total for {item} is {offer[item]}")
-
-
