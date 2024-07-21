@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class requestPage extends StatelessWidget {
-  const requestPage({Key? key}) : super(key: key);
+  requestPage({Key? key}) : super(key: key);
+
+  final List<String> items = [
+    'Drinking Water',
+    'Rice',
+    'Milk',
+    'Wheat',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +20,17 @@ class requestPage extends StatelessWidget {
           padding: const EdgeInsets.all(9.0),
           child: Row(
             children: [
-              Icon(
-                Icons.home,
-                size: 40,
-                color: Color.fromRGBO(0, 224, 255, 1),
+              Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.home,
+                    size: 40,
+                    color: Color.fromRGBO(0, 224, 255, 1),
+                  ),
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/homegu'), // Navigate to home page
+                ),
               ),
             ],
           ),
@@ -36,7 +50,7 @@ class requestPage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -46,7 +60,7 @@ class requestPage extends StatelessWidget {
                     'Add all the resources you require',
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -54,11 +68,10 @@ class requestPage extends StatelessWidget {
                 Item(
                   label1: 'Drinking Water',
                   label2: 'In stock',
-                  route: '/',
                 ),
-                Item(label1: 'Rice', label2: 'In stock', route: '/'),
-                Item(label1: 'Milk', label2: 'In stock', route: '/'),
-                Item(label1: 'Wheat', label2: 'In stock', route: '/'),
+                Item(label1: 'Rice', label2: 'In stock'),
+                Item(label1: 'Milk', label2: 'In stock'),
+                Item(label1: 'Wheat', label2: 'In stock'),
                 SizedBox(height: 7),
               ],
             ),
@@ -72,13 +85,11 @@ class requestPage extends StatelessWidget {
 class Item extends StatefulWidget {
   final String label1;
   final String label2;
-  final String route;
 
   const Item({
     Key? key,
     required this.label1,
     required this.label2,
-    required this.route,
   }) : super(key: key);
 
   @override
@@ -100,15 +111,20 @@ class _ItemState extends State<Item> {
     });
   }
 
+  void _clear() {
+    setState(() {
+      _count = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        width: 450,
-        height: 150,
+        constraints: const BoxConstraints(minHeight: 100),
         decoration: const BoxDecoration(
-            color: Colors.black,
+            color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [
               BoxShadow(
@@ -121,88 +137,106 @@ class _ItemState extends State<Item> {
                 offset: Offset(0.0, 0.0),
               )
             ]),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.label1,
-                  style: TextStyle(
-                    fontSize: 17,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.lightBlue[400],
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.label1,
+                style: TextStyle(
+                  fontSize: 17,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lightBlue[400],
                 ),
-                SizedBox(height: 3),
-                Text(
-                  widget.label2,
-                  style: TextStyle(
-                    fontSize: 12,
+              ),
+              SizedBox(height: 3),
+              Text(
+                widget.label2,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 60,
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.remove),
+                      onPressed: _decrement,
+                      color: Colors.white),
+                  Text(
+                    '$_count',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.lightBlue,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: _increment,
                     color: Colors.white,
                   ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 80,
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  OutlinedButton(
+                    onPressed: () {
+                      if (_count == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please select quantity'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                        return;
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Added to cart'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      fixedSize: const Size(100, 30),
+                      shadowColor: Colors.black,
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.lightBlue[400],
                     ),
-                    IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: _decrement,
-                        color: Colors.white),
-                    Text(
-                      '$_count',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.lightBlue,
-                      ),
+                    child: const Text('Request'),
+                  ),
+                  SizedBox(width: 10),
+                  OutlinedButton(
+                    onPressed: () {
+                      _clear();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cleared'),
+                          duration: Duration(seconds: 3),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      fixedSize: const Size(100, 30),
+                      shadowColor: Colors.black,
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.grey,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: _increment,
-                      color: Colors.white,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signupGU');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(120, 30),
-                        shadowColor: Colors.black,
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.lightBlue[400],
-                      ),
-                      child: const Text('Add to cart'),
-                    ),
-                    SizedBox(width: 10),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signupGU');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(100, 30),
-                        shadowColor: Colors.black,
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.grey,
-                      ),
-                      child: const Text('Clear'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    child: const Text('Clear'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -211,7 +245,7 @@ class _ItemState extends State<Item> {
 }
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     home: requestPage(),
   ));
 }

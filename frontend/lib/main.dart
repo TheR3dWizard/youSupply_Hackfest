@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/delAgents/accepted.dart';
 import 'package:frontend/delAgents/available.dart';
+import 'package:frontend/delAgents/claimed.dart';
+import 'package:frontend/delAgents/completed.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
@@ -46,7 +48,9 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => settings(),
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
-       '/available':(context)=> available()
+       '/available':(context)=> available(),
+        '/claimed':(context)=> claimed(),
+        '/completed':(context)=> completed(),
 
       },
       title: 'youSupply',

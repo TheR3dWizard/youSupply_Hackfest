@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mysql from 'mysql2';
+
 dotenv.config();
 
 const app = express();
@@ -34,14 +35,40 @@ app.get('/suprise', (req, res) => {
         });
 });
 
-app.post('/authenticate',(req,res) => {
+app.post('/authenticate/login',(req,res) => {
     console.log(req.body)
     var credentials = req.body
-    if (credentials.username == 'abc' && credentials.password == 'abc'){
-        res.status(200).send('authorized')
+    // use sql to veryify the credentials and if correct send latitude and longitude
+    // if not send a message saying invalid credentials
+    var sql = `SELECT username,contact_number,latitude,longitude FROM users WHERE username = '${credentials.username}' AND password = '${credentials.password}'`
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.log(err);
+        } else {
+            if (result.length > 0) {
+                res.send(result[0]);
+            } else {
+                res.status(401).send('Invalid credentials');
+            }
+        }
     }
-    res.status(418).send('unauthorized')
+    );
+})
 
+app.post('/authenticate/register',(req,res) => {
+    console.log(req.body)
+    var credentials = req.body
+    var sql = `INSERT INTO users (username,password,contact_number,latitude,longitude) VALUES ('${credentials.username}','${credentials.password}','${credentials.contact_number}',${credentials.latitude},${credentials.longitude})`
+    db.query(sql, (err, result) => {
+        if (err) {
+            if (err.code == 'ER_DUP_ENTRY') {
+                res.status(400).send('Username already exists');
+            }
+        } else {
+            res.status(200).send('User registered successfully');
+        }
+    }
+    );
 })
 
 app.listen(port, () => {

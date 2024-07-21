@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utilities.dart';
+
 
 class accepted extends StatefulWidget {
   const accepted({super.key});
@@ -10,6 +12,21 @@ class accepted extends StatefulWidget {
 class _MyWidgetState extends State<accepted> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      backgroundColor: Colors.black
+      ,
+      appBar: AppBar(
+        centerTitle: false,
+        title: Text(
+          'Accepted Deliveries',
+          style: TextStyle(
+            letterSpacing: 1.5,
+            color: Colors.white70,
+          ),
+        ),
+        backgroundColor: Colors.grey[850],
+      ),
+      
+    );
   }
 }

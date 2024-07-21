@@ -10,7 +10,7 @@ app = Flask(__name__)
 def home():
 	return 'this API will be used to natively interact with the algorithm logic'
 
-@app.route('/add/request', methods=['POST'])
+@app.route('/add/node', methods=['POST'])
 def addrequest():
     body = request.get_json()
 
@@ -20,7 +20,7 @@ def addrequest():
     newnode = Node(x_pos=body['xposition'], y_pos=body['yposition'], item=body['itemtype'], quantity=body['quantity'])
     centralsystemobject.addrequest(newnode)
     
-    return centralsystemobject.getrequests()
+    return centralsystemobject.stats()
 
 
 @app.route('/get/stats')
