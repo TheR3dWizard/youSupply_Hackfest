@@ -48,8 +48,8 @@ class LoginPage extends StatelessWidget {
                 valueListenable: typeNotifier,
                 builder: (context, value, child) {
                   return ToggleSwitch(
-                    activeFgColor: Colors.white,
-                    inactiveFgColor: Colors.white,
+                    activeFgColor: Colors.black,
+                    inactiveFgColor: Colors.black,
                     borderColor: [Colors.black45],
                     borderWidth: 1.5,
                     minWidth: 140,
@@ -58,7 +58,7 @@ class LoginPage extends StatelessWidget {
                     totalSwitches: 2,
                     labels: const ['Client', 'Delivery Agent'],
                     activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
-                    inactiveBgColor: Colors.grey[850],
+                    inactiveBgColor: Colors.grey[400],
                     onToggle: (index) {
                       typeNotifier.value =
                           index == 0 ? "Client" : "Delivery Agent";

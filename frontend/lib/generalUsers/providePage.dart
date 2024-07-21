@@ -69,7 +69,7 @@ class providePage extends StatelessWidget {
                 Item(
                   label1: 'Drinking Water',
                   label2: 'In stock',
-                  image: Image.asset('assets/rice.jpg'),
+                  image: Image.asset('assets/water.jpg'),
                 ),
                 Item(
                   label1: 'Rice',
