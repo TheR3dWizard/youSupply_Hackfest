@@ -40,7 +40,7 @@ app.post('/authenticate/login',(req,res) => {
     var credentials = req.body
     // use sql to veryify the credentials and if correct send latitude and longitude
     // if not send a message saying invalid credentials
-    var sql = `SELECT username,contact_number,latitude,longitude FROM users WHERE username = '${credentials.username}' AND password = '${credentials.password}'`
+    var sql = `SELECT username,contact_number,userrole,latitude,longitude FROM users WHERE username = '${credentials.username}' AND password = '${credentials.password}' AND userrole = '${credentials.userrole}'`
     db.query(sql, (err, result) => {
         if (err) {
             console.log(err);
@@ -58,11 +58,14 @@ app.post('/authenticate/login',(req,res) => {
 app.post('/authenticate/register',(req,res) => {
     console.log(req.body)
     var credentials = req.body
-    var sql = `INSERT INTO users (username,password,contact_number,latitude,longitude) VALUES ('${credentials.username}','${credentials.password}','${credentials.contact_number}',${credentials.latitude},${credentials.longitude})`
+    var sql = `INSERT INTO users (username,password,contact_number,userrole,latitude,longitude) VALUES ('${credentials.username}','${credentials.password}','${credentials.contact_number}','${credentials.userrole}',${credentials.latitude},${credentials.longitude})`
+    console.log(sql)
     db.query(sql, (err, result) => {
         if (err) {
             if (err.code == 'ER_DUP_ENTRY') {
                 res.status(400).send('Username already exists');
+            } else {
+                res.status(500).send(err);
             }
         } else {
             res.status(200).send('User registered successfully');
