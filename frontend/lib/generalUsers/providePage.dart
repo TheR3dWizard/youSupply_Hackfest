@@ -6,10 +6,10 @@ class providePage extends StatelessWidget {
 
   //should be takenb from the backend
   final List<dynamic> items = [
-    ['Drinking Water','assets/rice.jpg'],
-    ['Rice','assets/rice.jpg'],
-    ['Milk','assets/rice.jpg'],
-    ['Wheat','assets/rice.jpg'],
+    ['Drinking Water', 'assets/water.jpg'],
+    ['Rice', 'assets/rice.jpg'],
+    ['Milk', 'assets/milk_bottle.jpg'],
+    ['Bread', 'assets/bread.jpg'],
   ];
 
   @override
@@ -67,7 +67,8 @@ class providePage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                Column(children:List.generate(items.length, (context) {
+                Column(
+                    children: List.generate(items.length, (context) {
                   return Item(
                     label1: items[context][0],
                     label2: 'Description',

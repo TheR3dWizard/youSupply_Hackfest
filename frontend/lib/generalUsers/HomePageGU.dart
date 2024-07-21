@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/settings.dart';
 import 'package:frontend/utilities.dart';
 
 // This is the type used by the popup menu below.
@@ -29,15 +30,19 @@ class homePageGU extends StatelessWidget {
                       // Navigate to '/history' or perform related action
                       break;
                     case GUMenu.Settings:
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => settings()));
                       // Navigate to '/settings' or perform related action
                       break;
                     case GUMenu.ProfileView:
+                      Navigator.pushNamed(context, '/profile');
                       // Navigate to '/profile' or perform related action
                       break;
                     case GUMenu.SwitchAccount:
                       // Navigate to '/switch_account' or perform related action
                       break;
                     case GUMenu.Logout:
+                      Navigator.pushNamed(context, '/');
                       // Navigate to '/logout' or perform related action
                       break;
                     default:
