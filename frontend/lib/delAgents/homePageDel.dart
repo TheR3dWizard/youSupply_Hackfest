@@ -101,8 +101,8 @@ class homePageDel extends StatelessWidget {
               children: <Widget>[
                 Container(
                   width: 380,
-                  height: 200,
-                  color: Colors.yellow,
+                  height: 300,
+                  color: Colors.grey,
                   child: Padding(
                     padding: EdgeInsets.all(10),
                     child: Center(child: Text('map')),
