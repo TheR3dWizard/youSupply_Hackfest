@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utilities.dart';
 
 class requestPage extends StatelessWidget {
   requestPage({Key? key}) : super(key: key);
 
-  final List<String> items = [
-    'Drinking Water',
-    'Rice',
-    'Milk',
-    'Wheat',
+   final List<dynamic> items = [
+    ['Drinking Water','assets/rice.jpg'],
+    ['Rice','assets/rice.jpg'],
+    ['Milk','assets/rice.jpg'],
+    ['Wheat','assets/rice.jpg'],
   ];
 
   @override
@@ -65,27 +66,19 @@ class requestPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                Item(
-                  label1: 'Drinking Water',
-                  label2: 'In stock',
-                  image: Image.asset('assets/rice.jpg'),
+                Column(
+                  children: items
+                      .map((item) => Item(
+                            label1: item[0],
+                            label2: 'Description',
+                            image: Image.asset(
+                              item[1],
+                              width: 100,
+                              height: 100,
+                            ),
+                          ))
+                      .toList(),
                 ),
-                Item(
-                  label1: 'Rice',
-                  label2: 'In stock',
-                  image: Image.asset('assets/rice.jpg'),
-                ),
-                Item(
-                  label1: 'Milk',
-                  label2: 'In stock',
-                  image: Image.asset('assets/rice.jpg'),
-                ),
-                Item(
-                  label1: 'Wheat',
-                  label2: 'In stock',
-                  image: Image.asset('assets/rice.jpg'),
-                ),
-                SizedBox(height: 7),
               ],
             ),
           ),
@@ -207,7 +200,7 @@ class _ItemState extends State<Item> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       OutlinedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_count == 0) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -223,6 +216,7 @@ class _ItemState extends State<Item> {
                               duration: Duration(seconds: 3),
                             ),
                           );
+                          await addToCart(widget.label1, -1*_count);
                         },
                         style: OutlinedButton.styleFrom(
                           fixedSize: const Size(100, 30),
@@ -234,7 +228,7 @@ class _ItemState extends State<Item> {
                       ),
                       SizedBox(width: 10),
                       OutlinedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           _clear();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -242,6 +236,8 @@ class _ItemState extends State<Item> {
                               duration: Duration(seconds: 3),
                             ),
                           );
+                          await addToCart(widget.label1,0);
+
                         },
                         style: OutlinedButton.styleFrom(
                           fixedSize: const Size(100, 30),
