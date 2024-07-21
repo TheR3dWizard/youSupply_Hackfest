@@ -70,6 +70,8 @@ flutter:
     - assets/water_bottle.jpg
     - assets/rice.jpg
     - assets/water.jpg
+    - assets/milk_bottle.jpg
+    - assets/bread.jpg
     #- .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
