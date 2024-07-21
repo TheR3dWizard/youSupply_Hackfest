@@ -1,0 +1,19 @@
+{
+    "username":"",
+    "loggedin":false,
+    "role":"client",
+    "location":{
+        "xpos": 0,
+        "ypos": 0
+    },
+    "cart":[
+        {
+            "item":"water bottle",
+            "quantity": 3
+        },
+        {
+            "item":"flashlight",
+            "quantity": -1
+        }
+    ]
+}

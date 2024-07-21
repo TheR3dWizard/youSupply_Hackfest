@@ -7,6 +7,8 @@ class LoginPage extends StatelessWidget {
 
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  // final ValueNotifier<String> usernameNotifier = ValueNotifier<String>("");
+  // final ValueNotifier<String> passwordNotifier = ValueNotifier<String>("");
   final ValueNotifier<String> typeNotifier = ValueNotifier<String>("Client");
 
   @override
@@ -34,8 +36,12 @@ class LoginPage extends StatelessWidget {
                   label: "Username",
                   controller: usernameController,
                 ),
-                PasswordField(
-                  label1: "Password",
+                // PasswordField(
+                //   label1: "Password",
+                //   controller: passwordController,
+                // ),
+                LabelledTextField.readable(
+                  label: "Password",
                   controller: passwordController,
                 ),
               ],
@@ -46,8 +52,13 @@ class LoginPage extends StatelessWidget {
                 valueListenable: typeNotifier,
                 builder: (context, value, child) {
                   return ToggleSwitch(
-                    activeFgColor: Colors.white,
-                    inactiveFgColor: Colors.white,
+                    customTextStyles: [
+                      TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )
+                    ],
+                    activeFgColor: Colors.black,
+                    inactiveFgColor: Colors.black,
                     borderColor: [Colors.black45],
                     borderWidth: 1.5,
                     minWidth: 140,
@@ -55,11 +66,11 @@ class LoginPage extends StatelessWidget {
                     initialLabelIndex: value == "Client" ? 0 : 1,
                     totalSwitches: 2,
                     labels: const ['Client', 'Delivery Agent'],
-                    activeBgColor: const [Colors.blueAccent],
-                    inactiveBgColor: Colors.grey[850],
+                    activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
+                    inactiveBgColor: Colors.grey[400],
                     onToggle: (index) {
                       typeNotifier.value =
-                          index == 0 ? "Client" : "Delivery Agent";
+                          index == 0 ? "client" : "delagent";
                     },
                   );
                 },
@@ -86,7 +97,7 @@ class LoginPage extends StatelessWidget {
                   'Sign Up',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
-                    color: Colors.blue,
+                    color: Color.fromARGB(255, 0, 225, 255),
                     decorationColor: Colors.blue,
                   ),
                 ),
@@ -98,21 +109,45 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void authenticateUser(BuildContext context) {
+  void authenticateUser(BuildContext context) async {
     //TODO authentication
-    if (usernameController.text == "abc" && passwordController.text == "abc") {
-      if (typeNotifier.value == "Client") {
+    String username = usernameController.text;
+    String password = passwordController.text;
+    String role = typeNotifier.value;
+    if (await login(
+        username, password,role)) {
+      setLoggedIn(true,usernameController.text);
+      if (role == "client") {
         Navigator.pushNamed(context, '/homegu');
       } else {
         Navigator.pushNamed(context, '/homedel');
       }
     }
-    else{
-      if (typeNotifier.value == "Client") {
-        Navigator.pushNamed(context, '/homegu');
-      } else {
-        Navigator.pushNamed(context, '/homedel');
-      }
+    // else{
+    //   if (typeNotifier.value == "Client") {
+    //     Navigator.pushNamed(context, '/homegu');
+    //   } else {
+    //     Navigator.pushNamed(context, '/homedel');
+    //   }
+    // }
+    else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Invalid Credentials"),
+            content: const Text("Please enter valid credentials"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 }

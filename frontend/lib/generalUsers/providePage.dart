@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utilities.dart';
 
 class providePage extends StatelessWidget {
-  const providePage({Key? key}) : super(key: key);
+  providePage({Key? key}) : super(key: key);
+
+  //should be takenb from the backend
+  final List<dynamic> items = [
+    ['Drinking Water', 'assets/water.jpg'],
+    ['Rice', 'assets/rice.jpg'],
+    ['Milk', 'assets/milk_bottle.jpg'],
+    ['Bread', 'assets/bread.jpg'],
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +22,17 @@ class providePage extends StatelessWidget {
           padding: const EdgeInsets.all(9.0),
           child: Row(
             children: [
-              Icon(
-                Icons.home,
-                size: 40,
-                color: Color.fromRGBO(0, 224, 255, 1),
+              Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.home,
+                    size: 40,
+                    color: Color.fromRGBO(0, 224, 255, 1),
+                  ),
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/homegu'), // Navigate to home page
+                ),
               ),
             ],
           ),
@@ -36,7 +52,7 @@ class providePage extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -46,19 +62,19 @@ class providePage extends StatelessWidget {
                     'Add all the resources you wish to provide',
                     style: TextStyle(
                       fontSize: 15,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
                 SizedBox(height: 10),
-                Item(
-                  label1: 'Drinking Water',
-                  label2: 'In stock',
-                  route: '/',
-                ),
-                Item(label1: 'Rice', label2: 'In stock', route: '/'),
-                Item(label1: 'Milk', label2: 'In stock', route: '/'),
-                Item(label1: 'Wheat', label2: 'In stock', route: '/'),
+                Column(
+                    children: List.generate(items.length, (context) {
+                  return Item(
+                    label1: items[context][0],
+                    label2: 'Description',
+                    image: Image.asset(items[context][1]),
+                  );
+                })),
                 SizedBox(height: 7),
               ],
             ),
@@ -72,14 +88,14 @@ class providePage extends StatelessWidget {
 class Item extends StatefulWidget {
   final String label1;
   final String label2;
-  final String route;
+  final Image image;
 
-  const Item({
-    Key? key,
-    required this.label1,
-    required this.label2,
-    required this.route,
-  }) : super(key: key);
+  const Item(
+      {Key? key,
+      required this.label1,
+      required this.label2,
+      required this.image})
+      : super(key: key);
 
   @override
   _ItemState createState() => _ItemState();
@@ -100,15 +116,20 @@ class _ItemState extends State<Item> {
     });
   }
 
+  void _clear() {
+    setState(() {
+      _count = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        width: 450,
-        height: 150,
+        constraints: const BoxConstraints(minHeight: 100),
         decoration: const BoxDecoration(
-            color: Colors.black,
+            color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
             boxShadow: [
               BoxShadow(
@@ -121,89 +142,120 @@ class _ItemState extends State<Item> {
                 offset: Offset(0.0, 0.0),
               )
             ]),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.label1,
-                  style: TextStyle(
-                    fontSize: 17,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.lightBlue[400],
-                  ),
-                ),
-                SizedBox(height: 3),
-                Text(
-                  widget.label2,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 60,
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.label1,
+                    style: TextStyle(
+                      fontSize: 17,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromARGB(255, 0, 225, 255),
                     ),
-                    IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: _decrement,
-                        color: Colors.white),
-                    Text(
-                      '$_count',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.lightBlue,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: _increment,
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    widget.label2,
+                    style: TextStyle(
+                      fontSize: 12,
                       color: Colors.white,
                     ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signupGU');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(100, 30),
-                        shadowColor: Colors.black,
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.lightBlue[400],
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 60,
                       ),
-                      child: const Text('Provide'),
-                    ),
-                    SizedBox(width: 10),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/signupGU');
-                      },
-                      style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(100, 30),
-                        shadowColor: Colors.black,
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.grey,
+                      IconButton(
+                          icon: Icon(Icons.remove),
+                          onPressed: _decrement,
+                          color: Colors.white),
+                      Text(
+                        '$_count',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 0, 225, 255),
+                        ),
                       ),
-                      child: const Text('Clear'),
-                    ),
-                  ],
-                ),
-              ],
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: _increment,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () async {
+                          if (_count == 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please select quantity'),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                            return;
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Added to cart'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                          //call addtocart function
+                          await addToCart(widget.label1, _count);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          fixedSize: const Size(100, 30),
+                          shadowColor: Colors.black,
+                          foregroundColor: Colors.black,
+                          backgroundColor: Color.fromARGB(255, 0, 225, 255),
+                        ),
+                        child: const Text('Add to cart'),
+                      ),
+                      SizedBox(width: 10),
+                      OutlinedButton(
+                        onPressed: () async {
+                          _clear();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Cleared'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                          await addToCart(widget.label1, 0);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          fixedSize: const Size(100, 30),
+                          shadowColor: Colors.black,
+                          foregroundColor: Colors.black,
+                          backgroundColor: Colors.grey,
+                        ),
+                        child: const Text('Clear'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: widget.image,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -211,7 +263,7 @@ class _ItemState extends State<Item> {
 }
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     home: providePage(),
   ));
 }
