@@ -663,6 +663,13 @@ Future<void> addToCart(String item, int quantity) async {
 
 }
 
+Future<List<String>> getCoords() async{
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  return [json['location']['xpos'],json['location']['ypos']];
+
+}
+
 Future<void> removeFromCart(String item) async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
@@ -685,6 +692,8 @@ Future<void> setLoggedIn(bool value, String username) async {
 
   await file.writeAsString(jsonEncode(json));
 }
+
+
 // Backend Functions
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
@@ -724,14 +733,40 @@ Future<bool> register(String username, String password, String phone,
 }
 
 Future<bool> addnode(
-    double xpos, double ypos, String itemtype, int quantity) async {
+    String itemtype, int quantity) async {
   var url = Uri.parse('$baseUrl/add/request');
+  List<String> coords = await getCoords();
   var response = await http.post(url, body: {
-    'xpos': xpos,
-    'ypos': ypos,
+    'xposition': coords[0],
+    'yposition': coords[1],
     'itemtype': itemtype,
     'quantity': quantity,
   });
 
   return response.statusCode == 200;
+}
+
+
+Future<void> sendcart() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  print("File before sending: ${printFile()}");
+  List<String> coords = await getCoords();
+  json['cart'].forEach((element) async {
+    if(element['quantity'] == 0){
+      return;
+    }
+    var url = Uri.parse('$baseUrl/add/request');
+    var response = await http.post(url, body: {
+      'item': element['item'],
+      'quantity': element['quantity'],
+      'xposition': coords[0],
+      'yposition': coords[1],
+    });
+
+    if (response.statusCode == 200) {
+      removeFromCart(element['item']);
+    }
+  });
+  print("File after sending: ${printFile()}");
 }

@@ -226,7 +226,7 @@ class _ItemState extends State<Item> {
                       ),
                       SizedBox(width: 10),
                       OutlinedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           _clear();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -234,6 +234,7 @@ class _ItemState extends State<Item> {
                               duration: Duration(seconds: 3),
                             ),
                           );
+                          await addToCart(widget.label1, 0);
                         },
                         style: OutlinedButton.styleFrom(
                           fixedSize: const Size(100, 30),
