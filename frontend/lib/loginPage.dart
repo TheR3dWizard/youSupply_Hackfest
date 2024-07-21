@@ -103,8 +103,9 @@ class LoginPage extends StatelessWidget {
   void authenticateUser(BuildContext context) async {
     //TODO authentication
 
-    if (await authenticate(
+    if (await login(
         usernameController.text, passwordController.text)) {
+      setLoggedIn(true,usernameController.text);
       if (typeNotifier.value == "Client") {
         Navigator.pushNamed(context, '/homegu');
       } else {

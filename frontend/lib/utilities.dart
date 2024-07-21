@@ -4,7 +4,10 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
 
 class LabelledTextField extends StatelessWidget {
   final String label;
@@ -463,13 +466,90 @@ class Item extends StatelessWidget {
 }
 
 
+//Cart Functions using localFile
+
+Future<String> get _localPath async {
+  final directory = await getApplicationDocumentsDirectory();
+
+  return directory.path;
+}
+
+Future<File> get _localFile async {
+  final path = await _localPath;
+
+  File file = File('$path/account.json');
+  if (!file.existsSync()) {
+    await file.create(exclusive: false);
+    String jsonString = await rootBundle.loadString('assets/account.json');
+    await file.writeAsString(jsonString);
+  }
+
+  return file;
+}
+
+Future<void> setUserDetails(String username, double xpos, double ypos) async {
+  final file = await _localFile;
+
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['username'] = username;
+  json['location']['xpos'] = xpos.toString();
+  json['location']['ypos'] = ypos.toString();
+
+
+  await file.writeAsString(jsonEncode(json));
+}
+
+Future<void> addToCart(String item, int quantity) async {
+  final file = await _localFile;
+  bool found = false;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['cart'].forEach((element) {
+    if (element['item'] == item) {
+      found = true;
+      element['quantity'] = quantity;
+      return;
+    }
+  });
+
+  if (!found) {
+    json['cart'].add({
+      'item': item,
+      'quantity': quantity
+    });
+  }
+
+  await file.writeAsString(jsonEncode(json));
+}
+
+Future<void> removeFromCart(String item) async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['cart'].removeWhere((element) => element['item'] == item);
+
+  await file.writeAsString(jsonEncode(json));
+}
+
+Future<bool> isLoggedIn() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  return json['loggedin'] ;
+}
+
+Future<void> setLoggedIn(bool value,String username) async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['loggedin'] = value;
+  json['username'] = username;
+
+  await file.writeAsString(jsonEncode(json));
+}
 // Backend Functions
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
 
-Future<bool> authenticate(String username, String password) async {
+Future<bool> login(String username, String password) async {
   print("USERNAME: $username, PASSWORD: $password");
-  var url = Uri.parse('$baseUrl/authenticate');
+  var url = Uri.parse('$baseUrl/authenticate/login');
   var response = await http.post(url, body: json.encode({
     'username': username,
     'password': password
@@ -482,12 +562,11 @@ Future<bool> authenticate(String username, String password) async {
 
 
 //TODO change everything once we get the actual API
-Future<bool> register(String username, String password, String email, String phone, String role) async {
+Future<bool> register(String username, String password,String phone, String role,double longitude, double latitude) async {
   var url = Uri.parse('$baseUrl/register');
   var response = await http.post(url,body: {
     'username': username,
     'password': password,
-    'email': email,
     'phone': phone,
     'role': role,
   });
@@ -495,7 +574,7 @@ Future<bool> register(String username, String password, String email, String pho
   return response.statusCode == 200;
 }
 
-Future<bool> addnode(Float xpos,Float ypos,String itemtype,int quantity) async {
+Future<bool> addnode(double xpos,double ypos,String itemtype,int quantity) async {
   var url = Uri.parse('$baseUrl/add/request');
   var response = await http.post(url,body: {
     'xpos': xpos,

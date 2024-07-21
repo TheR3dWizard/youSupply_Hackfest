@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,7 +18,6 @@ class SignUpPageGU extends StatelessWidget {
       TextEditingController();
   final TextEditingController contactController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
-
   final ValueNotifier<String> typeNotifier = ValueNotifier<String>("Client");
   late Future<Position> location;
 
@@ -118,13 +118,25 @@ class SignUpPageGU extends StatelessWidget {
                       future: location,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          
                           return LabelledTextField.offOn(
                             enabled: false,
                             label:
                                 "Latitude: ${snapshot.data!.latitude}, Longitude: ${snapshot.data!.longitude}",
                           );
                         } else if (snapshot.hasError) {
-                          return Text("Error: ${snapshot.error}");
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: Text('${snapshot.error} \n Please enable location services and restart the app'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  SystemNavigator.pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
                         } else {
                           return CircularProgressIndicator();
                         }
