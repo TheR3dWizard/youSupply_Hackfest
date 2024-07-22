@@ -153,7 +153,9 @@ class Cluster:
 
     def getfeasible(self) -> List[Node]:
         if self.sinknodes == [] or self.sourcenodes == []:
-            return self.getallnodes()
+            freepool = self.getallnodes()
+            self.sinknodes == []
+            self.sourcenodes == []
 
         self.updateinventory()
         freepool = []
@@ -181,8 +183,11 @@ class Cluster:
                 self.removesink(node)
                 freepool.append(node)
 
-        if deficits == [] or excesses == []:
-            return freepool
+        if self.sinknodes == [] or self.sourcenodes == []:
+            freepool = self.getallnodes()
+            self.sinknodes == []
+            self.sourcenodes == []
+
 
 
         for excess, nodes in excesses:
@@ -198,8 +203,10 @@ class Cluster:
         # TODO: write functionality to change a half excess node into a full excess and fitting node
         # if deficit is -3, and sink is -5, then sink should be converted to a -2 node and freepool should have a -3 node
 
-        if deficits == [] or excesses == []:
-            return freepool
+        if self.sinknodes == [] or self.sourcenodes == []:
+            freepool = self.getallnodes()
+            self.sinknodes == []
+            self.sourcenodes == []
 
         self.updateinventory()
         return freepool
@@ -209,6 +216,9 @@ class Cluster:
         visited = set()
         available = defaultdict(int)
         path = []
+
+        if self.sinknodes == [] or self.sourcenodes == []:
+            return path
 
         # function to get the closest node
         closest = lambda node, possibilities: min(
@@ -266,6 +276,8 @@ class Cluster:
 
     def plotallpaths(self):
         self.getpath()
+        if self.path == []:
+            return
         print("Main Path")
         self.path.plotpath()
         print("Subpaths")
@@ -367,6 +379,7 @@ class System:
         if not listofnodes:
             self.generatenodes()
 
+
     def generatenodes(self) -> None:
         for _ in range(0, self.numberofnodes):
             x = random.randint(0, 5000)
@@ -384,7 +397,7 @@ class System:
 
     def spectralclustering(self, num_points: int = 50):
         spc = SpectralClustering(
-            n_clusters=self.getnumberofnodes() // num_points,
+            n_clusters=self.getnumberofnodes() // num_points if self.getnumberofnodes() // num_points != 0 else 1,
             random_state=42,
             affinity="nearest_neighbors",
         )
@@ -456,15 +469,11 @@ class System:
         print(f"Total Sink Nodes: {self.numberofsinknodes}")
 
         for item in itemcounter:
-            try:
-                print(
-                    f"{item}: Requested {request[item]}, Offered {offer[item]}, all concerning nodes {itemcounter[item]}"
+            print(
+                    f'''{item}: Requested {request[item] if item in request else 0}, 
+Offered {offer[item] if item in offer else 0}, 
+all concerning nodes {itemcounter[item]}'''
                 )
-            except KeyError:
-                print(
-                    f"{item}: Requested {request[item]}, Offered 0, all concerning nodes {itemcounter[item]}"
-                )
-
         for cluster in self.clusterlist:
             cluster.printcluster()
 
@@ -496,11 +505,13 @@ class System:
 
 class Solution:
     def __init__(self, system: System = None) -> None:
-        self.system = system if system else System(totalnodes=100, pfactor=0.2)
+        self.system = system if system else System(totalnodes=100, pfactor=0)
+        if not self.system.isfeasiblesystem():
+            print("System is not feasible")
+            return
         self.system.spectralclustering(num_points=100)
         self.system.print()
         self.freepoolsystem = self.system.createfreepool()
-        # TODO: write functions to check if there are no sinks or sources in the freepool and if so, stop the algorithm
         self.system.plotclusters()
         if self.freepoolsystem.isfeasiblesystem():
             self.nextSol = Solution(self.freepoolsystem)
