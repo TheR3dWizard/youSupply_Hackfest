@@ -18,67 +18,60 @@ class providePage extends StatelessWidget {
       backgroundColor: Colors.black12,
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
-        title: Padding(
-          padding: const EdgeInsets.all(9.0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(9.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.home,
-                    size: 40,
-                    color: Color.fromRGBO(0, 224, 255, 1),
-                  ),
-                  onPressed: () => Navigator.pushNamed(
-                      context, '/homegu'), // Navigate to home page
-                ),
-              ),
-            ],
+        centerTitle: true,
+        title: Text(
+          'Provide Resources',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 0, 225, 255),
           ),
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  child: const Text(
-                    'Resources',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+        child: Row(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                    child: const Text(
+                      'Resources',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  child: const Text(
-                    'Add all the resources you wish to provide',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white,
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                    child: const Text(
+                      'Add all the resources you wish to provide',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Column(
-                    children: List.generate(items.length, (context) {
-                  return Item(
-                    label1: items[context][0],
-                    label2: 'Description',
-                    image: Image.asset(items[context][1]),
-                  );
-                })),
-                SizedBox(height: 7),
-              ],
+                  SizedBox(height: 10),
+                  Column(
+                      children: List.generate(items.length, (context) {
+                    return Item(
+                      label1: items[context][0],
+                      label2: 'Description',
+                      image: Image.asset(items[context][1]),
+                    );
+                  })),
+                  SizedBox(height: 7),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

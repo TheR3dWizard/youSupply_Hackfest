@@ -88,8 +88,9 @@ class SignUpPageGU extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ToggleSwitch(
-                    activeFgColor: Colors.white,
-                    inactiveFgColor: Colors.white,
+                    activeFgColor: Colors.black,
+                    customTextStyles: [TextStyle(fontWeight: FontWeight.bold)],
+                    inactiveFgColor: Colors.black,
                     borderColor: [Colors.black45],
                     borderWidth: 1.5,
                     minWidth: 140,
@@ -98,7 +99,7 @@ class SignUpPageGU extends StatelessWidget {
                     totalSwitches: 2,
                     labels: const ['Client', 'Delivery Agent'],
                     activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
-                    inactiveBgColor: Colors.grey[850],
+                    inactiveBgColor: Colors.grey[400],
                     onToggle: (index) {
                       if (index == 0) {
                         typeNotifier.value = "Client";

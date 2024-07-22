@@ -142,6 +142,14 @@ class homePageGU extends StatelessWidget {
                       onpressed: () {
                         Navigator.pushNamed(context, '/provide');
                       }),
+                  SizedBox(width: 20),
+                  Select(
+                      label: 'Cart', // Navigate to provide page
+                      icon: Icons.card_travel,
+                      route: '/cart',
+                      onpressed: () {
+                        Navigator.pushNamed(context, '/cart');
+                      }),
                 ],
               ),
             ),

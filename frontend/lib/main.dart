@@ -13,18 +13,17 @@ import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
 import 'utilities.dart';
+import 'generalUsers/cartPage.dart';
+
 //import 'frontend/lib/delAgents/available.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-
-
 class MyApp extends StatelessWidget {
   MyApp({super.key});
   bool loggedIn = false;
-
 
   MyApp.initState() {
     isLoggedIn().then((value) {
@@ -44,25 +43,24 @@ class MyApp extends StatelessWidget {
         '/homedel': (context) => homePageDel(),
         '/provide': (context) => providePage(),
         '/request': (context) => requestPage(),
-        'history' : (context) => history(),
+        'history': (context) => history(),
         '/settings': (context) => settings(),
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
-       '/available':(context)=> available(),
-        '/claimed':(context)=> claimed(),
-        '/completed':(context)=> completed(),
-
+        '/available': (context) => available(),
+        '/claimed': (context) => claimed(),
+        '/completed': (context) => completed(),
+        '/cart': (context) => Cartpage()
       },
       title: 'youSupply',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: (){
-        if(loggedIn){
+      home: () {
+        if (loggedIn) {
           return homePageGU();
-        }
-        else{
+        } else {
           return LoginPage();
         }
       }(),
