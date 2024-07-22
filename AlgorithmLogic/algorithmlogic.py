@@ -181,6 +181,9 @@ class Cluster:
                 self.removesink(node)
                 freepool.append(node)
 
+        if deficits == [] or excesses == []:
+            return freepool
+
 
         for excess, nodes in excesses:
             while excess > 0:
@@ -194,6 +197,9 @@ class Cluster:
                     break
         # TODO: write functionality to change a half excess node into a full excess and fitting node
         # if deficit is -3, and sink is -5, then sink should be converted to a -2 node and freepool should have a -3 node
+
+        if deficits == [] or excesses == []:
+            return freepool
 
         self.updateinventory()
         return freepool
