@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pprint
 from services import GoogleAPI
 import numpy as np
-
+from scipy.spatial import ConvexHull
 
 
 class Node:
@@ -108,7 +108,7 @@ class Cluster:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, centerx=0, centery=0, usegooglemapsapi=False) -> None:
+    def __init__(self, centerx=0, centery=0, usegooglemapsapi=True) -> None:
         self.identifier = str(uuid.uuid4())
         self.centerxpos = centerx
         self.centerypos = centery
@@ -119,19 +119,12 @@ class Cluster:
         self.inventory = defaultdict(int)
         self.usegooglemapsapi = usegooglemapsapi
         self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
-
-        # TODO KEERTHI
-        # create a numpy array called allnodes hint: use self.allnodes during declaration
-
-        # TODO KEERTHI
-        # create a ConvexHull object for this cluster like self.convexhullobject 
-        # initalize it to the empty numpy array created previously 
-        # try incremental = True param in ConvexHull
-
+        self.allnodes = []
+        self.convexhullobject = None
+        
     def addnode(self, newnode: Node):
-        # TODO KERTHI repalce the below two lines with a trigger to update centroid 
-        self.centerypos = (self.centerypos + newnode.y_pos) / 2
-        self.centerxpos = (self.centerxpos + newnode.x_pos) / 2
+        self.allnodes.append([newnode.x_pos, newnode.y_pos])
+        self.updatecentroid(newnode.x_pos, newnode.y_pos)
         
         if newnode.nodetype == "Source":
             self.sourcenodes.append(newnode)
@@ -139,8 +132,6 @@ class Cluster:
             self.sinknodes.append(newnode)
         else:
             raise TypeError("Invalid Node Type")   
-        # TODO KERTHI
-        # extract the xposition and yposition from the Node object and append it to the all nodes array     
         
     def removesource(self, sourcenode: Node):
         if sourcenode in self.sourcenodes:
@@ -154,15 +145,24 @@ class Cluster:
         else:
             raise ValueError("Node not in cluster")
 
-    # TODO KEERTHI
-    # create a function update centroid that essentially gets the vertices from the convexhull object 
-    # and recomputes the centroid 
-    # after recomputing it updates the value to the centerxpos and centerypos variables of the class
-    #                           self.centerxpos  and  self.centerypos
-    # hint: create function as def updatecentroid(self):
+    def updatecentroid(self, addxpos = 0, addypos = 0):
+        if len(self.allnodes) == 1:
+            self.centerxpos = self.allnodes[0][0]
+            self.centerypos = self.allnodes[0][1]
+            return
+        elif len(self.allnodes) == 2:
+            self.centerxpos = (self.allnodes[0][0] + self.allnodes[1][0]) / 2
+            self.centerypos = (self.allnodes[0][1] + self.allnodes[1][1]) / 2
+            return
+        else:
+            if not self.convexhullobject:
+                self.convexhullobject = ConvexHull(self.allnodes, incremental=True)
+            
+            self.convexhullobject.add_points([[addxpos, addypos]])
+            self.centerxpos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 0])
+            self.centerypos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 1])
 
-    # also check if the below function would work
-
+            return
     '''
     For a more accurate calculation of the centroid after adding each new node, you would need to keep track of the total number of nodes and use that in your calculation. Here's a corrected approach in pseudocode:
 
@@ -317,9 +317,9 @@ class Cluster:
     def getdistance(self, nodeobject: Node) -> int:
         if self.usegooglemapsapi:
             googleapi = GoogleAPI()
-            return googleapi.returndistancebetweentwopoints(
+            return float(googleapi.returndistancebetweentwopoints(
                 [self.centerxpos, self.centerypos], [nodeobject.x_pos, nodeobject.y_pos]
-            )
+            )['distance'][:-3])
 
         return (
             abs(nodeobject.x_pos - self.centerxpos) ** 2
