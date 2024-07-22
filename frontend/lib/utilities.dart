@@ -666,6 +666,14 @@ Future<void> addToCart(String item, int quantity) async {
   print("File after adding: ${printFile()}");
 }
 
+//empties the cart
+Future<void> emptyCart() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['cart'] = [];
+  await file.writeAsString(jsonEncode(json));
+}
+
 Future<List<String>> getCoords() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
@@ -751,6 +759,7 @@ Future<bool> addnode(String itemtype, int quantity) async {
   return response.statusCode == 200;
 }
 
+//sends all nodes in cart to backend
 Future<void> sendcart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
