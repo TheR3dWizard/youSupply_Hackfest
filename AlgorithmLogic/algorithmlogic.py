@@ -288,6 +288,14 @@ class Cluster:
         self.getpath()
         self.path.plotpath()
 
+    def removepath(self,path:Path):
+        self.subpaths.remove(path)
+        for node in path.path:
+            if node.nodetype == "Sink":
+                self.removesink(node)
+            else:
+                self.removesource(node)
+
     def tolist(self):
         return self.sourcenodes + self.sinknodes
 
@@ -378,6 +386,28 @@ class System:
         self.freepool: List[Node] = []
         if not listofnodes:
             self.generatenodes()
+
+    def addNode(self, node: Node):
+        self.listofnodes.append(node)
+        if node.nodetype == "Sink":
+            self.numberofsinknodes += 1
+        else:
+            self.numberofsourcenodes += 1
+
+    def removeNode(self, node: Node):
+        self.listofnodes.remove(node)
+        if node.nodetype == "Sink":
+            self.numberofsinknodes -= 1
+        else:
+            self.numberofsourcenodes -= 1
+    
+    #function to remove a path from a system in case the path is saitisfied
+    def removePath(self, path: Path):
+        for cluster in self.clusterlist:
+            if path in cluster.subpaths:
+                cluster.removepath(path)
+        for node in path.path:
+            self.removeNode(node)
 
 
     def generatenodes(self) -> None:
@@ -518,5 +548,54 @@ class Solution:
         for cluster in self.system.clusterlist:
             cluster.plotallpaths()
 
+    def getallpaths(self):
+        paths = []
+        for cluster in self.system.clusterlist:
+            # cluster.getpath()
+            paths.append(cluster.subpaths)
+        return paths
 
-sol = Solution()
+#uncomment the following lines to test the code
+# sol = Solution()
+# paths = sol.getallpaths()
+
+#the class that will be used by the backend (fully abstracted) 
+class Algorithm:
+    def __init__(self) -> None:
+        self.system = None
+        self.freepoolsystem = None
+        self.paths = []
+
+    #function to set the system, will be called by the backend only when initializing the system
+    #after initialization, the system will be set by the addNode function only and should not be called again
+    def setSystem(self, system: System) -> None:
+        if not self.system.isfeasiblesystem():
+            raise ValueError("System does not contain sinks or sources and is not feasible")
+        self.system.spectralclustering(num_points=100)
+        #figure out what to do with the freepool system
+        #possible solutions:
+        #1) maybe create a new system 
+        #2) change it from a system into just a list of nodes
+        #3) change addNode to add a node to the freepool system and not the main system
+        self.freepoolsystem = self.system.createfreepool()
+        for cluster in self.system.clusterlist:
+            cluster.getpath()
+            self.paths.append(cluster.path)
+
+    #function to add a node to the system
+    #will automatically set the system and recalculate all paths
+    def addNode(self, node: Node) -> None:
+        self.system.addNode(node)
+        self.setSystem(self.system)
+
+    #function to be called when a path is satisfied
+    def removePath(self, path: Path) -> None:
+        self.paths.remove(path)
+        self.system.removePath(path)
+
+    #function to get all the paths
+    def getPaths(self) -> List[Path]:
+        return self.paths
+    
+    #TODO: functionality to handle paths in the different layers (available, in progress, completed) with no inconsistencies
+    # probably the hardest thing :)
