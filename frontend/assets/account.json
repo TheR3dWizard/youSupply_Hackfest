@@ -1,7 +1,7 @@
 {
     "username":"",
     "loggedin":false,
-    "role":"client",
+    "role":"",
     "location":{
         "xpos": 0,
         "ypos": 0
