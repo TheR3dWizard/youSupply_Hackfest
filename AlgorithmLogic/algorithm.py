@@ -4,6 +4,8 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import pprint
 from services import GoogleAPI
+import numpy as np
+
 
 
 class Node:
@@ -116,19 +118,30 @@ class Cluster:
         self.subpaths: List[Path] = []
         self.inventory = defaultdict(int)
         self.usegooglemapsapi = usegooglemapsapi
-        self.clustermetric = 0
+        self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
+
+        # TODO KEERTHI
+        # create a numpy array called allnodes hint: use self.allnodes during declaration
+
+        # TODO KEERTHI
+        # create a ConvexHull object for this cluster like self.convexhullobject 
+        # initalize it to the empty numpy array created previously 
+        # try incremental = True param in ConvexHull
 
     def addnode(self, newnode: Node):
-        self.centerxpos = (self.centerxpos + newnode.x_pos) / 2
+        # TODO KERTHI repalce the below two lines with a trigger to update centroid 
         self.centerypos = (self.centerypos + newnode.y_pos) / 2
-
+        self.centerxpos = (self.centerxpos + newnode.x_pos) / 2
+        
         if newnode.nodetype == "Source":
             self.sourcenodes.append(newnode)
         elif newnode.nodetype == "Sink":
             self.sinknodes.append(newnode)
         else:
-            raise TypeError("Invalid Node Type")
-
+            raise TypeError("Invalid Node Type")   
+        # TODO KERTHI
+        # extract the xposition and yposition from the Node object and append it to the all nodes array     
+        
     def removesource(self, sourcenode: Node):
         if sourcenode in self.sourcenodes:
             self.sourcenodes.remove(sourcenode)
@@ -140,6 +153,27 @@ class Cluster:
             self.sinknodes.remove(sinknode)
         else:
             raise ValueError("Node not in cluster")
+
+    # TODO KEERTHI
+    # create a function update centroid that essentially gets the vertices from the convexhull object 
+    # and recomputes the centroid 
+    # after recomputing it updates the value to the centerxpos and centerypos variables of the class
+    #                           self.centerxpos  and  self.centerypos
+    # hint: create function as def updatecentroid(self):
+
+    # also check if the below function would work
+
+    '''
+    For a more accurate calculation of the centroid after adding each new node, you would need to keep track of the total number of nodes and use that in your calculation. Here's a corrected approach in pseudocode:
+
+    1. Initialize `total_nodes` to 1 (assuming the first node is the starting point).
+    2. For each new node added:
+    - Increment `total_nodes` by 1.
+    - Update centerxpos to (centerxpos * (total_nodes - 1) + newnode.x_pos) / total_nodes.
+    - Update centerypos to (centerypos * (total_nodes - 1) + newnode.y_pos) / total_nodes.
+
+    This method ensures that each node is weighted appropriately in the calculation of the centroid.
+    '''
 
     def updateinventory(self):
         self.inventory = defaultdict(int)
@@ -458,6 +492,7 @@ class System:
                 offer[node.itemtype] = offer.get(node.itemtype, 0) + node.quantity
 
             itemcounter[node.itemtype] = itemcounter.get(node.itemtype, 0) + 1
+
 
         print(f"Total Source Nodes: {self.numberofsourcenodes}")
         print(f"Total Sink Nodes: {self.numberofsinknodes}")
