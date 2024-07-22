@@ -172,15 +172,15 @@ class Cluster:
                         [_ for _ in self.sourcenodes if _.itemtype == i],
                     ]
                 )
-
+        
         for deficit, nodes in deficits:
             while deficit < 0:
                 node = min(nodes, key=lambda x: x.quantity)
-
                 deficit -= node.quantity
                 nodes.remove(node)
                 self.removesink(node)
                 freepool.append(node)
+
 
         for excess, nodes in excesses:
             while excess > 0:
@@ -190,6 +190,8 @@ class Cluster:
                     nodes.remove(node)
                     self.removesource(node)
                     freepool.append(node)
+                else:
+                    break
         # TODO: write functionality to change a half excess node into a full excess and fitting node
         # if deficit is -3, and sink is -5, then sink should be converted to a -2 node and freepool should have a -3 node
 
@@ -488,7 +490,7 @@ class System:
 
 class Solution:
     def __init__(self, system: System = None) -> None:
-        self.system = system if system else System(totalnodes=500, pfactor=0.8)
+        self.system = system if system else System(totalnodes=100, pfactor=0.2)
         self.system.spectralclustering(num_points=100)
         self.system.print()
         self.freepoolsystem = self.system.createfreepool()
