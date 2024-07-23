@@ -125,6 +125,7 @@ class homePageGU extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Container(
+              constraints: BoxConstraints(maxWidth: 500),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
