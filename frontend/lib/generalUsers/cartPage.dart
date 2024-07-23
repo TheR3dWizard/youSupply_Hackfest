@@ -25,14 +25,13 @@ class _CartpageState extends State<Cartpage> {
       appBar: AppBar(),
       body: Column(
         children: [
-          ListView.builder(
-            itemCount: _cart.length,
-            itemBuilder: (context, index) {
+          Column(
+            children: List.generate(_cart.length, (index) {
               return ListTile(
                 title: Text(_cart[index]['item']),
                 subtitle: Text(_cart[index]['quantity'].toString()),
               );
-            },
+            }),
           ),
           OutlinedButton(
               onPressed: () {

@@ -15,6 +15,11 @@ class requestPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black12,
+      floatingActionButton: IconButton.filled(
+          onPressed: () {
+            Navigator.pushNamed(context, '/cart');
+          },
+          icon: const Icon(Icons.card_travel)),
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
         centerTitle: true,
@@ -28,53 +33,48 @@ class requestPage extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Row(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    child: const Text(
-                      'Resources',
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: const Text(
+                  'Resources',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                    child: const Text(
-                      'Add all the resources you require',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Column(
-                    children: items
-                        .map((item) => Item(
-                              label1: item[0],
-                              label2: 'Description',
-                              image: Image.asset(
-                                item[1],
-                                width: 100,
-                                height: 100,
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: const Text(
+                  'Add all the resources you require',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Column(
+                children: items
+                    .map((item) => Item(
+                          label1: item[0],
+                          label2: 'Description',
+                          image: Image.asset(
+                            item[1],
+                            width: 100,
+                            height: 100,
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -123,7 +123,7 @@ class _ItemState extends State<Item> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 100),
+        constraints: const BoxConstraints(minHeight: 100, minWidth: 200),
         decoration: const BoxDecoration(
             color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
