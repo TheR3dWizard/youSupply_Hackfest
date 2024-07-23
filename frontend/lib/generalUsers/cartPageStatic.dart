@@ -1,14 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/utilities.dart';
 
-class Cartpage extends StatefulWidget {
-  const Cartpage({super.key});
+class CartpageStatic extends StatefulWidget {
+  const CartpageStatic({super.key});
 
   @override
-  State<Cartpage> createState() => _CartpageState();
+  State<CartpageStatic> createState() => _CartpageStaticState();
 }
 
-class _CartpageState extends State<Cartpage> {
+class _CartpageStaticState extends State<CartpageStatic> {
   
 @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class _CartpageState extends State<Cartpage> {
             print(snapshot.error);
             return const Center(child: Text("Error"));
           }
-          
+          print(snapshot.data);
           return Column(
             children: [
               Column(
@@ -68,8 +70,15 @@ class _CartpageState extends State<Cartpage> {
       ),
     );
   }
+
+  Future<List<Map<String, dynamic>>> readCartLocal() async {
+  List<Map<String, dynamic>> cart = jsonDecode('[{item: water bottle, quantity: 3}, {item: flashlight, quantity: -1}, {item: Drinking Water, quantity: -4}, {item: Rice, quantity: 1}]');
+  
+
+  return cart;
+}
 }
 
 void main() {
-  runApp(MaterialApp(home: Cartpage()));
+  runApp(MaterialApp(home: CartpageStatic()));
 }

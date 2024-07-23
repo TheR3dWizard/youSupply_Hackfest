@@ -46,35 +46,7 @@ class LoginPage extends StatelessWidget {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ValueListenableBuilder<String>(
-                valueListenable: typeNotifier,
-                builder: (context, value, child) {
-                  return ToggleSwitch(
-                    customTextStyles: [
-                      TextStyle(
-                        fontWeight: FontWeight.bold,
-                      )
-                    ],
-                    activeFgColor: Colors.black,
-                    inactiveFgColor: Colors.black,
-                    borderColor: [Colors.black45],
-                    borderWidth: 1.5,
-                    minWidth: 140,
-                    minHeight: 50,
-                    initialLabelIndex: value == "Client" ? 0 : 1,
-                    totalSwitches: 2,
-                    labels: const ['Client', 'Delivery Agent'],
-                    activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
-                    inactiveBgColor: Colors.grey[400],
-                    onToggle: (index) {
-                      typeNotifier.value = index == 0 ? "client" : "delagent";
-                    },
-                  );
-                },
-              ),
-            ),
+            
             OutlinedButton(
               onPressed: () {
                 authenticateUser(context);
@@ -115,7 +87,8 @@ class LoginPage extends StatelessWidget {
     String role = typeNotifier.value;
     if (await login(username, password, role)) {
       setLoggedIn(true, usernameController.text);
-      if (role == "client") {
+      print("Logged in as $role");
+      if (role == "Client") {
         Navigator.pushNamed(context, '/homegu');
       } else {
         Navigator.pushNamed(context, '/homedel');

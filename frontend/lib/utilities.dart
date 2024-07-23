@@ -570,7 +570,12 @@ Future<void> setLoggedIn(bool value, String username) async {
 Future<List<Map<String, dynamic>>> readCart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  return json['cart'];
+  List<dynamic> cartDynamic = json['cart'];
+  
+  // Convert List<dynamic> to List<Map<String, dynamic>>
+  List<Map<String, dynamic>> cart = cartDynamic.map((item) => item as Map<String, dynamic>).toList();
+
+  return cart;
 }
 
 // Backend Functions
@@ -607,7 +612,7 @@ Future<bool> register(String username, String password, String phone,
     'password': password,
     'phone': phone,
     'role': role,
-  });
+  },headers: {"Content-Type": "application/json"});
 
   return response.statusCode == 200;
 }
@@ -620,7 +625,7 @@ Future<bool> addnode(String itemtype, int quantity) async {
     'yposition': coords[1],
     'itemtype': itemtype,
     'quantity': quantity,
-  });
+  },headers: {"Content-Type": "application/json"});
 
   return response.statusCode == 200;
 }
@@ -641,11 +646,25 @@ Future<void> sendcart() async {
       'quantity': element['quantity'],
       'xposition': coords[0],
       'yposition': coords[1],
-    });
+    }
+    // ,headers: {"Content-Type": "application/json"}
+    );
 
     if (response.statusCode == 200) {
+      print("Successfully sent ${element['item']}");
       removeFromCart(element['item']);
     }
   });
   print("File after sending: ${printFile()}");
+}
+
+Future<Map<String,dynamic>> loadPaths() async {
+  var url = Uri.parse('https://algorithm.akashshanmugaraj.com/sample/paths');
+  var response = await http.post(url,body: jsonEncode({
+  "username":"abc",
+  "password":"abc",
+  "userrole":"client"
+}),headers: {"Content-Type": "application/json"});
+  print(response.body);
+  return jsonDecode(response.body);
 }
