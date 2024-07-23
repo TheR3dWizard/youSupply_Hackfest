@@ -9,58 +9,62 @@ class Cartpage extends StatefulWidget {
 }
 
 class _CartpageState extends State<Cartpage> {
-  List<Map<String, dynamic>> _cart = [];
-
-  @override
-  void initState() {
-    super.initState();
-    readCart().then(
-      (value) => {_cart = value},
-    );
-  }
-
-  @override
+  
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: [
-          Column(
-            children: List.generate(_cart.length, (index) {
-              return ListTile(
-                title: Text(_cart[index]['item']),
-                subtitle: Text(_cart[index]['quantity'].toString()),
-              );
-            }),
-          ),
-          OutlinedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Accept Cart"),
-                      content: const Text(
-                          "Are you sure you want to accept this cart?"),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Cancel")),
-                        TextButton(
-                            onPressed: () {
-                              sendcart();
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Accept Cart"))
-                      ],
+      body: FutureBuilder<List<dynamic>>(
+        future: readCart(),
+        builder: (context,snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            print(snapshot.error);
+            return const Center(child: Text("Error"));
+          }
+          
+          return Column(
+            children: [
+              Column(
+                children: List.generate(snapshot.data?.length ?? 0, (index) {
+                  return ListTile(
+                    title: Text(snapshot.data![index]['item']),
+                    subtitle: Text(snapshot.data![index]['quantity'].toString()),
+                  );
+                }),
+              ),
+              OutlinedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("Accept Cart"),
+                          content: const Text(
+                              "Are you sure you want to accept this cart?"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Cancel")),
+                            TextButton(
+                                onPressed: () {
+                                  sendcart();
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Accept Cart"))
+                          ],
+                        );
+                      },
                     );
                   },
-                );
-              },
-              child: const Text("Accept Cart"))
-        ],
+                  child: const Text("Accept Cart"))
+            ],
+          );
+        }
       ),
     );
   }

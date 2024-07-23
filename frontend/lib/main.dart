@@ -9,6 +9,8 @@ import 'signUpPage.dart';
 import 'generalUsers/providePage.dart';
 import 'generalUsers/requestPage.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/cartPage.dart';
+
 import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
@@ -35,6 +37,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/login',
       routes: {
+        '/cart': (context) => Cartpage(),
         '/login': (context) => LoginPage(),
         '/signupGU': (context) => SignUpPageGU(),
         '/homegu': (context) => homePageGU(),
