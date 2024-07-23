@@ -69,8 +69,7 @@ class LoginPage extends StatelessWidget {
                     activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
                     inactiveBgColor: Colors.grey[400],
                     onToggle: (index) {
-                      typeNotifier.value =
-                          index == 0 ? "client" : "delagent";
+                      typeNotifier.value = index == 0 ? "client" : "delagent";
                     },
                   );
                 },
@@ -114,9 +113,8 @@ class LoginPage extends StatelessWidget {
     String username = usernameController.text;
     String password = passwordController.text;
     String role = typeNotifier.value;
-    if (await login(
-        username, password,role)) {
-      setLoggedIn(true,usernameController.text);
+    if (await login(username, password, role)) {
+      setLoggedIn(true, usernameController.text);
       if (role == "client") {
         Navigator.pushNamed(context, '/homegu');
       } else {

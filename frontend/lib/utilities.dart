@@ -337,7 +337,7 @@ class Select extends StatelessWidget {
       constraints: BoxConstraints(
         maxHeight: 250,
         maxWidth: 500,
-        minWidth: 250,
+        // minWidth: 250,
       ),
       decoration: const BoxDecoration(
           color: Colors.black,
@@ -718,8 +718,7 @@ Future<bool> login(String username, String password, String role) async {
   var url = Uri.parse('$baseUrl/authenticate/login');
   var response = await http.post(url,
       body: json.encode(
-        {'username': username, 'password': password, "userrole": role},
-      ),
+          {'username': username, 'password': password, "userrole": role}),
       headers: {"Content-Type": "application/json"});
   print(response.body);
   if (response.statusCode == 200) {
