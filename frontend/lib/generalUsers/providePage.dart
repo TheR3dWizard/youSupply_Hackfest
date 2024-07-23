@@ -4,7 +4,7 @@ import 'package:frontend/utilities.dart';
 class providePage extends StatelessWidget {
   providePage({Key? key}) : super(key: key);
 
-  //should be takenb from the backend
+  //should be taken from the backend
   final List<dynamic> items = [
     ['Drinking Water', 'assets/water.jpg'],
     ['Flashlight', 'assets/flashlight.jpg'],
@@ -26,8 +26,12 @@ class providePage extends StatelessWidget {
             height: 50,
             child: Row(
               children: [
-                const Icon(Icons.shopping_cart_checkout_outlined),
-                Text('View Cart'),
+                const Icon(Icons.shopping_cart_checkout_outlined,
+                    color: Colors.black),
+                Text(
+                  'View Cart',
+                  style: TextStyle(color: Colors.black),
+                ),
               ],
             ),
           )),
@@ -229,7 +233,7 @@ class _ItemState extends State<Item> {
                           foregroundColor: Colors.black,
                           backgroundColor: Color.fromARGB(255, 0, 225, 255),
                         ),
-                        child: const Text('Add to cart'),
+                        child: const Text('Provide'),
                       ),
                       SizedBox(width: 10),
                       OutlinedButton(

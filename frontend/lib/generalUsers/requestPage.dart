@@ -25,8 +25,9 @@ class requestPage extends StatelessWidget {
             height: 50,
             child: Row(
               children: [
-                const Icon(Icons.shopping_cart_checkout_outlined),
-                Text('View Cart'),
+                const Icon(Icons.shopping_cart_checkout_outlined,
+                    color: Colors.black),
+                Text('View Cart', style: TextStyle(color: Colors.black)),
               ],
             ),
           )),
