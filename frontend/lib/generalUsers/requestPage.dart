@@ -221,7 +221,7 @@ class _ItemState extends State<Item> {
                           await addToCart(widget.label1, -1 * _count);
                         },
                         style: OutlinedButton.styleFrom(
-                          fixedSize: const Size(100, 30),
+                          fixedSize: const Size(120, 30),
                           shadowColor: Colors.black,
                           foregroundColor: Colors.black,
                           backgroundColor: Color.fromARGB(255, 0, 225, 255),
