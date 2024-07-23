@@ -77,12 +77,14 @@ class _MyAppState extends State<MyApp> {
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
         '/available': (context) =>
-            available(deliveryDetailsList: deliveryDetailsList),
+            Available(deliveryDetailsList: deliveryDetailsList),
         '/claimed': (context) => claimed(),
         '/completed': (context) => completed(),
         '/cart': (context) => Cartpage(),
-        '/mapview': (context) =>
-            MapView(toLocations: [], resourcesToCollect: []),
+        '/mapview': (context) => MapView(
+              toLocations: [],
+              resourcesToCollect: [],
+            ),
       },
       title: 'youSupply',
       theme: ThemeData(
