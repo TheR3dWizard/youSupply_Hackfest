@@ -2,6 +2,12 @@ from flask import Flask
 from algorithm import System, Cluster, Node
 from flask import request
 from services import DatabaseObject
+import json
+
+def read_json_file(file_path):
+    with open(file_path, "r") as file:
+        data = json.load(file)
+    return data
 
 centralsystemobject = System(distancelimit=5)
 databaseobject = DatabaseObject()
@@ -38,6 +44,11 @@ def addrequest():
 
     return centralsystemobject.stats()
 
+@app.route("/sample/paths", methods=["POST"])
+def getpaths():
+    body = request.get_json()
+    return read_json_file("samplepaths.json")
+    
 
 @app.route("/get/stats")
 def stats():
