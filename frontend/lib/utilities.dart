@@ -466,120 +466,6 @@ class Item extends StatelessWidget {
   }
 }
 
-// class Deliveries extends StatelessWidget {
-//   final String fromLoc;
-//   final double distance; // New parameter
-
-//   Deliveries({
-//     required this.fromLoc,
-//     required this.distance,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-//       child: Container(
-//         width: 410,
-//         height: 100,
-//         decoration: BoxDecoration(
-//           color: Colors.black87,
-//           borderRadius: BorderRadius.all(Radius.circular(15)),
-//           boxShadow: [
-//             BoxShadow(
-//               color: Colors.black26,
-//               blurRadius: 4.0,
-//               offset: Offset(0.0, 2.0),
-//             ),
-//             BoxShadow(
-//               color: Colors.white,
-//               offset: Offset(0.0, 0.0),
-//             )
-//           ],
-//         ),
-//         child: Padding(
-//           padding: EdgeInsets.fromLTRB(7, 8, 7, 3),
-//           child: Column(
-//             children: <Widget>[
-//               Row(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: <Widget>[
-//                   Row(
-//                     children: [
-//                       Icon(Icons.location_pin, color: Colors.red),
-//                       SizedBox(width: 2),
-//                       Text(
-//                         fromLoc,
-//                         style: TextStyle(
-//                           fontSize: 20,
-//                           fontWeight: FontWeight.bold,
-//                           letterSpacing: 1,
-//                           color: Colors.white,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                   OutlinedButton(
-//                     onPressed: () {},
-//                     style: OutlinedButton.styleFrom(
-//                       backgroundColor:
-//                           Color.fromARGB(255, 0, 225, 255), // color refff
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(20),
-//                       ),
-//                     ),
-//                     child: Text(
-//                       "View",
-//                       style: TextStyle(
-//                         fontSize: 15,
-//                         letterSpacing: 1,
-//                         color: Colors.black87,
-//                         fontWeight: FontWeight.w700,
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               SizedBox(height: 4),
-//               Padding(
-//                 padding: const EdgeInsets.fromLTRB(7.0, 0, 0, 0),
-//                 child: Row(
-//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                   children: <Widget>[
-//                     Row(
-//                       children: [
-//                         Text(
-//                           "Distance: ",
-//                           style: TextStyle(
-//                             fontSize: 15,
-//                             fontWeight: FontWeight.w600,
-//                             letterSpacing: 1.2,
-//                             color: Colors.white,
-//                           ),
-//                         ),
-//                         SizedBox(width: 5),
-//                         Text(
-//                           "$distance km",
-//                           style: TextStyle(
-//                             fontSize: 15,
-//                             fontWeight: FontWeight.w600,
-//                             letterSpacing: 1,
-//                             color: Colors.white,
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 //Cart Functions using localFile
 
 Future<void> printFile() async {
@@ -671,7 +557,10 @@ Future<bool> isLoggedIn() async {
 
 Future<void> setLoggedIn(bool value, String username) async {
   final file = await _localFile;
+  print("File is: ${await file.readAsString()}");
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  print("Hello CUrrent");
+
   json['loggedin'] = value;
   json['username'] = username;
 
@@ -697,10 +586,13 @@ Future<bool> login(String username, String password, String role) async {
       headers: {"Content-Type": "application/json"});
   print(response.body);
   if (response.statusCode == 200) {
+    print("Hello");
     var json = jsonDecode(response.body);
-    await setUserDetails(
-        username, json['latitude'], json['longitude'], json['userrole']);
+    print("Hello 2");
+    //await setUserDetails(
+    //    username, json['latitude'], json['longitude'], json['userrole']);
     await setLoggedIn(true, username);
+    print("Works!");
     return true;
   }
   return false;
