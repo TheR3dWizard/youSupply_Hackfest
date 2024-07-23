@@ -447,6 +447,15 @@ class System:
                     cluster.addsource(node)
             self.clusterlist.append(cluster)
 
+    def changeSytemtoCluster(self):
+        cluster = Cluster()
+        for node in self.listofnodes:
+            if node.nodetype == "Sink":
+                cluster.addsink(node)
+            else:
+                cluster.addsource(node)
+        self.clusterlist.append(cluster)
+
     def createfreepool(self):
         for cluster in self.clusterlist:
             self.freepool += cluster.getfeasible()
@@ -535,7 +544,7 @@ all concerning nodes {itemcounter[item]}'''
 
 class Solution:
     def __init__(self, system: System = None) -> None:
-        self.system = system if system else System(totalnodes=100, pfactor=0)
+        self.system = system if system else System(totalnodes=100, pfactor=0.4)
         if not self.system.isfeasiblesystem():
             print("System is not feasible")
             return
@@ -562,16 +571,22 @@ class Solution:
 #the class that will be used by the backend (fully abstracted) 
 class Algorithm:
     def __init__(self) -> None:
-        self.system = None
+        self.system: System = System(totalnodes=0)
         self.freepoolsystem = None
         self.paths = []
 
     #function to set the system, will be called by the backend only when initializing the system
     #after initialization, the system will be set by the addNode function only and should not be called again
     def setSystem(self, system: System) -> None:
+        self.system = system
         if not self.system.isfeasiblesystem():
             raise ValueError("System does not contain sinks or sources and is not feasible")
-        self.system.spectralclustering(num_points=100)
+        
+        #implement distance based clustering here
+        # self.system.spectralclustering(num_points=75)
+        
+        #this function just changes the clusterlist to one cluster containing all the nodes
+        self.system.changeSytemtoCluster()
         #figure out what to do with the freepool system
         #possible solutions:
         #1) maybe create a new system 
@@ -580,7 +595,7 @@ class Algorithm:
         self.freepoolsystem = self.system.createfreepool()
         for cluster in self.system.clusterlist:
             cluster.getpath()
-            self.paths.append(cluster.path)
+            self.paths.extend(cluster.subpaths)
 
     #function to add a node to the system
     #will automatically set the system and recalculate all paths
@@ -599,3 +614,17 @@ class Algorithm:
     
     #TODO: functionality to handle paths in the different layers (available, in progress, completed) with no inconsistencies
     # probably the hardest thing :)
+
+nodelist = [
+    Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1), 
+    Node(x_pos=2, y_pos=2, item="Flashlight", quantity=-1), 
+    Node(x_pos=3, y_pos=3, item="Canned Food", quantity=-1),
+    Node(x_pos=3, y_pos=0, item="Canned Food", quantity=1)
+]
+
+alg = Algorithm()
+alg.setSystem(System(totalnodes= 500,pfactor = 0.4))
+paths = alg.getPaths()
+
+for path in paths:
+    path.plotpath()
