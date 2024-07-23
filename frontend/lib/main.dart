@@ -13,8 +13,6 @@ import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
 import 'utilities.dart';
-import 'generalUsers/cartPage.dart';
-
 //import 'frontend/lib/delAgents/available.dart';
 
 void main() {
@@ -50,7 +48,6 @@ class MyApp extends StatelessWidget {
         '/available': (context) => available(),
         '/claimed': (context) => claimed(),
         '/completed': (context) => completed(),
-        '/cart': (context) => Cartpage()
       },
       title: 'youSupply',
       theme: ThemeData(
