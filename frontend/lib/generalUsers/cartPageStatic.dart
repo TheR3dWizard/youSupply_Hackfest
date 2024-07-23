@@ -11,63 +11,62 @@ class CartpageStatic extends StatefulWidget {
 }
 
 class _CartpageStaticState extends State<CartpageStatic> {
-  
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: FutureBuilder<List<dynamic>>(
-        future: readCartLocal(),
-        builder: (context,snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            print(snapshot.error);
-            return const Center(child: Text("Error"));
-          }
-          print(snapshot.data);
-          return Column(
-            children: [
-              Column(
-                children: List.generate(snapshot.data?.length ?? 0, (index) {
-                  return ListTile(
-                    title: Text(snapshot.data![index]['item']),
-                    subtitle: Text(snapshot.data![index]['quantity'].toString()),
-                  );
-                }),
-              ),
-              OutlinedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text("Accept Cart"),
-                          content: const Text(
-                              "Are you sure you want to accept this cart?"),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("Cancel")),
-                            TextButton(
-                                onPressed: () {
-                                  sendcart();
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("Accept Cart"))
-                          ],
-                        );
-                      },
+          future: readCartLocal(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              print(snapshot.error);
+              return const Center(child: Text("Error"));
+            }
+            print(snapshot.data);
+            return Column(
+              children: [
+                Column(
+                  children: List.generate(snapshot.data?.length ?? 0, (index) {
+                    return ListTile(
+                      title: Text(snapshot.data![index]['item']),
+                      subtitle:
+                          Text(snapshot.data![index]['quantity'].toString()),
                     );
-                  },
-                  child: const Text("Accept Cart"))
-            ],
-          );
-        }
-      ),
+                  }),
+                ),
+                OutlinedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text("Accept Cart"),
+                            content: const Text(
+                                "Are you sure you want to accept this cart?"),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Cancel")),
+                              TextButton(
+                                  onPressed: () {
+                                    sendcart();
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Accept Cart"))
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: const Text("Accept Cart"))
+              ],
+            );
+          }),
     );
   }
 

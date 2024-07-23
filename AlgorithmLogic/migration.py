@@ -49,7 +49,7 @@ class Node:
         ) ** 0.5
 
     def __repr__(self):
-        return f"{self.x_pos},{self.y_pos},{self.itemtype},{self.quantity};"
+        return f"\t{self.x_pos},{self.y_pos},{self.itemtype},{self.quantity};\t"
 
     def __gtr__(self, other):
         return self.quantity > other.quantity
@@ -64,6 +64,9 @@ class Path:
         self.distance = distance
         self.identifier = str(uuid.uuid4())
 
+    def __repr__(self) -> str:
+        return f"Path: {self.path} with distance {self.distance}"
+    
     def getPath(self):
         return self.path
 
@@ -158,7 +161,9 @@ class Cluster:
             if not self.convexhullobject:
                 self.convexhullobject = ConvexHull(self.allnodes, incremental=True)
             
+            # print(f'before adding points {addxpos}, {addypos}')
             self.convexhullobject.add_points([[addxpos, addypos]])
+            # print(f'after adding points')
             self.centerxpos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 0])
             self.centerypos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 1])
 
@@ -402,7 +407,7 @@ class System:
         self.freepool: List[Node] = []
 
     def addrequest(self, node: Node) -> Cluster:
-        self.listofitems.append (node.itemtype)
+        self.listofitems.append(node.itemtype)
         self.listofnodes.append(node)
         self.numberofnodes += 1
         
@@ -460,7 +465,13 @@ class System:
     
     # TODO AKASH: check if this function needs to return a new System or if changes can be modified in place
     def reconstructsystem(self):
-        newsystem = System(distancelimit=self.threshold)
+        print("Reconstructing the system")
+        newsystem = System(distancelimit=self.threshold, listofnodes=[])
+        print(f"New System from {self.listofnodes}")
+        
+        # for node in self.listofnodes:
+            # print(node)
+        
         for node in self.listofnodes:
             newsystem.addrequest(node)
         
@@ -482,7 +493,7 @@ class System:
     def createfreepool(self):
         for cluster in self.clusterlist:
             self.freepool += cluster.getfeasible()
-        return System(listofnodes=self.freepool)
+        return System(listofnodes=self.freepool, distancelimit=self.threshold)
 
     def isfeasiblesystem(self):
         return self.numberofsinknodes != 0 and self.numberofsourcenodes != 0
@@ -582,12 +593,14 @@ class Algorithm:
         if not targetsystem.isfeasiblesystem():
             raise ValueError("System does not contain sinks or sources and is not feasible")
         
+        print("Attempting reconstruction of the system")
         self.system = targetsystem.reconstructsystem()
         #figure out what to do with the freepool system
         #possible solutions:
         #1) maybe create a new system 
         #2) change it from a system into just a list of nodes
         #3) change addNode to add a node to the freepool system and not the main system
+        print("Reconstruction successful, creating freepool system")
         self.freepoolsystem = self.system.createfreepool()
         for cluster in self.system.clusterlist:
             cluster.getpath()
@@ -615,7 +628,11 @@ nodelist = [
     Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1), 
     Node(x_pos=0, y_pos=2, item="Flashlight", quantity=-1), 
     Node(x_pos=3, y_pos=3, item="Canned Food", quantity=-1),
-    Node(x_pos=3, y_pos=0, item="Canned Food", quantity=1)
+    Node(x_pos=4, y_pos=4, item="Canned Food", quantity=1),
+    Node(x_pos=5, y_pos=5, item="Water Bottle", quantity=1),
+    Node(x_pos=6, y_pos=6, item="Water Bottle", quantity=-1),
+    Node(x_pos=7, y_pos=7, item="Water Bottle", quantity=-1),
+    Node(x_pos=8, y_pos=8, item="Water Bottle", quantity=1)
 ]
 
 
@@ -623,10 +640,12 @@ alg = Algorithm()
 samplesystem = System(distancelimit=5)
 
 for node in nodelist:
+    print(f"Trying to add node {node.x_pos}, {node.y_pos} to the node system")
     samplesystem.addrequest(node)
-    
+
+print(f'Sample System is now all done and set with {samplesystem.numberofnodes} nodes')
 alg.setSystem(samplesystem)
 paths = alg.getPaths()
 
 for path in paths:
-    path.plotpath()
+    print(paths)

@@ -30,6 +30,7 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20),
             Column(
               children: [
                 LabelledTextField.readable(
@@ -46,7 +47,6 @@ class LoginPage extends StatelessWidget {
                 ),
               ],
             ),
-            
             OutlinedButton(
               onPressed: () {
                 authenticateUser(context);
@@ -56,7 +56,10 @@ class LoginPage extends StatelessWidget {
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.black,
               ),
-              child: const Text('Login'),
+              child: const Text(
+                'Login',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 1.0),
