@@ -79,7 +79,7 @@ class providePage extends StatelessWidget {
                   children: List.generate(items.length, (context) {
                 return Item(
                   label1: items[context][0],
-                  label2: 'Description',
+                  label2: 'In stock',
                   image: Image.asset(
                     items[context][1],
                     width: 100,

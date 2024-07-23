@@ -75,7 +75,7 @@ class requestPage extends StatelessWidget {
                 children: items
                     .map((item) => Item(
                           label1: item[0],
-                          label2: 'Description',
+                          label2: 'In stock',
                           image: Image.asset(
                             item[1],
                             width: 100,
