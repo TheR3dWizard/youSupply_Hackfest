@@ -19,7 +19,7 @@ class providePage extends StatelessWidget {
       backgroundColor: Colors.black12,
       floatingActionButton: ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/cart');
+            Navigator.pushNamed(context, '/cartstatic');
           },
           child: SizedBox(
             width: 100,
