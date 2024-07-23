@@ -582,6 +582,26 @@ Future<List<Map<String, dynamic>>> readCart() async {
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
 
+//item id and item name map
+
+Map<String,String> itemnameToID = {
+'c8b1d27f-e9c4-4c28-a7db-332daba4ac42': 'First Aid Kit',
+'9fdb9531-29d9-41e6-aeb3-5e1fdf79c867': 'Water Bottles',
+'6674ea86-9340-4a81-bf7a-d583b054f7a0': 'Blankets',
+'619d8b87-a67c-4769-bbf0-839715a3603d': 'Flashlights',
+'754788e4-a944-44d3-ad80-f3e5c6a8b689': 'Food Packages'
+};
+
+List<String> items = [
+  'First Aid Kit',
+  'Water Bottles',
+  'Blankets',
+  'Flashlights',
+  'Food Packages'
+
+];
+
+
 Future<bool> login(String username, String password, String role) async {
   print("USERNAME: $username, PASSWORD: $password, ROLE: $role");
   var url = Uri.parse('$baseUrl/authenticate/login');
@@ -634,28 +654,41 @@ Future<bool> addnode(String itemtype, int quantity) async {
 Future<void> sendcart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  print("File before sending: ${printFile()}");
+  print("File before sending:");
+  printFile();
   List<String> coords = await getCoords();
   json['cart'].forEach((element) async {
     if (element['quantity'] == 0) {
       return;
     }
-    var url = Uri.parse('$baseUrl/add/request');
-    var response = await http.post(url, body: {
+    var url = Uri.parse('$baseUrl/add/node');
+    print("Item: ${element['item']}, quantity: ${element['quantity']},xposition: ${coords[0]}, yposition: ${coords[1]}");
+    var response = await http.post(url, body: jsonEncode({
       'item': element['item'],
-      'quantity': element['quantity'],
-      'xposition': coords[0],
-      'yposition': coords[1],
-    }
+      'quantity': element['quantity'].toString(),
+      'xposition': coords[0].toString(),
+      'yposition': coords[1].toString(),
+    })
     // ,headers: {"Content-Type": "application/json"}
     );
-
+    print(jsonEncode({
+      'item': element['item'],
+      'quantity': element['quantity'].toString(),
+      'xposition': coords[0].toString(),
+      'yposition': coords[1].toString(),
+    }));
     if (response.statusCode == 200) {
       print("Successfully sent ${element['item']}");
       removeFromCart(element['item']);
     }
+    else{
+      print("Failed to send ${element['item']}");
+      print(response.body);
+    }
   });
-  print("File after sending: ${printFile()}");
+  print("File after sending:");
+  printFile();
+
 }
 
 Future<Map<String,dynamic>> loadPaths() async {

@@ -6,9 +6,10 @@ class requestPage extends StatelessWidget {
 
   final List<dynamic> items = [
     ['Drinking Water', 'assets/water.jpg'],
-    ['Rice', 'assets/rice.jpg'],
-    ['Milk', 'assets/milk_bottle.jpg'],
-    ['Bread', 'assets/bread.jpg'],
+    ['Flashlight', 'assets/flashlight.jpg'],
+    ['Blanket', 'assets/blanket.jpg'],
+    ['First Aid Kit', 'assets/firstaidkit.jpg'],
+    ['Food Packages', 'assets/foodparcel.jpg']
   ];
 
   @override

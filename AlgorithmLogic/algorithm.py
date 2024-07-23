@@ -108,7 +108,7 @@ class Cluster:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, centerx=0, centery=0, usegooglemapsapi=True) -> None:
+    def __init__(self, centerx=0, centery=0, usegooglemapsapi=False) -> None:
         self.identifier = str(uuid.uuid4())
         self.centerxpos = centerx
         self.centerypos = centery

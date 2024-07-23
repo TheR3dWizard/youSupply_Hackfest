@@ -71,6 +71,10 @@ flutter:
     - assets/account.json
     - assets/milk_bottle.jpg
     - assets/bread.jpg
+    - assets/blanket.jpg
+    - assets/foodparcel.jpg
+    - assets/firstaidkit.jpg
+    - assets/flashlight.jpg
     #- .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
