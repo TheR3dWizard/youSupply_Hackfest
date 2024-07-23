@@ -15,11 +15,20 @@ class requestPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black12,
-      floatingActionButton: IconButton.filled(
+      floatingActionButton: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/cart');
           },
-          icon: const Icon(Icons.card_travel)),
+          child: SizedBox(
+            width: 100,
+            height: 50,
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_cart_checkout_outlined),
+                Text('View Cart'),
+              ],
+            ),
+          )),
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
         centerTitle: true,

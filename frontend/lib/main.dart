@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/available': (context) => available(),
         '/claimed': (context) => claimed(),
         '/completed': (context) => completed(),
+        '/cart': (context) => Cartpage(),
       },
       title: 'youSupply',
       theme: ThemeData(

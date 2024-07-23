@@ -69,3 +69,7 @@ class _CartpageState extends State<Cartpage> {
     );
   }
 }
+
+void main() {
+  runApp(MaterialApp(home: Cartpage()));
+}
