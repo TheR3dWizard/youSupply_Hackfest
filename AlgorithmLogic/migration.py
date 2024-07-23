@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pprint
 from services import GoogleAPI
 import numpy as np
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, QhullError
 
 
 class Node:
@@ -49,7 +49,7 @@ class Node:
         ) ** 0.5
 
     def __repr__(self):
-        return f"\t{self.x_pos},{self.y_pos},{self.itemtype},{self.quantity};\t"
+        return self.__str__()
 
     def __gtr__(self, other):
         return self.quantity > other.quantity
@@ -63,6 +63,8 @@ class Path:
         self.path = path
         self.distance = distance
         self.identifier = str(uuid.uuid4())
+        self.xposition = path[0].x_pos
+        self.yposition = path[0].y_pos
 
     def __repr__(self) -> str:
         return f"Path: {self.path} with distance {self.distance}"
@@ -122,12 +124,13 @@ class Cluster:
         self.inventory = defaultdict(int)
         self.usegooglemapsapi = usegooglemapsapi
         self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
-        self.allnodes = []
+        self.allnodes = np.empty((0, 2))
         self.convexhullobject = None
         
     def addnode(self, newnode: Node):
-        self.allnodes.append([newnode.x_pos, newnode.y_pos])
-        self.updatecentroid(newnode.x_pos, newnode.y_pos)
+        # self.allnodes.append([newnode.x_pos, newnode.y_pos])
+        self.allnodes = np.vstack([self.allnodes, [newnode.x_pos, newnode.y_pos]]) 
+        self.updatecentroid()
         
         if newnode.nodetype == "Source":
             self.sourcenodes.append(newnode)
@@ -148,26 +151,26 @@ class Cluster:
         else:
             raise ValueError("Node not in cluster")
 
-    def updatecentroid(self, addxpos = 0, addypos = 0):
-        if len(self.allnodes) == 1:
-            self.centerxpos = self.allnodes[0][0]
-            self.centerypos = self.allnodes[0][1]
-            return
-        elif len(self.allnodes) == 2:
-            self.centerxpos = (self.allnodes[0][0] + self.allnodes[1][0]) / 2
-            self.centerypos = (self.allnodes[0][1] + self.allnodes[1][1]) / 2
-            return
+    def updatecentroid(self):
+        if len(self.allnodes) > 2:
+            try:
+                self.convexhullobject = ConvexHull(self.allnodes)
+                hull_points = self.allnodes[self.convexhullobject.vertices]
+                self.centerxpos, self.centerypos = self.polygon_centroid(hull_points)
+            except QhullError:
+                self.centerxpos, self.centerypos = np.mean(self.allnodes, axis=0)
         else:
-            if not self.convexhullobject:
-                self.convexhullobject = ConvexHull(self.allnodes, incremental=True)
-            
-            # print(f'before adding points {addxpos}, {addypos}')
-            self.convexhullobject.add_points([[addxpos, addypos]])
-            # print(f'after adding points')
-            self.centerxpos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 0])
-            self.centerypos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 1])
+            self.centerxpos, self.centerypos = np.mean(self.allnodes, axis=0)
 
-            return
+    def polygon_centroid(self, points):
+        if len(points) == 1:
+            return points[0]
+        x = points[:, 0]
+        y = points[:, 1]
+        a = np.sum(x[:-1] * y[1:] - x[1:] * y[:-1]) / 2
+        cx = np.sum((x[:-1] + x[1:]) * (x[:-1] * y[1:] - x[1:] * y[:-1])) / (6 * a)
+        cy = np.sum((y[:-1] + y[1:]) * (x[:-1] * y[1:] - x[1:] * y[:-1])) / (6 * a)
+        return np.array([cx, cy])
     '''
     For a more accurate calculation of the centroid after adding each new node, you would need to keep track of the total number of nodes and use that in your calculation. Here's a corrected approach in pseudocode:
 
@@ -648,4 +651,6 @@ alg.setSystem(samplesystem)
 paths = alg.getPaths()
 
 for path in paths:
-    print(paths)
+    print("Printing path")
+    for node in path.getPath():
+        print(node)
