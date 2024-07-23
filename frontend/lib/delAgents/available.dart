@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/delAgents/MapView.dart';
-import 'package:frontend/utilities.dart';
 
 class DeliveryDetails {
   final String fromLoc;
@@ -19,12 +18,13 @@ class DeliveryDetailsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //random data
+    // Sample data for toLocations and resourcesToCollect
     List<String> toLocations = [
       '456 Elm St, Shelbyville',
       '789 Oak St, Capital City',
       '321 Pine St, Springfield',
     ];
+
     List<String> resourcesToCollect = [
       '5 Bags of Rice',
       '10 Bottles of Water',
@@ -52,7 +52,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      '${deliveryDetails.fromLoc}',
+                      deliveryDetails.fromLoc,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 18,
@@ -84,7 +84,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
                       ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
             Spacer(),
@@ -120,19 +120,19 @@ class DeliveryDetailsWidget extends StatelessWidget {
   }
 }
 
-class available extends StatefulWidget {
+class Available extends StatefulWidget {
   final List<DeliveryDetails> deliveryDetailsList;
 
-  const available({
+  const Available({
     super.key,
     required this.deliveryDetailsList,
   });
 
   @override
-  State<available> createState() => _availableState();
+  State<Available> createState() => _AvailableState();
 }
 
-class _availableState extends State<available> {
+class _AvailableState extends State<Available> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +159,7 @@ class _availableState extends State<available> {
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 2),
                 child: Container(
                   height: 300,
-                  width: 410,
+                  width: double.infinity, // Adjusted width to fit the screen
                   decoration: BoxDecoration(
                     color: Colors.grey,
                     borderRadius: BorderRadius.circular(10),

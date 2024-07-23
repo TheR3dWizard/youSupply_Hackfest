@@ -15,7 +15,8 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  List<bool> _completedStatus = [];
+  late List<bool> _completedStatus;
+  bool _acceptPressed = false; // State variable to track Accept button press
 
   @override
   void initState() {
@@ -25,6 +26,8 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
+    final int length =
+        widget.toLocations.isNotEmpty ? widget.toLocations.length : 0;
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -74,12 +77,16 @@ class _MapViewState extends State<MapView> {
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: widget.toLocations.length,
+                      itemCount: length,
                       itemBuilder: (context, index) {
                         String currentLocation = widget.toLocations[index];
                         String currentResource =
                             widget.resourcesToCollect[index];
                         bool isCompleted = _completedStatus[index];
+
+                        String nextLocation = index < length - 1
+                            ? widget.toLocations[index + 1]
+                            : 'End';
 
                         return Container(
                           padding: const EdgeInsets.all(10.0),
@@ -95,8 +102,9 @@ class _MapViewState extends State<MapView> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      '$currentLocation',
+                                      currentLocation,
                                       style: TextStyle(
+                                        fontWeight: FontWeight.bold,
                                         fontSize: 18,
                                         color: Colors.white70,
                                       ),
@@ -110,10 +118,9 @@ class _MapViewState extends State<MapView> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      index < widget.toLocations.length - 1
-                                          ? widget.toLocations[index + 1]
-                                          : 'End',
+                                      nextLocation,
                                       style: TextStyle(
+                                        fontWeight: FontWeight.bold,
                                         fontSize: 18,
                                         color: Colors.white70,
                                       ),
@@ -124,61 +131,73 @@ class _MapViewState extends State<MapView> {
                               ),
                               SizedBox(height: 10),
                               Text(
-                                '$currentResource',
+                                currentResource,
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.white60,
                                 ),
                               ),
-                              SizedBox(height: 10),
-                              Align(
-                                alignment: Alignment.bottomRight,
-                                child: isCompleted
-                                    ? Container(
-                                        color: Colors.green,
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        child: Text(
-                                          'Completed',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
+                              SizedBox(height: 5),
+                              if (_acceptPressed) // Conditionally show the button
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: isCompleted
+                                      ? Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 5),
+                                          child: Text(
+                                            'Completed',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w300,
+                                            ),
+                                          ),
+                                        )
+                                      : OutlinedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              _completedStatus[index] = true;
+                                            });
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            backgroundColor: Color.fromARGB(
+                                                255, 0, 255, 255),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 15),
+                                          ),
+                                          child: Text(
+                                            'Mark as Completed',
+                                            style: TextStyle(
+                                              color: Colors.black87,
+                                            ),
                                           ),
                                         ),
-                                      )
-                                    : ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _completedStatus[index] = true;
-                                          });
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          //primary: Colors.blue,
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 15),
-                                        ),
-                                        child: Text('Mark as Completed'),
-                                      ),
-                              ),
+                                ),
                             ],
                           ),
                         );
                       },
                     ),
                   ),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        //add func
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                  if (!_acceptPressed) // Conditionally show the Accept button
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _acceptPressed = true;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 30),
+                          shape: ContinuousRectangleBorder(),
+                          minimumSize: Size(450, 25),
+                        ),
+                        child: Text('Accept'),
                       ),
-                      child: Text('Accept'),
                     ),
-                  ),
                 ],
               ),
             ),
