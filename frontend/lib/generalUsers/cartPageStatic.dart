@@ -17,7 +17,7 @@ class _CartpageStaticState extends State<CartpageStatic> {
     return Scaffold(
       appBar: AppBar(),
       body: FutureBuilder<List<dynamic>>(
-        future: readCart(),
+        future: readCartLocal(),
         builder: (context,snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -72,11 +72,11 @@ class _CartpageStaticState extends State<CartpageStatic> {
   }
 
   Future<List<Map<String, dynamic>>> readCartLocal() async {
-  List<Map<String, dynamic>> cart = jsonDecode('[{item: water bottle, quantity: 3}, {item: flashlight, quantity: -1}, {item: Drinking Water, quantity: -4}, {item: Rice, quantity: 1}]');
-  
+  List<dynamic> cartDynamic = jsonDecode('[{"item": "water bottle", "quantity": 3}, {"item": "flashlight", "quantity": -1}, {"item": "Drinking Water", "quantity": -4}, {"item": "Rice", "quantity": 1}]');
+  List<Map<String, dynamic>> cart = cartDynamic.map((item) => item as Map<String, dynamic>).toList();
 
   return cart;
-}
+  }
 }
 
 void main() {
