@@ -16,11 +16,16 @@ class providePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black12,
-      floatingActionButton: IconButton.filled(
+      floatingActionButton: ElevatedButton(
           onPressed: () {
             Navigator.pushNamed(context, '/cart');
           },
-          icon: const Icon(Icons.card_travel)),
+          child: Row(
+            children: [
+              const Icon(Icons.card_travel),
+              Text('View Cart'),
+            ],
+          )),
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
         centerTitle: true,
@@ -120,7 +125,7 @@ class _ItemState extends State<Item> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 100),
+        constraints: const BoxConstraints(minHeight: 100, minWidth: 200),
         decoration: const BoxDecoration(
             color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
