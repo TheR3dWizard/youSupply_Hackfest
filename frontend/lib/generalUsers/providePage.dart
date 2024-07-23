@@ -233,7 +233,7 @@ class _ItemState extends State<Item> {
                           foregroundColor: Colors.black,
                           backgroundColor: Color.fromARGB(255, 0, 225, 255),
                         ),
-                        child: const Text('Add to cart'),
+                        child: const Text('Provide'),
                       ),
                       SizedBox(width: 10),
                       OutlinedButton(
