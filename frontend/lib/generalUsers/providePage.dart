@@ -20,11 +20,15 @@ class providePage extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, '/cart');
           },
-          child: Row(
-            children: [
-              const Icon(Icons.card_travel),
-              Text('View Cart'),
-            ],
+          child: SizedBox(
+            width: 100,
+            height: 50,
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_cart_checkout_outlined),
+                Text('View Cart'),
+              ],
+            ),
           )),
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
