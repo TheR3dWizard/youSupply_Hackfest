@@ -76,7 +76,11 @@ class providePage extends StatelessWidget {
                 return Item(
                   label1: items[context][0],
                   label2: 'Description',
-                  image: Image.asset(items[context][1]),
+                  image: Image.asset(
+                    items[context][1],
+                    width: 100,
+                    height: 100,
+                  ),
                 );
               })),
               SizedBox(height: 7),
