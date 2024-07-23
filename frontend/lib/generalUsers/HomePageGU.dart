@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/utilities.dart';
 import 'package:frontend/settings.dart';
+import 'package:frontend/utilities.dart';
 
 // This is the type used by the popup menu below.
 enum GUMenu { History, Settings, ProfileView, SwitchAccount, Logout }
@@ -35,16 +35,14 @@ class homePageGU extends StatelessWidget {
                       // Navigate to '/settings' or perform related action
                       break;
                     case GUMenu.ProfileView:
-                      // Navigate to '/profile' or perform related action
                       Navigator.pushNamed(context, '/profile');
-
-                      // Navigate to '/profile' or perform related action
                       // Navigate to '/profile' or perform related action
                       break;
                     case GUMenu.SwitchAccount:
                       // Navigate to '/switch_account' or perform related action
                       break;
                     case GUMenu.Logout:
+                      Navigator.pushNamed(context, '/');
                       // Navigate to '/logout' or perform related action
                       break;
                     default:
@@ -125,7 +123,6 @@ class homePageGU extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Container(
-              constraints: BoxConstraints(maxWidth: 500),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -144,6 +141,14 @@ class homePageGU extends StatelessWidget {
                       route: '/provide',
                       onpressed: () {
                         Navigator.pushNamed(context, '/provide');
+                      }),
+                  SizedBox(width: 20),
+                  Select(
+                      label: 'Cart', // Navigate to provide page
+                      icon: Icons.card_travel,
+                      route: '/cart',
+                      onpressed: () {
+                        Navigator.pushNamed(context, '/cart');
                       }),
                 ],
               ),

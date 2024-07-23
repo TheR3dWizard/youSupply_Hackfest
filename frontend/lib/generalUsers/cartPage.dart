@@ -35,7 +35,29 @@ class _CartpageState extends State<Cartpage> {
           ),
           OutlinedButton(
               onPressed: () {
-                sendcart();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Accept Cart"),
+                      content: const Text(
+                          "Are you sure you want to accept this cart?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Cancel")),
+                        TextButton(
+                            onPressed: () {
+                              sendcart();
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Accept Cart"))
+                      ],
+                    );
+                  },
+                );
               },
               child: const Text("Accept Cart"))
         ],
