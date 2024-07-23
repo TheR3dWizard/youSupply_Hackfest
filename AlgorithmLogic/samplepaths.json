@@ -15,8 +15,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
@@ -36,29 +60,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
                 "latitude": 37.7749,
                 "longitude": -122.4194
-            }
-            
-        ],
-        "2": [
+            },
             {
-                "itemtype":"water",
-                "quantity":10,
+                "itemtype":"clothing",
+                "quantity":-3,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             },
             {
                 "itemtype":"food",
-                "quantity":5,
-                "latitude": 37.7749,
-                "longitude": -122.4194
-            },
-            {
-                "itemtype":"clothing",
-                "quantity":3,
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
@@ -78,12 +105,35 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
                 "latitude": 37.7749,
                 "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
+                "latitude": 37.7749,
+                "longitude": -122.4194
             }
-            
         ],
         "4": [
             {
@@ -99,8 +149,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
@@ -120,8 +194,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
@@ -141,8 +239,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
@@ -162,12 +284,35 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
                 "latitude": 37.7749,
                 "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
+                "latitude": 37.7749,
+                "longitude": -122.4194
             }
-            
         ],
         "8": [
             {
@@ -183,8 +328,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
@@ -204,8 +373,32 @@
                 "longitude": -122.4194
             },
             {
+                "itemtype":"water",
+                "quantity":-7,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"water",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
                 "itemtype":"clothing",
                 "quantity":3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"clothing",
+                "quantity":-3,
+                "latitude": 37.7749,
+                "longitude": -122.4194
+            },
+            {
+                "itemtype":"food",
+                "quantity":-5,
                 "latitude": 37.7749,
                 "longitude": -122.4194
             }
