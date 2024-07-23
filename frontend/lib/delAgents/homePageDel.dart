@@ -27,10 +27,10 @@ class homePageDel extends StatelessWidget {
                   // Handle navigation or other actions based on the selected menu item
                   switch (selectedMenu) {
                     case DeliveryMenu.History:
-                      
                       break;
                     case DeliveryMenu.Settings:
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => settings()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => settings()));
                     case DeliveryMenu.ProfileView:
                       Navigator.pushNamed(context, '/profile');
                       break;
