@@ -9,6 +9,7 @@ import 'signUpPage.dart';
 import 'generalUsers/providePage.dart';
 import 'generalUsers/requestPage.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/cartPage.dart';
 import 'delAgents/history.dart';
 import 'settings.dart';
 import 'profile.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         '/available': (context) => available(),
         '/claimed': (context) => claimed(),
         '/completed': (context) => completed(),
+        '/cart': (context) => Cartpage(),
       },
       title: 'youSupply',
       theme: ThemeData(
