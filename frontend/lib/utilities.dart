@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 import 'package:path_provider/path_provider.dart';
@@ -769,9 +770,9 @@ Future<List<LatLng>> loadLocations(int index) async {
   
 }
 
-List<Marker> _setMarkers(List<LatLng> coordinates) {
-
-  List<Marker> _markers = [];
+Future<Set<Marker>> setMarkers(int index) async {
+  List<LatLng> coordinates = await loadLocations(index);
+  Set<Marker> _markers = {};
   for (int i = 0; i < coordinates.length; i++) {
     _markers.add(
       Marker(
@@ -882,4 +883,21 @@ Future<String> getAddress(double lat,double lng) async {
   List<Placemark> placemarks = await placemarkFromCoordinates(lat,lng);
   Placemark place = placemarks[0];
   return place.name ?? place.locality ?? place.subLocality ?? place.administrativeArea ?? "Unknown";
+}
+
+Future<Set<Polyline>> setPolylines(int index) async {
+  List<LatLng> coordinates = await loadLocations(index);
+  Set<Polyline> _polylines = {};
+  List<LatLng> polylineCoordinates = [];
+  for (int i = 0; i < coordinates.length; i++) {
+    polylineCoordinates.add(coordinates[i]);
+  }
+  _polylines.add(Polyline(
+    polylineId: PolylineId('polyline_$index'),
+    color: Colors.blue,
+    points: polylineCoordinates,
+    width: 5,
+  ));
+
+  return _polylines;
 }

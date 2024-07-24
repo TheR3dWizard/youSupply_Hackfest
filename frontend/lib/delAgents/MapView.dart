@@ -6,6 +6,7 @@ import 'package:frontend/utilities.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 class MapView extends StatefulWidget {
   final int pathIndex;
 
@@ -33,11 +34,13 @@ class _MapViewState extends State<MapView> {
       Completer<GoogleMapController>();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    target: LatLng(11.025155757439432, 77.00250346910578),
+    zoom: 10.4746,
   );
 
-  
+  PolylinePoints polylinePoints = PolylinePoints();
+  final List<Polyline> polyline = [];
+  List<LatLng> routeCoords = [];
 
   @override
   Widget build(BuildContext context) {
@@ -74,15 +77,32 @@ class _MapViewState extends State<MapView> {
                 FutureBuilder<Set<Marker>>(
                   future: setMarkers(widget.pathIndex),
                   builder: (context,snapshot) {
-                    return SizedBox(
-                      height: 200,
-                      child: GoogleMap(
-                        mapType: MapType.hybrid,
-                        initialCameraPosition: _kGooglePlex,
-                        onMapCreated: (GoogleMapController controller) {
-                          _controller.complete(controller);
-                        },
-                      ),
+                    return FutureBuilder(
+                      future: setPolylines(widget.pathIndex),
+                      builder: (context,snapshot2) {
+                        if (snapshot.connectionState == ConnectionState.waiting || snapshot2.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError || snapshot2.hasError) {
+                          print(snapshot.error);
+                          print(snapshot2.error);
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else if (!snapshot.hasData || !snapshot2.hasData) {
+                          return Center(child: Text('No data available'));
+                        }
+                        return SizedBox(
+                          height: 200,
+                          child: GoogleMap(
+                            mapType: MapType.hybrid,
+                            initialCameraPosition: _kGooglePlex,
+                            onMapCreated: (GoogleMapController controller) {
+                              _controller.complete(controller);
+                            },
+                            markers: snapshot.data ?? {},
+                            polylines: snapshot2.data!,
+                            
+                          ),
+                        );
+                      }
                     );
                   }
                 ),
