@@ -712,7 +712,7 @@ Future<void> sendcart() async {
         })
         ,headers: {"Content-Type": "application/json"}
         );
-
+    await Future.delayed(Duration(seconds: 1));
     print(jsonEncode({
           'itemid': itemid,
           'quantity': element['quantity'],
