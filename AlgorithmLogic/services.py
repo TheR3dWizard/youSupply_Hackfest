@@ -62,10 +62,15 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
 
-    def updateclustercentroid(self, clusterid: str, lat: float, lon: float):
-        query = f"UPDATE clusters SET latitude={lat}, longitude={lon} WHERE cluster_id='{clusterid}'"
-        self.cursor.execute(query)
-        self.connection.commit()
+    def updateclustercentroid(self, clusterid, newlat, newlon):
+        query = f"UPDATE clusters SET latitude = {newlat}, longitude = {newlon} WHERE id = {clusterid}"
+        try:
+            for result in self.connection.cmd_query_iter(query):
+                pass  # Iterate through results to ensure all queries are executed
+            self.connection.commit()
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+            self.connection.rollback()
 
     def removecluster(self, clusterid: str):
         query = f"DELETE FROM clusters WHERE cluster_id='{clusterid}'"
@@ -79,6 +84,21 @@ class DatabaseObject:
 
     def removeresource(self, resourceid: str):
         query = f"DELETE FROM resources WHERE resource_id='{resourceid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def insertpath(self, pathid: str, pathobject: str):
+        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', \"{pathobject}\")"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def removepath(self, pathid: str):
+        query = f"DELETE FROM pathstore WHERE path_id='{pathid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def truncatepath(self):
+        query = f"TRUNCATE TABLE pathstore"
         self.cursor.execute(query)
         self.connection.commit()
 
@@ -162,7 +182,16 @@ class ChromaDBAgent:
     
     # select and display all the vectors in the collection
     def getallvectors(self):
-        return self.collection.list()
+        return self.collection.get()['ids']
+    
+    def numberofvectors(self):
+        return len(self.collection.get()['ids'])
+
+    def whatallcollectionhas(self):
+        return dir(self.collection)
+
+    def whatallclienthas(self):
+        return dir(self.client)
 
 if __name__ == "__main__":
     vdb = ChromaDBAgent()
@@ -174,4 +203,8 @@ if __name__ == "__main__":
     vdb.insertpathobject("100", [100, 100])
     vdb.insertpathobject("200", [200, 200])
 
-    print(vdb.getnearestneighbors([1, 1],2))
+    print("What all collection")
+    print(vdb.getallvectors())
+    
+    vdb.clearindex()
+    print(vdb.getallvectors())

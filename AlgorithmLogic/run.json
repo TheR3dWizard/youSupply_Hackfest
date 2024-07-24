@@ -1,0 +1,9 @@
+{
+    "apps": [
+        {
+            "name": "yousupply-algorithm-backend",
+            "script": "server.py",
+            "interpreter": "/home/akashshanmugaraj/hackfestmain/AlgorithmLogic/hackfest/bin/python"
+        }
+    ]
+}
