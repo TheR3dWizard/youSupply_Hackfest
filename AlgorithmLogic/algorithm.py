@@ -6,7 +6,9 @@ import pprint
 from services import GoogleAPI
 import numpy as np
 from scipy.spatial import ConvexHull, QhullError
+from services import GoogleAPI
 
+globalgooglemapsobject = GoogleAPI()
 
 class Node:
     """
@@ -58,6 +60,7 @@ class Node:
 
     def export(self) -> dict:
         return {
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.x_pos, self.y_pos]),
             "itemtype": self.itemtype,
             "quantity": self.quantity,
             "latitude": self.x_pos,
@@ -83,14 +86,14 @@ class Path:
         return str({
             "pathidentifier": self.identifier,
             "distance": self.distance,
-            "inwords": "Yet to be updated"
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition])
         })
     
     def export(self):
         return {
             "pathidentifier": self.identifier,
             "distance": self.distance,
-            "inwords": "Yet to be updated"
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition])
         }
         
     def getPath(self):

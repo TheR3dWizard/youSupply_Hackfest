@@ -6,7 +6,7 @@ import mysql.connector
 from chromadb import Client
 from chromadb.config import Settings
 from chromadb.api import Collection
-
+from pprint import pprint
 load_dotenv()
 
 
@@ -156,6 +156,21 @@ class GoogleAPI:
 
         return output
 
+    def geocodecoordinatestoaddress(self, coordinatelist:List[float]):
+        endpoint = "https://maps.googleapis.com/maps/api/geocode/json"
+        print("Attempting to geocode coordinates", coordinatelist)
+
+        params = {
+            "key": self.api_key,
+            "latlng": f"{coordinatelist[0]},{coordinatelist[1]}",
+        }
+
+        response = requests.get(endpoint, params=params)
+        if response.status_code != 200:
+            raise Exception(f"Error making request: {response.status_code}")
+
+        return response.json()['results'][0]['formatted_address'][:26]
+
 class ChromaDBAgent:
     def __init__(self) -> None:
         self.client = Client(Settings())
@@ -192,19 +207,3 @@ class ChromaDBAgent:
 
     def whatallclienthas(self):
         return dir(self.client)
-
-if __name__ == "__main__":
-    vdb = ChromaDBAgent()
-    vdb.insertpathobject("1", [1, 1])
-    vdb.insertpathobject("2", [2, 2])
-    vdb.insertpathobject("3", [3, 3])
-    vdb.insertpathobject("4", [4, 4])
-    vdb.insertpathobject("5", [5, 5])
-    vdb.insertpathobject("100", [100, 100])
-    vdb.insertpathobject("200", [200, 200])
-
-    print("What all collection")
-    print(vdb.getallvectors())
-    
-    vdb.clearindex()
-    print(vdb.getallvectors())

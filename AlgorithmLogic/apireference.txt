@@ -1,43 +1,39 @@
-{
-    "xposition": 20.989979,
-    "yposition": 53.004152,
+{ "nodelist":
+[{
+    "xposition": 10.991417,
+    "yposition": 77.004313,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": 10,
     "username": "JaneDoe"
-}
-
+},
 {
-    "xposition": 20.989979,
-    "yposition": 53.003152,
+    "xposition": 10.990018,
+    "yposition": 77.002040,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": 10,
     "username": "JaneDoe"
-}
-
+},
 {
-    "xposition": 20.989979,
-    "yposition": 53.007091,
+    "xposition": 10.991982,
+    "yposition": 77.008117,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": -20,
     "username": "JaneDoe"
-}
-
+},
 {
     "xposition": 42.989979,
     "yposition": 53.004152,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": -1,
     "username": "JaneDoe"
-}
-
+},
 {
     "xposition": 42.989979,
     "yposition": 53.004152,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": -1,
     "username": "JaneDoe"
-}
-
+},
 {
     "xposition": 42.989979,
     "yposition": 53.004152,
@@ -45,3 +41,4 @@
     "quantity": 2,
     "username": "JaneDoe"
 }
+]}
