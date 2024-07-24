@@ -3,8 +3,9 @@ from typing import List
 from dotenv import load_dotenv
 import os
 import mysql.connector
-from pinecone.grpc import PineconeGRPC as Pinecone
-from pinecone import ServerlessSpec
+from chromadb import Client
+from chromadb.config import Settings
+from chromadb.api import Collection
 
 load_dotenv()
 
@@ -135,47 +136,42 @@ class GoogleAPI:
 
         return output
 
-from pinecone.grpc import PineconeGRPC as Pinecone
-import os
-
-class VectorDatabaseObject:
+class ChromaDBAgent:
     def __init__(self) -> None:
-        self.pinecodeobject = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-        self.indexname = "pathobjects"
-        self.pathobject = self.pinecodeobject.Index(self.indexname)
+        self.client = Client(Settings())
+        self.collection_name = "path_objects"
+        if self.collection_name not in self.client.list_collections():
+            self.collection = self.client.create_collection(self.collection_name)
+        else:
+            self.collection = self.client.get_collection(self.collection_name)
     
     def insertpathobject(self, pathobjectid: str, coordinates):
         vectorobject = {
             "id": pathobjectid,
-            "values": coordinates
+            "vector": coordinates
         }
         
-        self.pathobject.upsert(vectors=[
-        vectorobject
-        ])
-        
-    def removepathobjects(self):
-        for ids in self.pathobject.list():
-            self.pathobject.delete(ids=ids)
+        self.collection.upsert(vectorobject["id"], vectorobject["vector"])
     
-    
-    # get neerest neighbors by passing the coordinates of the point
     def getnearestneighbors(self, coordinates, kval=5):
-        return self.pathobject.query(vector=coordinates, top_k=kval)
+        return self.collection.query(coordinates, n_results=kval)['ids']
 
     def clearindex(self):
-        self.pinecodeobject.delete_index(self.indexname)
-        # After deleting the index, recreate it
-        self.pinecodeobject.create_index(self.indexname,2,ServerlessSpec(cloud="aws", region="us-east-1"),metric="euclidean")
-        self.pathobject = self.pinecodeobject.Index(self.indexname)
+        self.client.delete_collection(self.collection_name)
+        self.collection = self.client.create_collection(self.collection_name)
+    
+    # select and display all the vectors in the collection
+    def getallvectors(self):
+        return self.collection.list()
 
-vdb = VectorDatabaseObject()
-vdb.insertpathobject("1", [1, 1])
-vdb.insertpathobject("2", [2, 2])
-vdb.insertpathobject("3", [3, 3])
-vdb.insertpathobject("4", [4, 4])
-vdb.insertpathobject("5", [5, 5])
-vdb.insertpathobject("100", [100, 100])
-vdb.insertpathobject("200", [200, 200])
+if __name__ == "__main__":
+    vdb = ChromaDBAgent()
+    vdb.insertpathobject("1", [1, 1])
+    vdb.insertpathobject("2", [2, 2])
+    vdb.insertpathobject("3", [3, 3])
+    vdb.insertpathobject("4", [4, 4])
+    vdb.insertpathobject("5", [5, 5])
+    vdb.insertpathobject("100", [100, 100])
+    vdb.insertpathobject("200", [200, 200])
 
-print(vdb.getnearestneighbors([1, 1]))
+    print(vdb.getnearestneighbors([1, 1],2))
