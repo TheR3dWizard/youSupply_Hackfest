@@ -745,7 +745,7 @@ Future<Map<String, dynamic>> loadPaths() async {
   return json['paths'];
 }
 
-Future<List<String>> loadtoLocations(int index) async {
+Future<List<String>> loadLocations(int index) async {
   Map<String, dynamic> paths = await loadPaths();
   List<String> toLocations = [];
   paths.forEach((key, value) {
