@@ -33,61 +33,64 @@ class DeliveryDetailsWidget extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(7, 10, 7, 10),
         child: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.location_pin,
-                      color: Colors.red,
-                      size: 25,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      deliveryDetails.fromLoc,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 18,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.location_pin,
+                        color: Colors.red,
+                        size: 25,
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.directions,
-                      color: Colors.blue,
-                      size: 25,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Pickup within ',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 18,
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          deliveryDetails.fromLoc,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 18,
+                          ),
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${deliveryDetails.distanceFromDelAgent} km',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 18,
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.directions,
+                        color: Colors.blue,
+                        size: 25,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      SizedBox(width: 10),
+                      Text(
+                        'Pickup within ',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        '${deliveryDetails.distanceFromDelAgent} km',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            Spacer(),
             OutlinedButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        MapView(pathIndex: pathIndex), // Use pathIndex
+                    builder: (context) => MapView(pathIndex: pathIndex),
                   ),
                 );
               },
@@ -181,6 +184,7 @@ class _AvailableState extends State<Available> {
     );
   }
 }
+
 
 
 
