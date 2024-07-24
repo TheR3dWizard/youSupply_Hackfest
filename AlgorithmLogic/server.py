@@ -30,26 +30,46 @@ def home():
 @app.route("/add/node", methods=["POST"])
 def addrequest():
     body = request.get_json()
-
-    newnode = Node(
-        x_pos=body["xposition"],
-        y_pos=body["yposition"],
-        item=body["itemid"],
-        quantity=body["quantity"],
-    )
-    updatedcluster = centralsystemobject.addrequest(newnode)
+    '''
+    new body format
+    {
+        "nodelist": [
+            {
+                "xposition": 1,
+                "yposition": 1,
+                "itemid": "Flashlight",
+                "quantity": 1,
+                "username": "JohnDoe"
+            },
+            {
+                "xposition": 1,
+                "yposition": 1,
+                "itemid": "Flashlight",
+                "quantity": -1,
+                "username": "JohnDoe"
+            }
+        ]
+    }
+    '''
+    for node in body["nodelist"]:
+        newnode = Node(
+            x_pos=node["xposition"],
+            y_pos=node["yposition"],
+            item=node["itemid"],
+            quantity=node["quantity"],
+        )
+        updatedcluster = centralsystemobject.addrequest(newnode)
     
+        databaseobject.insertrequest(
+            requestid=newnode.identifier,
+            resourceid=node["itemid"],
+            clusterid=updatedcluster.identifier,
+            username=node["username"],
+            quantity=node["quantity"],
+            newlat=updatedcluster.centerxpos,
+            newlon=updatedcluster.centerxpos,
+        )
     computepathobject.setSystem(centralsystemobject)
-    databaseobject.insertrequest(
-        requestid=newnode.identifier,
-        resourceid=body["itemid"],
-        clusterid=updatedcluster.identifier,
-        username=body["username"],
-        quantity=body["quantity"],
-        newlat=updatedcluster.centerxpos,
-        newlon=updatedcluster.centerxpos,
-    )
-    
 
     masterpathlist = computepathobject.getPaths()
     
