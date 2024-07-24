@@ -267,7 +267,7 @@ class Option extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        width: 380,
+        width: 370,
         height: 80,
         decoration: const BoxDecoration(
             color: Color.fromARGB(255, 0, 225, 255),
@@ -543,12 +543,11 @@ Future<List<String>> getCoords() async {
   return [json['location']['xpos'], json['location']['ypos']];
 }
 
-List<String> getrandomCoords(){
+List<String> getrandomCoords() {
   Random random = new Random();
   double x = random.nextDouble() * 100;
   double y = random.nextDouble() * 100;
-  return [x.toString(),y.toString()];
-
+  return [x.toString(), y.toString()];
 }
 
 Future<void> removeFromCart(String item) async {
@@ -581,9 +580,10 @@ Future<List<Map<String, dynamic>>> readCart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
   List<dynamic> cartDynamic = json['cart'];
-  
+
   // Convert List<dynamic> to List<Map<String, dynamic>>
-  List<Map<String, dynamic>> cart = cartDynamic.map((item) => item as Map<String, dynamic>).toList();
+  List<Map<String, dynamic>> cart =
+      cartDynamic.map((item) => item as Map<String, dynamic>).toList();
 
   return cart;
 }
@@ -608,9 +608,7 @@ List<String> items = [
   'Blankets',
   'Flashlights',
   'Food Packages'
-
 ];
-
 
 Future<bool> login(String username, String password, String role) async {
   print("USERNAME: $username, PASSWORD: $password, ROLE: $role");
@@ -642,7 +640,9 @@ Future<bool> register(String username, String password, String phone,
     'password': password,
     'phone': phone,
     'role': role,
-  },headers: {"Content-Type": "application/json"});
+  }, headers: {
+    "Content-Type": "application/json"
+  });
 
   return response.statusCode == 200;
 }
@@ -655,7 +655,9 @@ Future<bool> addnode(String itemtype, int quantity) async {
     'yposition': coords[1],
     'itemtype': itemtype,
     'quantity': quantity,
-  },headers: {"Content-Type": "application/json"});
+  }, headers: {
+    "Content-Type": "application/json"
+  });
 
   return response.statusCode == 200;
 }
@@ -667,10 +669,9 @@ Future<void> sendcart() async {
   print("File before sending:");
   printFile();
 
-
   // List<String> coords = await getCoords();
-  List <String> coords = getrandomCoords();
-    
+  List<String> coords = getrandomCoords();
+
   json['cart'].forEach((element) async {
     if (element['quantity'] == 0) {
       return;
@@ -678,22 +679,24 @@ Future<void> sendcart() async {
 
     var url = Uri.parse('$baseUrl/add/node');
     String itemid = itemnameToID[element['item']] ?? "";
-    if(itemid == ""){
+    if (itemid == "") {
       print("Item ID not found for ${element['item']}");
       return;
     }
 
-    print("Item: ${element['item']}, quantity: ${element['quantity']},xposition: ${coords[0]}, yposition: ${coords[1]}");
+    print(
+        "Item: ${element['item']}, quantity: ${element['quantity']},xposition: ${coords[0]}, yposition: ${coords[1]}");
 
-    var response = await http.post(url, body: jsonEncode({
-      'itemid': itemid,
-      'quantity': element['quantity'].toString(),
-      'xposition': coords[0].toString(),
-      'yposition': coords[1].toString(),
-      'username': json['username'],
-    })
-    // ,headers: {"Content-Type": "application/json"}
-    );
+    var response = await http.post(url,
+        body: jsonEncode({
+          'itemid': itemid,
+          'quantity': element['quantity'].toString(),
+          'xposition': coords[0].toString(),
+          'yposition': coords[1].toString(),
+          'username': json['username'],
+        })
+        // ,headers: {"Content-Type": "application/json"}
+        );
 
     print(jsonEncode({
       'item': element['item'],
@@ -705,33 +708,28 @@ Future<void> sendcart() async {
     if (response.statusCode == 200) {
       print("Successfully sent ${element['item']}");
       removeFromCart(element['item']);
-    }
-    else{
+    } else {
       print("Failed to send ${element['item']}");
       print(response.body);
     }
-
-
   });
   print("File after sending:");
   printFile();
-
 }
 
-Future<Map<String,dynamic>> loadPaths() async {
+Future<Map<String, dynamic>> loadPaths() async {
   var url = Uri.parse('https://algorithm.akashshanmugaraj.com/sample/paths');
-  var response = await http.post(url,body: jsonEncode({
-  "username":"abc",
-  "password":"abc",
-  "userrole":"client"
-}),headers: {"Content-Type": "application/json"});
+  var response = await http.post(url,
+      body: jsonEncode(
+          {"username": "abc", "password": "abc", "userrole": "client"}),
+      headers: {"Content-Type": "application/json"});
   print(response.body);
-  Map<String,dynamic> json = jsonDecode(response.body);
+  Map<String, dynamic> json = jsonDecode(response.body);
   return json['paths'];
 }
 
 Future<List<String>> loadtoLocations(int index) async {
-  Map<String,dynamic> paths = await loadPaths();
+  Map<String, dynamic> paths = await loadPaths();
   List<String> toLocations = [];
   paths.forEach((key, value) {
     if (key == index.toString()) {
@@ -746,16 +744,16 @@ Future<List<String>> loadtoLocations(int index) async {
 }
 
 Future<List<String>> loadResourcesToCollect(int index) async {
-  Map<String,dynamic> paths = await loadPaths();
+  Map<String, dynamic> paths = await loadPaths();
   List<String> resourcesToCollect = [];
   paths.forEach((key, value) {
     if (key == index.toString()) {
       value.forEach((element) {
         String resource;
-        if (element['quantity'] < 0){
-          resource = "${-1 * element['quantity']}  $element['itemtype'] to deliver";
-        }
-        else{
+        if (element['quantity'] < 0) {
+          resource =
+              "${-1 * element['quantity']}  $element['itemtype'] to deliver";
+        } else {
           resource = "${element['quantity']}  $element['itemtype'] to collect";
         }
         resourcesToCollect.add(resource);
@@ -767,46 +765,74 @@ Future<List<String>> loadResourcesToCollect(int index) async {
 }
 
 //The data that should be passed into a single row of the routes widget
-//pass it in the constructor and access the data 
+//pass it in the constructor and access the data
 // the current format for everything is correct just use this data (if the data seems wrong just lmk and I can change it)
 class Tuple {
   String startLoc;
   String endLoc;
   String resources;
 
-  Tuple(this.startLoc,this.endLoc,this.resources);
+  Tuple(this.startLoc, this.endLoc, this.resources);
 }
 
 //It takes an index as the parameter and generates all the tuples for the path that is referenced by that index
 //The index is the key of the path in the paths json
 //Call this function via a future builder in the MapView widget and use a list view builder or smtng to create it (similar to cartpage)
+// Future<List<Tuple>> loadPathsTuple(int index) async {
+//   Map<String, dynamic> paths = await loadPaths();
+//   List<Tuple> pathList = [];
+//   paths.forEach((key, value) {
+//     if (key == index.toString()) {
+//       int length = value.length;
+//       for (int i = 1; i < length; i++) {
+//         String startLoc =
+//             value[i - 1]['latitude'] + ',' + value[i - 1]['longitude'];
+//         String endLoc = value[i]['latitude'] + ',' + value[i]['longitude'];
+//         String resources;
+//         if (value[i - 1]['quantity'] < 0) {
+//           resources =
+//               "${-1 * value[i]['quantity']}  ${value[i]['itemtype']} to deliver";
+//         } else {
+//           resources =
+//               "${value[i]['quantity']}  ${value[i]['itemtype']} to collect";
+//         }
+//         pathList.add(Tuple(startLoc, endLoc, resources));
+//       }
+//     }
+//   });
+
+//   return pathList;
+// }
 Future<List<Tuple>> loadPathsTuple(int index) async {
-  Map<String,dynamic> paths = await loadPaths();
+  Map<String, dynamic> paths = await loadPaths();
   List<Tuple> pathList = [];
   paths.forEach((key, value) {
     if (key == index.toString()) {
       int length = value.length;
-      for(int i = 1;i<length;i++){
-        String startLoc = value[i-1]['latitude'] + ',' + value[i-1]['longitude'];
+      for (int i = 1; i < length; i++) {
+        String startLoc =
+            value[i - 1]['latitude'] + ',' + value[i - 1]['longitude'];
         String endLoc = value[i]['latitude'] + ',' + value[i]['longitude'];
         String resources;
-        if (value[i-1]['quantity'] < 0){
-          resources = "${-1 * value[i]['quantity']}  ${value[i]['itemtype']} to deliver";
+        if (value[i - 1]['quantity'] < 0) {
+          resources =
+              "${-1 * value[i]['quantity']}  ${value[i]['itemtype']} to deliver";
+        } else {
+          resources =
+              "${value[i]['quantity']}  ${value[i]['itemtype']} to collect";
         }
-        else{
-          resources = "${value[i]['quantity']}  ${value[i]['itemtype']} to collect";
-        }
-        pathList.add(Tuple(startLoc,endLoc,resources));
+        pathList.add(Tuple(startLoc, endLoc, resources));
       }
     }
   });
 
+  print('Path List: $pathList');
   return pathList;
 }
 
 //This loads all the tuple lists for all the paths
 Future<List<List<Tuple>>> loadAllPathsTuple() async {
-  Map<String,dynamic> paths = await loadPaths();
+  Map<String, dynamic> paths = await loadPaths();
   List<List<Tuple>> allPaths = [];
   paths.forEach((key, value) async {
     allPaths.add(await loadPathsTuple(int.parse(key)));
@@ -818,13 +844,11 @@ Future<List<List<Tuple>>> loadAllPathsTuple() async {
 //This will load all the data needed in the available widget
 //Call this function via a future builder in the available widget and use a list view builder or smtng to create it (similar to cartpage)
 Future<List<List<String>>> loadPathsNames() async {
-  Map<String,dynamic> paths = await loadPaths();
+  Map<String, dynamic> paths = await loadPaths();
   List<List<String>> pathNames = [];
   paths.forEach((key, value) {
-    pathNames.add([
-      "${value[0]['latitude']},${value[0]['longitude']}",
-      "5 kms"
-      ]);
+    pathNames
+        .add(["${value[0]['latitude']},${value[0]['longitude']}", "5 kms"]);
   });
 
   return pathNames;
