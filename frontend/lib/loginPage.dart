@@ -65,7 +65,7 @@ class LoginPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 1.0),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/signupGU');
+                  Navigator.pushNamed(context, '/signup');
                 },
                 child: const Text(
                   'Sign Up',

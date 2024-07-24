@@ -512,7 +512,8 @@ Future<void> addToCart(String item, int quantity) async {
   bool found = false;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
 
-  print("File before adding: ${printFile()}");
+  print("File before adding:");
+  printFile();
   json['cart'].forEach((element) {
     if (element['item'] == item) {
       found = true;
@@ -526,7 +527,9 @@ Future<void> addToCart(String item, int quantity) async {
   }
 
   await file.writeAsString(jsonEncode(json));
-  print("File after adding: ${printFile()}");
+  print("File after adding: ");
+  printFile();
+
 }
 
 //empties the cart
@@ -580,7 +583,8 @@ Future<List<Map<String, dynamic>>> readCart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
   List<dynamic> cartDynamic = json['cart'];
-
+  print("File when reading cart");
+  printFile();
   // Convert List<dynamic> to List<Map<String, dynamic>>
   List<Map<String, dynamic>> cart =
       cartDynamic.map((item) => item as Map<String, dynamic>).toList();

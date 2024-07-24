@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
         '/accepted': (context) => accepted(),
         '/available': (context) => Available(),
         '/claimed': (context) => claimed(),
-        '/cartstatic': (context) => cartPageStatic(),
+        '/cartstatic': (context) => cartPage(),
         '/completed': (context) => completed(),
         '/cart': (context) => cartPage(),
         //   '/mapview': (context) => MapView(),
