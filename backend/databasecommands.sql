@@ -58,3 +58,8 @@ INSERT INTO requests (request_id, resource_id, cluster_id, username, quantity) V
 ('f3a2bfb8-26b5-44c0-848e-da40749bb967', '6674ea86-9340-4a81-bf7a-d583b054f7a0', '4d138cf0-9b41-4447-b11b-8f704d633ead', 'MikeSmith', 20),
 ('29437e02-8b27-4a5f-99e0-8a02144743ee', '754788e4-a944-44d3-ad80-f3e5c6a8b689', 'a4556046-d142-4474-afad-62bee3ecfd7a', 'abca', 40),
 ('4e91f029-fd81-444b-b374-222c47def861', 'c8b1d27f-e9c4-4c28-a7db-332daba4ac42', 'd8826fe1-04ec-4496-b908-3b8cec3f5f33', 'abc', 60);
+
+CREATE TABLE pathstore (
+    path_id CHAR(36) PRIMARY KEY,
+    pathjson TEXT
+);

@@ -81,6 +81,21 @@ class DatabaseObject:
         query = f"DELETE FROM resources WHERE resource_id='{resourceid}'"
         self.cursor.execute(query)
         self.connection.commit()
+    
+    def insertpath(self, pathid: str, pathobject: str):
+        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', \"{pathobject}\")"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def removepath(self, pathid: str):
+        query = f"DELETE FROM pathstore WHERE path_id='{pathid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def truncatepath(self):
+        query = f"TRUNCATE TABLE pathstore"
+        self.cursor.execute(query)
+        self.connection.commit()
 
 
 class GoogleAPI:
@@ -162,7 +177,16 @@ class ChromaDBAgent:
     
     # select and display all the vectors in the collection
     def getallvectors(self):
-        return self.collection.list()
+        return self.collection.get()['ids']
+    
+    def numberofvectors(self):
+        return len(self.collection.get()['ids'])
+
+    def whatallcollectionhas(self):
+        return dir(self.collection)
+
+    def whatallclienthas(self):
+        return dir(self.client)
 
 if __name__ == "__main__":
     vdb = ChromaDBAgent()
@@ -174,4 +198,8 @@ if __name__ == "__main__":
     vdb.insertpathobject("100", [100, 100])
     vdb.insertpathobject("200", [200, 200])
 
-    print(vdb.getnearestneighbors([1, 1],2))
+    print("What all collection")
+    print(vdb.getallvectors())
+    
+    vdb.clearindex()
+    print(vdb.getallvectors())
