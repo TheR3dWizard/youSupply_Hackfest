@@ -16,3 +16,4 @@ AlgorithmLogic/chroma_data
 .vscode
 frontend/android/app/src/main/AndroidManifest.xml
 frontend/lib/testfunctions.dart
+AlgorithmLogic/myalgorithm.py
