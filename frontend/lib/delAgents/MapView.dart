@@ -37,6 +37,8 @@ class _MapViewState extends State<MapView> {
     zoom: 14.4746,
   );
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,15 +71,20 @@ class _MapViewState extends State<MapView> {
             return Column(
               children: [
                 // Map Container
-                SizedBox(
-                  height: 200,
-                  child: GoogleMap(
-                    mapType: MapType.hybrid,
-                    initialCameraPosition: _kGooglePlex,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                  ),
+                FutureBuilder<Set<Marker>>(
+                  future: setMarkers(widget.pathIndex),
+                  builder: (context,snapshot) {
+                    return SizedBox(
+                      height: 200,
+                      child: GoogleMap(
+                        mapType: MapType.hybrid,
+                        initialCameraPosition: _kGooglePlex,
+                        onMapCreated: (GoogleMapController controller) {
+                          _controller.complete(controller);
+                        },
+                      ),
+                    );
+                  }
                 ),
                 // Routes List
                 Expanded(
