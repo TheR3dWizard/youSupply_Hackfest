@@ -1,10 +1,11 @@
-import random
 import uuid
-from typing import List, Optional
+from typing import List
 from collections import defaultdict
-from sklearn.cluster import KMeans, SpectralClustering
 import matplotlib.pyplot as plt
 import pprint
+from services import GoogleAPI
+import numpy as np
+from scipy.spatial import ConvexHull
 
 
 class Node:
@@ -16,6 +17,7 @@ class Node:
     def __init__(
         self, x_pos: int = 0, y_pos: int = 0, item: str = "", quantity: int = 1
     ):
+        self.identifier = str(uuid.uuid4())
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.itemtype = item
@@ -60,6 +62,7 @@ class Path:
     def __init__(self, path: List[Node], distance: float) -> None:
         self.path = path
         self.distance = distance
+        self.identifier = str(uuid.uuid4())
 
     def getPath(self):
         return self.path
@@ -95,7 +98,6 @@ class Cluster:
         - getter functions for class attributes
         - print function
 
-    TODO: Finalize centerxpos and centerypos
     TODO: Implement a metric to evaluate the cluster
 
     """
@@ -106,32 +108,40 @@ class Cluster:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, identifier: str = None) -> None:
-        if not identifier:
-            self.identifier = str(uuid.uuid4())
-
-        # TODO: figure out some way to get center of the cluster @OKeerthiKuttan
-        self.centerxpos = 0
-        self.centerypos = 0
+    def __init__(self, centerx=0, centery=0, usegooglemapsapi=False) -> None:
+        self.identifier = str(uuid.uuid4())
+        self.centerxpos = centerx
+        self.centerypos = centery
         self.sourcenodes = []
         self.sinknodes = []
         self.path: Path = None
         self.subpaths: List[Path] = []
         self.inventory = defaultdict(int)
+        self.usegooglemapsapi = usegooglemapsapi
         self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
 
-    def addsink(self, sinknode: Node):
-        if sinknode.nodetype != "Sink":
-            raise TypeError("Invalid Sink Node")
-        self.sinknodes.append(sinknode)
+        # TODO KEERTHI
+        # create a numpy array called allnodes hint: use self.allnodes during declaration
 
-    def addsource(
-        self, sourcenode: Node
-    ):  # TODO: Update centerxpos, centerypos after adding a source, center -> centroid
-        if sourcenode.nodetype != "Source":
-            raise TypeError("Invalid Source Node")
-        self.sourcenodes.append(sourcenode)
+        # TODO KEERTHI
+        # create a ConvexHull object for this cluster like self.convexhullobject 
+        # initalize it to the empty numpy array created previously 
+        # try incremental = True param in ConvexHull
 
+    def addnode(self, newnode: Node):
+        # TODO KERTHI repalce the below two lines with a trigger to update centroid 
+        self.centerypos = (self.centerypos + newnode.y_pos) / 2
+        self.centerxpos = (self.centerxpos + newnode.x_pos) / 2
+        
+        if newnode.nodetype == "Source":
+            self.sourcenodes.append(newnode)
+        elif newnode.nodetype == "Sink":
+            self.sinknodes.append(newnode)
+        else:
+            raise TypeError("Invalid Node Type")   
+        # TODO KERTHI
+        # extract the xposition and yposition from the Node object and append it to the all nodes array     
+        
     def removesource(self, sourcenode: Node):
         if sourcenode in self.sourcenodes:
             self.sourcenodes.remove(sourcenode)
@@ -143,6 +153,27 @@ class Cluster:
             self.sinknodes.remove(sinknode)
         else:
             raise ValueError("Node not in cluster")
+
+    # TODO KEERTHI
+    # create a function update centroid that essentially gets the vertices from the convexhull object 
+    # and recomputes the centroid 
+    # after recomputing it updates the value to the centerxpos and centerypos variables of the class
+    #                           self.centerxpos  and  self.centerypos
+    # hint: create function as def updatecentroid(self):
+
+    # also check if the below function would work
+
+    '''
+    For a more accurate calculation of the centroid after adding each new node, you would need to keep track of the total number of nodes and use that in your calculation. Here's a corrected approach in pseudocode:
+
+    1. Initialize `total_nodes` to 1 (assuming the first node is the starting point).
+    2. For each new node added:
+    - Increment `total_nodes` by 1.
+    - Update centerxpos to (centerxpos * (total_nodes - 1) + newnode.x_pos) / total_nodes.
+    - Update centerypos to (centerypos * (total_nodes - 1) + newnode.y_pos) / total_nodes.
+
+    This method ensures that each node is weighted appropriately in the calculation of the centroid.
+    '''
 
     def updateinventory(self):
         self.inventory = defaultdict(int)
@@ -284,16 +315,34 @@ class Cluster:
         return self.sourcenodes
 
     def getdistance(self, nodeobject: Node) -> int:
+        if self.usegooglemapsapi:
+            googleapi = GoogleAPI()
+            return googleapi.returndistancebetweentwopoints(
+                [self.centerxpos, self.centerypos], [nodeobject.x_pos, nodeobject.y_pos]
+            )
+
         return (
             abs(nodeobject.x_pos - self.centerxpos) ** 2
             + abs(nodeobject.y_pos - self.centerypos) ** 2
         ) ** 0.5
+
+    def getcenter(self):
+        return self.centerxpos, self.centerypos
 
     def printcluster(self) -> None:
         print(f"Cluster Identifier: {self.identifier}")
         print(f"Cluster centered at {self.centerxpos}, {self.centerypos}")
         print(f"Number of Source Nodes: {len(self.sourcenodes)}")
         print(f"Number of Sink Nodes: {len(self.sinknodes)}\n")
+
+    def getstats(self) -> dict:
+        statslist = dict()
+        statslist["Cluster Identifier"] = self.identifier
+        statslist["Number of Source Nodes"] = len(self.sourcenodes)
+        statslist["Number of Sink Nodes"] = len(self.sinknodes)
+        statslist["Center"] = (self.centerxpos, self.centerypos)
+
+        return statslist
 
 
 class System:
@@ -315,91 +364,69 @@ class System:
         return self.__str__()
 
     # can be initialized with a list of nodes or generate based on a probability factor
-    def __init__(
-        self,
-        totalnodes: int = 100,
-        pfactor: float = 0.5,
-        itemlist: List[str] = None,
-        listofnodes: List[Node] = None,
-    ) -> None:
-        self.numberofnodes = len(listofnodes) if listofnodes else totalnodes
-        self.probabilityfactor = pfactor
-        if not itemlist:
-            self.listofitems = ["Water Bottle", "Flashlight", "Canned Food"]
-        else:
-            self.listofitems = itemlist
-        self.listofpositions = (
-            [
-                (x, y)
-                for x, y in zip(
-                    [node.x_pos for node in listofnodes],
-                    [node.y_pos for node in listofnodes],
-                )
-            ]
-            if listofnodes
-            else []
-        )
-        self.listofnodes = listofnodes if listofnodes else []
-        self.sourcenodes = (
-            [_ for _ in listofnodes if _.nodetype == "Source"] if listofnodes else []
-        )
-        self.sinknodes = (
-            [_ for _ in listofnodes if _.nodetype == "Sink"] if listofnodes else []
-        )
-        self.numberofsinknodes = (
-            len([_ for _ in listofnodes if _.nodetype == "Sink"]) if listofnodes else 0
-        )
-        self.numberofsourcenodes = (
-            len([_ for _ in listofnodes if _.nodetype == "Source"])
-            if listofnodes
-            else 0
-        )
+    def __init__(self, distancelimit, listofnodes: List[Node] = []) -> None:
+        self.identifier = str(uuid.uuid4())
+        self.threshold = distancelimit
+        self.listofitems = listofnodes
+
+        self.numberofnodes: int = 0
+        self.numberofsinknodes: int = 0
+        self.numberofsourcenodes: int = 0
+        
+        self.listofnodes: List[Node] = []
+
         self.clusterlist: List[Cluster] = []
+        self.numberofclusters: int = 0
+
         self.freepool: List[Node] = []
-        if not listofnodes:
-            self.generatenodes()
 
-    def generatenodes(self) -> None:
-        for _ in range(0, self.numberofnodes):
-            x = random.randint(0, 5000)
-            y = random.randint(0, 5000)
-            item = random.choice(self.listofitems)
-            if random.random() < self.probabilityfactor:
-                self.numberofsinknodes += 1
-                quantity = random.randint(-10, -1)
-                self.listofnodes.append(Node(x, y, item, quantity))
-            else:
-                self.numberofsourcenodes += 1
-                quantity = random.randint(1, 10)
-                self.listofnodes.append(Node(x, y, item, quantity))
-            self.listofpositions.append((x, y))
+    def addrequest(self, node: Node) -> Cluster:
+        self.listofitems.append(node.itemtype)
+        self.listofnodes.append(node)
+        if node.nodetype == "Sink":
+            self.numberofsinknodes += 1
+        elif node.nodetype == "Source":
+            self.numberofsourcenodes += 1
+            
+        self.numberofnodes = 0
 
-    def spectralclustering(self, num_points: int = 50):
-        spc = SpectralClustering(
-            n_clusters=self.getnumberofnodes() // num_points,
-            random_state=42,
-            affinity="nearest_neighbors",
-        )
-        spc.fit(self.listofpositions)
-        cluster_labels = spc.labels_
-        clusters = defaultdict(list)
+        if not self.numberofclusters:
+            newcluster = Cluster(centerx=node.x_pos, centery=node.y_pos)
+            newcluster.addnode(node)
+            self.clusterlist.append(newcluster)
+            self.numberofclusters += 1
+            return newcluster
 
-        for i, label in enumerate(cluster_labels):
-            clusters[label].append(self.getnodes()[i])
-        print()
-        for cluster_nodes in clusters.values():
-            cluster = Cluster()
-            for node in cluster_nodes:
-                if node.nodetype == "Sink":
-                    cluster.addsink(node)
-                else:
-                    cluster.addsource(node)
-            self.clusterlist.append(cluster)
+        distances = [cluster.getdistance(node) for cluster in self.clusterlist]
+        minindex = distances.index(min(distances))
+        if min(distances) <= self.threshold:
+            self.clusterlist[minindex].addnode(node)
+            return self.clusterlist[minindex]
+        else:
+            newcluster = Cluster(centerx=node.x_pos, centery=node.y_pos)
+            newcluster.addnode(node)
+            self.clusterlist.append(newcluster)
+            self.numberofclusters += 1
+            print(f"New Cluster Created: {newcluster.identifier}")
+            return newcluster
+
+    def stats(self) -> dict:
+        statslist = dict()
+
+        statslist["Number of Nodes"] = self.numberofnodes
+        statslist["Number of Clusters"] = self.numberofclusters
+        statslist["Number of Items"] = len(self.listofitems)
+
+        ClusterStats = []
+        for cluster in self.clusterlist:
+            ClusterStats.append(cluster.getstats())
+        statslist["Cluster Stats"] = ClusterStats
+        return statslist
 
     def createfreepool(self):
         for cluster in self.clusterlist:
             self.freepool += cluster.getfeasible()
-        return System(listofnodes=self.freepool)
+        return System(listofnodes=self.freepool, distancelimit=self.threshold)
 
     def isfeasiblesystem(self):
         return self.numberofsinknodes != 0 and self.numberofsourcenodes != 0
@@ -412,6 +439,13 @@ class System:
             plt.scatter(x, y)
         plt.show()
 
+    def getpaths(self):
+        pathlist = []
+        for cluster in self.clusterlist:
+            for path in cluster.subpaths:
+                pathlist.append(path.getPath())
+        return pathlist
+    
     def getnodes(self):
         return self.listofnodes
 
@@ -474,6 +508,7 @@ class System:
 
             itemcounter[node.itemtype] = itemcounter.get(node.itemtype, 0) + 1
 
+
         print(f"Total Source Nodes: {self.numberofsourcenodes}")
         print(f"Total Sink Nodes: {self.numberofsinknodes}")
 
@@ -485,19 +520,26 @@ class System:
             print(f"Request total for {item} is {request[item]}")
             print(f"Offer total for {item} is {offer[item]}")
 
-
-class Solution:
-    def __init__(self, system: System = None) -> None:
-        self.system = system if system else System(totalnodes=500, pfactor=0.8)
-        self.system.spectralclustering(num_points=100)
-        self.system.print()
-        self.freepoolsystem = self.system.createfreepool()
-        # TODO: write functions to check if there are no sinks or sources in the freepool and if so, stop the algorithm
-        self.system.plotclusters()
+class ReComputePaths:
+    def __init__(self, targetsystem: System) -> None:
+        self.targetsystem = targetsystem
+        self.freepoolsystem = self.targetsystem.createfreepool()
+        
+        self.targetsystem.plotclusters()
+        
         if self.freepoolsystem.isfeasiblesystem():
-            self.nextSol = Solution(self.freepoolsystem)
-        for cluster in self.system.clusterlist:
+            self.nextsolution = ReComputePaths(self.freepoolsystem)
+        
+        for cluster in self.targetsystem.getclusterslist():
             cluster.plotallpaths()
 
+nodelist = [Node(0, 0, "A", -9), Node(1, 1, "A", 3), Node(0, 2, "A", 3), Node(0, 0, "B", -9), Node(1, 1, "B", 3), Node(0, 2, "B", 3)]
 
-sol = Solution()
+mastersystem = System(distancelimit=5)
+
+for node in nodelist:
+    mastersystem.addrequest(node)
+
+mastersystem.print()
+
+ReComputePaths(mastersystem)

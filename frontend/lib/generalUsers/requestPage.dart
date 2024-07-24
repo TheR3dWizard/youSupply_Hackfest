@@ -4,83 +4,85 @@ import 'package:frontend/utilities.dart';
 class requestPage extends StatelessWidget {
   requestPage({Key? key}) : super(key: key);
 
-   final List<dynamic> items = [
-    ['Drinking Water','assets/rice.jpg'],
-    ['Rice','assets/rice.jpg'],
-    ['Milk','assets/rice.jpg'],
-    ['Wheat','assets/rice.jpg'],
+  final List<dynamic> items = [
+    ['Drinking Water', 'assets/water.jpg'],
+    ['Rice', 'assets/rice.jpg'],
+    ['Milk', 'assets/milk_bottle.jpg'],
+    ['Bread', 'assets/bread.jpg'],
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black12,
+      floatingActionButton: ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/cart');
+          },
+          child: SizedBox(
+            width: 100,
+            height: 50,
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_cart_checkout_outlined),
+                Text('View Cart'),
+              ],
+            ),
+          )),
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
-        title: Padding(
-          padding: const EdgeInsets.all(9.0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(9.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.home,
-                    size: 40,
-                    color: Color.fromRGBO(0, 224, 255, 1),
-                  ),
-                  onPressed: () => Navigator.pushNamed(
-                      context, '/homegu'), // Navigate to home page
-                ),
-              ),
-            ],
+        centerTitle: true,
+        title: Text(
+          'Request Resources',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 0, 225, 255),
           ),
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  child: const Text(
-                    'Resources',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: const Text(
+                  'Resources',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  child: const Text(
-                    'Add all the resources you require',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white,
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: const Text(
+                  'Add all the resources you require',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 10),
-                Column(
-                  children: items
-                      .map((item) => Item(
-                            label1: item[0],
-                            label2: 'Description',
-                            image: Image.asset(
-                              item[1],
-                              width: 100,
-                              height: 100,
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ],
-            ),
+              ),
+              SizedBox(height: 10),
+              Column(
+                children: items
+                    .map((item) => Item(
+                          label1: item[0],
+                          label2: 'Description',
+                          image: Image.asset(
+                            item[1],
+                            width: 100,
+                            height: 100,
+                          ),
+                        ))
+                    .toList(),
+              ),
+            ],
           ),
         ),
       ),
@@ -130,7 +132,7 @@ class _ItemState extends State<Item> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 100),
+        constraints: const BoxConstraints(minHeight: 100, minWidth: 200),
         decoration: const BoxDecoration(
             color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -216,10 +218,10 @@ class _ItemState extends State<Item> {
                               duration: Duration(seconds: 3),
                             ),
                           );
-                          await addToCart(widget.label1, -1*_count);
+                          await addToCart(widget.label1, -1 * _count);
                         },
                         style: OutlinedButton.styleFrom(
-                          fixedSize: const Size(100, 30),
+                          fixedSize: const Size(120, 30),
                           shadowColor: Colors.black,
                           foregroundColor: Colors.black,
                           backgroundColor: Color.fromARGB(255, 0, 225, 255),
@@ -236,8 +238,7 @@ class _ItemState extends State<Item> {
                               duration: Duration(seconds: 3),
                             ),
                           );
-                          await addToCart(widget.label1,0);
-
+                          await addToCart(widget.label1, 0);
                         },
                         style: OutlinedButton.styleFrom(
                           fixedSize: const Size(100, 30),

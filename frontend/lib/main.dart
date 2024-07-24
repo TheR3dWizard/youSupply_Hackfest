@@ -1,42 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/delAgents/MapView.dart';
 import 'package:frontend/delAgents/accepted.dart';
 import 'package:frontend/delAgents/available.dart';
 import 'package:frontend/delAgents/claimed.dart';
 import 'package:frontend/delAgents/completed.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
+import 'package:frontend/generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/providePage.dart';
+import 'package:frontend/generalUsers/requestPage.dart';
+import 'package:frontend/generalUsers/cartPage.dart';
+import 'package:frontend/delAgents/history.dart';
+import 'package:frontend/settings.dart';
+import 'package:frontend/profile.dart';
+import 'package:frontend/utilities.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
-import 'generalUsers/providePage.dart';
-import 'generalUsers/requestPage.dart';
-import 'package:frontend/generalUsers/homePageGU.dart';
-import 'delAgents/history.dart';
-import 'settings.dart';
-import 'profile.dart';
-import 'utilities.dart';
-//import 'frontend/lib/delAgents/available.dart';
 
 void main() {
   runApp(MyApp());
 }
 
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class _MyAppState extends State<MyApp> {
   bool loggedIn = false;
 
-
-  MyApp.initState() {
+  @override
+  void initState() {
+    super.initState();
     isLoggedIn().then((value) {
-      loggedIn = value;
+      setState(() {
+        loggedIn = value;
+      });
     });
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final deliveryDetailsList = [
+      DeliveryDetails(
+          fromLoc: '123 Main St, Springfield', distanceFromDelAgent: 4.5),
+      DeliveryDetails(
+          fromLoc: '456 Elm St, Shelbyville', distanceFromDelAgent: 3.2),
+      DeliveryDetails(
+          fromLoc: '789 Oak St, Capital City', distanceFromDelAgent: 5.8),
+      DeliveryDetails(
+          fromLoc: '321 Pine St, Springfield', distanceFromDelAgent: 2.5),
+      DeliveryDetails(
+          fromLoc: '654 Maple St, Shelbyville', distanceFromDelAgent: 6.1),
+      DeliveryDetails(
+          fromLoc: '987 Cedar St, Capital City', distanceFromDelAgent: 1.7),
+      DeliveryDetails(
+          fromLoc: '135 Birch St, Springfield', distanceFromDelAgent: 4.9),
+      DeliveryDetails(
+          fromLoc: '246 Walnut St, Shelbyville', distanceFromDelAgent: 3.3),
+      DeliveryDetails(
+          fromLoc: '357 Ash St, Capital City', distanceFromDelAgent: 5.2),
+      DeliveryDetails(
+          fromLoc: '468 Beech St, Springfield', distanceFromDelAgent: 2.8),
+    ];
+
     return MaterialApp(
-      initialRoute: '/login',
+      initialRoute: loggedIn ? '/homegu' : '/login',
       routes: {
         '/login': (context) => LoginPage(),
         '/signupGU': (context) => SignUpPageGU(),
@@ -44,28 +72,23 @@ class MyApp extends StatelessWidget {
         '/homedel': (context) => homePageDel(),
         '/provide': (context) => providePage(),
         '/request': (context) => requestPage(),
-        'history' : (context) => history(),
+        '/history': (context) => history(),
         '/settings': (context) => settings(),
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
-       '/available':(context)=> available(),
-        '/claimed':(context)=> claimed(),
-        '/completed':(context)=> completed(),
-
+        '/available': (context) =>
+            available(deliveryDetailsList: deliveryDetailsList),
+        '/claimed': (context) => claimed(),
+        '/completed': (context) => completed(),
+        '/cart': (context) => Cartpage(),
+        '/mapview': (context) =>
+            MapView(toLocations: [], resourcesToCollect: []),
       },
       title: 'youSupply',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: (){
-        if(loggedIn){
-          return homePageGU();
-        }
-        else{
-          return LoginPage();
-        }
-      }(),
     );
   }
 }

@@ -45,15 +45,16 @@ CREATE TABLE requests (
     request_id CHAR(36) PRIMARY KEY,
     resource_id CHAR(36),
     cluster_id CHAR(36),
-    latitude DECIMAL(10, 8),
-    longitude DECIMAL(11, 8),
+    username VARCHAR(50),
     quantity INT,
     FOREIGN KEY (resource_id) REFERENCES resources(resource_id),
-    FOREIGN KEY (cluster_id) REFERENCES clusters(cluster_id)
+    FOREIGN KEY (cluster_id) REFERENCES clusters(cluster_id),
+    FOREIGN KEY (username) REFERENCES users(username)
 );
 
-INSERT INTO requests (request_id, resource_id, cluster_id, latitude, longitude, quantity) VALUES ('0cf780ca-5b7d-4f12-aa0c-047c3ab2c3e4', '6674ea86-9340-4a81-bf7a-d583b054f7a0', '0211b363-decd-4b8f-bba2-0827ce397fa3', 37.774929, -122.419418, 50),
-('c9d81ffe-e238-41f8-8169-1679e25e7a8f', '754788e4-a944-44d3-ad80-f3e5c6a8b689', '44128509-e819-4dbe-965e-1e188ef44050', 40.712776, -74.005974, 30),
-('f3a2bfb8-26b5-44c0-848e-da40749bb967', '6674ea86-9340-4a81-bf7a-d583b054f7a0', '4d138cf0-9b41-4447-b11b-8f704d633ead', 34.052235, -118.243683, 20),
-('29437e02-8b27-4a5f-99e0-8a02144743ee', '754788e4-a944-44d3-ad80-f3e5c6a8b689', 'a4556046-d142-4474-afad-62bee3ecfd7a', 51.507351, -0.127758, 40),
-('4e91f029-fd81-444b-b374-222c47def861', 'c8b1d27f-e9c4-4c28-a7db-332daba4ac42', 'd8826fe1-04ec-4496-b908-3b8cec3f5f33', 48.856613, 2.352222, 60)
+INSERT INTO requests (request_id, resource_id, cluster_id, username, quantity) VALUES 
+('0cf780ca-5b7d-4f12-aa0c-047c3ab2c3e4', '6674ea86-9340-4a81-bf7a-d583b054f7a0', '0211b363-decd-4b8f-bba2-0827ce397fa3', 'JohnDoe', 50),
+('c9d81ffe-e238-41f8-8169-1679e25e7a8f', '754788e4-a944-44d3-ad80-f3e5c6a8b689', '44128509-e819-4dbe-965e-1e188ef44050', 'JaneDoe', 30),
+('f3a2bfb8-26b5-44c0-848e-da40749bb967', '6674ea86-9340-4a81-bf7a-d583b054f7a0', '4d138cf0-9b41-4447-b11b-8f704d633ead', 'MikeSmith', 20),
+('29437e02-8b27-4a5f-99e0-8a02144743ee', '754788e4-a944-44d3-ad80-f3e5c6a8b689', 'a4556046-d142-4474-afad-62bee3ecfd7a', 'abca', 40),
+('4e91f029-fd81-444b-b374-222c47def861', 'c8b1d27f-e9c4-4c28-a7db-332daba4ac42', 'd8826fe1-04ec-4496-b908-3b8cec3f5f33', 'abc', 60);

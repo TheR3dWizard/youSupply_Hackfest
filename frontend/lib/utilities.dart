@@ -330,54 +330,58 @@ class Select extends StatelessWidget {
       required this.route,
       required this.icon,
       required this.onpressed});
+
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        decoration: const BoxDecoration(
-            color: Colors.black,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 4.0,
-                offset: Offset(0.0, 2.0),
-              ),
-              BoxShadow(
-                color: Colors.white,
-                offset: Offset(0.0, 0.0),
-              )
-            ]),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 20, 5, 20),
-                  child: IconButton(
-                    icon: Icon(
-                      icon,
-                      size: 70,
-                      color: Color.fromARGB(255, 0, 225, 255),
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, route);
-                    },
-                  )),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(5, 10, 5, 30),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 25,
-                    //fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: 250,
+        maxWidth: 500,
+        // minWidth: 250,
+      ),
+      decoration: const BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 4.0,
+              offset: Offset(0.0, 2.0),
+            ),
+            BoxShadow(
+              color: Colors.white,
+              offset: Offset(0.0, 0.0),
+            )
+          ]),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+                padding: const EdgeInsets.fromLTRB(5, 20, 5, 20),
+                child: IconButton(
+                  icon: Icon(
+                    icon,
+                    size: 70,
                     color: Color.fromARGB(255, 0, 225, 255),
                   ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, route);
+                  },
+                )),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 10, 5, 30),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 25,
+                  //fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                  color: Color.fromARGB(255, 0, 225, 255),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -462,151 +466,11 @@ class Item extends StatelessWidget {
   }
 }
 
-class Deliveries extends StatelessWidget {
-  final String fromLoc;
-  final String toLoc;
-  final String item;
-  final String quantity;
-  final String status;
-
-  Deliveries({
-    required this.fromLoc,
-    required this.toLoc,
-    required this.item,
-    required this.quantity,
-    required this.status,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-      child: Container(
-        width: 410,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 4.0,
-              offset: Offset(0.0, 2.0),
-            ),
-            BoxShadow(
-              color: Colors.white,
-              offset: Offset(0.0, 0.0),
-            )
-          ],
-        ),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(7, 8, 7, 3),
-          child: Column(
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      Icon(Icons.location_pin, color: Colors.red),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text(
-                        fromLoc,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(width: 20),
-                  Row(
-                    children: [
-                      Icon(Icons.location_pin, color: Colors.green),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text(
-                        toLoc,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(7.0, 0, 0, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      children: [
-                        Text(
-                          "$item :",
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.2,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(width: 5),
-                        Text(
-                          quantity,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor:
-                            Color.fromARGB(255, 0, 225, 255), //color refff
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      child: Text(
-                        "View",
-                        style: TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 1,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 //Cart Functions using localFile
 
-Future<void> printFile() async{
+Future<void> printFile() async {
   final file = await _localFile;
   print(await file.readAsString());
-
 }
 
 Future<String> get _localPath async {
@@ -628,7 +492,8 @@ Future<File> get _localFile async {
   return file;
 }
 
-Future<void> setUserDetails(String username, String xpos, String ypos,String role) async {
+Future<void> setUserDetails(
+    String username, String xpos, String ypos, String role) async {
   final file = await _localFile;
 
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
@@ -660,14 +525,20 @@ Future<void> addToCart(String item, int quantity) async {
 
   await file.writeAsString(jsonEncode(json));
   print("File after adding: ${printFile()}");
-
 }
 
-Future<List<String>> getCoords() async{
+//empties the cart
+Future<void> emptyCart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  return [json['location']['xpos'],json['location']['ypos']];
+  json['cart'] = [];
+  await file.writeAsString(jsonEncode(json));
+}
 
+Future<List<String>> getCoords() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  return [json['location']['xpos'], json['location']['ypos']];
 }
 
 Future<void> removeFromCart(String item) async {
@@ -686,33 +557,67 @@ Future<bool> isLoggedIn() async {
 
 Future<void> setLoggedIn(bool value, String username) async {
   final file = await _localFile;
+  print("File is: ${await file.readAsString()}");
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  print("Hello CUrrent");
+
   json['loggedin'] = value;
   json['username'] = username;
 
   await file.writeAsString(jsonEncode(json));
 }
 
+Future<List<Map<String, dynamic>>> readCart() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  List<dynamic> cartDynamic = json['cart'];
+  
+  // Convert List<dynamic> to List<Map<String, dynamic>>
+  List<Map<String, dynamic>> cart = cartDynamic.map((item) => item as Map<String, dynamic>).toList();
+
+  return cart;
+}
 
 // Backend Functions
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
 
-Future<bool> login(String username, String password,String role) async {
+//item id and item name map
+
+Map<String,String> itemnameToID = {
+'c8b1d27f-e9c4-4c28-a7db-332daba4ac42': 'First Aid Kit',
+'9fdb9531-29d9-41e6-aeb3-5e1fdf79c867': 'Water Bottles',
+'6674ea86-9340-4a81-bf7a-d583b054f7a0': 'Blankets',
+'619d8b87-a67c-4769-bbf0-839715a3603d': 'Flashlights',
+'754788e4-a944-44d3-ad80-f3e5c6a8b689': 'Food Packages'
+};
+
+List<String> items = [
+  'First Aid Kit',
+  'Water Bottles',
+  'Blankets',
+  'Flashlights',
+  'Food Packages'
+
+];
+
+
+Future<bool> login(String username, String password, String role) async {
   print("USERNAME: $username, PASSWORD: $password, ROLE: $role");
   var url = Uri.parse('$baseUrl/authenticate/login');
-  var response = await http.post(url, body: json.encode({
-    'username': username,
-    'password': password,
-    "userrole":role
-  },),headers: {
-  "Content-Type": "application/json"
-});
+  var response = await http.post(url,
+      body: json.encode(
+          {'username': username, 'password': password, "userrole": role}),
+      headers: {"Content-Type": "application/json"});
   print(response.body);
-  if(response.statusCode == 200) {
+  if (response.statusCode == 200) {
+    print("Hello");
     var json = jsonDecode(response.body);
-    await setUserDetails(username, json['latitude'], json['longitude'],json['userrole']);
+    print("Hello 2");
+    //await setUserDetails(
+    //    username, json['latitude'], json['longitude'], json['userrole']);
     await setLoggedIn(true, username);
+    print("Works!");
     return true;
   }
   return false;
@@ -727,13 +632,12 @@ Future<bool> register(String username, String password, String phone,
     'password': password,
     'phone': phone,
     'role': role,
-  });
+  },headers: {"Content-Type": "application/json"});
 
   return response.statusCode == 200;
 }
 
-Future<bool> addnode(
-    String itemtype, int quantity) async {
+Future<bool> addnode(String itemtype, int quantity) async {
   var url = Uri.parse('$baseUrl/add/request');
   List<String> coords = await getCoords();
   var response = await http.post(url, body: {
@@ -741,32 +645,59 @@ Future<bool> addnode(
     'yposition': coords[1],
     'itemtype': itemtype,
     'quantity': quantity,
-  });
+  },headers: {"Content-Type": "application/json"});
 
   return response.statusCode == 200;
 }
 
-
+//sends all nodes in cart to backend
 Future<void> sendcart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  print("File before sending: ${printFile()}");
+  print("File before sending:");
+  printFile();
   List<String> coords = await getCoords();
   json['cart'].forEach((element) async {
-    if(element['quantity'] == 0){
+    if (element['quantity'] == 0) {
       return;
     }
-    var url = Uri.parse('$baseUrl/add/request');
-    var response = await http.post(url, body: {
+    var url = Uri.parse('$baseUrl/add/node');
+    print("Item: ${element['item']}, quantity: ${element['quantity']},xposition: ${coords[0]}, yposition: ${coords[1]}");
+    var response = await http.post(url, body: jsonEncode({
       'item': element['item'],
-      'quantity': element['quantity'],
-      'xposition': coords[0],
-      'yposition': coords[1],
-    });
-
+      'quantity': element['quantity'].toString(),
+      'xposition': coords[0].toString(),
+      'yposition': coords[1].toString(),
+    })
+    // ,headers: {"Content-Type": "application/json"}
+    );
+    print(jsonEncode({
+      'item': element['item'],
+      'quantity': element['quantity'].toString(),
+      'xposition': coords[0].toString(),
+      'yposition': coords[1].toString(),
+    }));
     if (response.statusCode == 200) {
+      print("Successfully sent ${element['item']}");
       removeFromCart(element['item']);
     }
+    else{
+      print("Failed to send ${element['item']}");
+      print(response.body);
+    }
   });
-  print("File after sending: ${printFile()}");
+  print("File after sending:");
+  printFile();
+
+}
+
+Future<Map<String,dynamic>> loadPaths() async {
+  var url = Uri.parse('https://algorithm.akashshanmugaraj.com/sample/paths');
+  var response = await http.post(url,body: jsonEncode({
+  "username":"abc",
+  "password":"abc",
+  "userrole":"client"
+}),headers: {"Content-Type": "application/json"});
+  print(response.body);
+  return jsonDecode(response.body);
 }

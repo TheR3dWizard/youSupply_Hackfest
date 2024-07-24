@@ -16,68 +16,70 @@ class providePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black12,
+      floatingActionButton: ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, '/cart');
+          },
+          child: SizedBox(
+            width: 100,
+            height: 50,
+            child: Row(
+              children: [
+                const Icon(Icons.shopping_cart_checkout_outlined),
+                Text('View Cart'),
+              ],
+            ),
+          )),
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
-        title: Padding(
-          padding: const EdgeInsets.all(9.0),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(9.0),
-                child: IconButton(
-                  icon: Icon(
-                    Icons.home,
-                    size: 40,
-                    color: Color.fromRGBO(0, 224, 255, 1),
-                  ),
-                  onPressed: () => Navigator.pushNamed(
-                      context, '/homegu'), // Navigate to home page
-                ),
-              ),
-            ],
+        centerTitle: true,
+        title: Text(
+          'Provide Resources',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 0, 225, 255),
           ),
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  child: const Text(
-                    'Resources',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: const Text(
+                  'Resources',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                  child: const Text(
-                    'Add all the resources you wish to provide',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white,
-                    ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                child: const Text(
+                  'Add all the resources you wish to provide',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 10),
-                Column(
-                    children: List.generate(items.length, (context) {
-                  return Item(
-                    label1: items[context][0],
-                    label2: 'Description',
-                    image: Image.asset(items[context][1]),
-                  );
-                })),
-                SizedBox(height: 7),
-              ],
-            ),
+              ),
+              SizedBox(height: 10),
+              Column(
+                  children: List.generate(items.length, (context) {
+                return Item(
+                  label1: items[context][0],
+                  label2: 'Description',
+                  image: Image.asset(items[context][1]),
+                );
+              })),
+              SizedBox(height: 7),
+            ],
           ),
         ),
       ),
@@ -127,7 +129,7 @@ class _ItemState extends State<Item> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 100),
+        constraints: const BoxConstraints(minHeight: 100, minWidth: 200),
         decoration: const BoxDecoration(
             color: Colors.black87,
             borderRadius: BorderRadius.all(Radius.circular(20)),
