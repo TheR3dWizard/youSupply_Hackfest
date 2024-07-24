@@ -23,25 +23,7 @@ When a disaster strikes, the main bottleneck for recovery is resources, or the l
 15. Route - A path through a cluster that satisfies all the nodes
 16. Delivery - A route is built of individual deliveries
 
-## Functional Requirements
 
-- Users should be able to post their needs and surpluses
-
-- Delivery agents should be able to pick what requests they can satisfy
-
-- There should be an algorithm to optimize requests and supplies to satisfy all requests
-
-- The process for users to post requirements should be easy
-
-## Non-Functional Requirements
-
-- The app should be integrated with pre-existing NGOs to help their efforts
-
-- Measures should be implemented to prevent misuse
-
-- There should be features to foster a sense of community among the users
-
-- Users should be able to directly connect with other users bypassing the algorithm if they so choose
 
 ## System Architecture
 
