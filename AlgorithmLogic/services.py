@@ -6,7 +6,7 @@ import mysql.connector
 from chromadb import Client
 from chromadb.config import Settings
 from chromadb.api import Collection
-
+from pprint import pprint
 load_dotenv()
 
 
@@ -62,10 +62,15 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
 
-    def updateclustercentroid(self, clusterid: str, lat: float, lon: float):
-        query = f"UPDATE clusters SET latitude={lat}, longitude={lon} WHERE cluster_id='{clusterid}'"
-        self.cursor.execute(query)
-        self.connection.commit()
+    def updateclustercentroid(self, clusterid, newlat, newlon):
+        query = f"UPDATE clusters SET latitude = {newlat}, longitude = {newlon} WHERE id = {clusterid}"
+        try:
+            for result in self.connection.cmd_query_iter(query):
+                pass  # Iterate through results to ensure all queries are executed
+            self.connection.commit()
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+            self.connection.rollback()
 
     def removecluster(self, clusterid: str):
         query = f"DELETE FROM clusters WHERE cluster_id='{clusterid}'"
@@ -79,6 +84,21 @@ class DatabaseObject:
 
     def removeresource(self, resourceid: str):
         query = f"DELETE FROM resources WHERE resource_id='{resourceid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def insertpath(self, pathid: str, pathobject: str):
+        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', \"{pathobject}\")"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def removepath(self, pathid: str):
+        query = f"DELETE FROM pathstore WHERE path_id='{pathid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def truncatepath(self):
+        query = f"TRUNCATE TABLE pathstore"
         self.cursor.execute(query)
         self.connection.commit()
 
@@ -136,6 +156,21 @@ class GoogleAPI:
 
         return output
 
+    def geocodecoordinatestoaddress(self, coordinatelist:List[float]):
+        endpoint = "https://maps.googleapis.com/maps/api/geocode/json"
+        print("Attempting to geocode coordinates", coordinatelist)
+
+        params = {
+            "key": self.api_key,
+            "latlng": f"{coordinatelist[0]},{coordinatelist[1]}",
+        }
+
+        response = requests.get(endpoint, params=params)
+        if response.status_code != 200:
+            raise Exception(f"Error making request: {response.status_code}")
+
+        return response.json()['results'][0]['formatted_address'][:26]
+
 class ChromaDBAgent:
     def __init__(self) -> None:
         self.client = Client(Settings())
@@ -162,16 +197,13 @@ class ChromaDBAgent:
     
     # select and display all the vectors in the collection
     def getallvectors(self):
-        return self.collection.list()
+        return self.collection.get()['ids']
+    
+    def numberofvectors(self):
+        return len(self.collection.get()['ids'])
 
-if __name__ == "__main__":
-    vdb = ChromaDBAgent()
-    vdb.insertpathobject("1", [1, 1])
-    vdb.insertpathobject("2", [2, 2])
-    vdb.insertpathobject("3", [3, 3])
-    vdb.insertpathobject("4", [4, 4])
-    vdb.insertpathobject("5", [5, 5])
-    vdb.insertpathobject("100", [100, 100])
-    vdb.insertpathobject("200", [200, 200])
+    def whatallcollectionhas(self):
+        return dir(self.collection)
 
-    print(vdb.getnearestneighbors([1, 1],2))
+    def whatallclienthas(self):
+        return dir(self.client)

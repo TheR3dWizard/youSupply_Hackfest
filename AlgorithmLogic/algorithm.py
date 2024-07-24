@@ -6,7 +6,9 @@ import pprint
 from services import GoogleAPI
 import numpy as np
 from scipy.spatial import ConvexHull, QhullError
+from services import GoogleAPI
 
+globalgooglemapsobject = GoogleAPI()
 
 class Node:
     """
@@ -49,8 +51,21 @@ class Node:
         ) ** 0.5
 
     def __repr__(self):
-        return self.__str__()
+        return str({
+            "itemtype": self.itemtype,
+            "quantity": self.quantity,
+            "latitude": self.x_pos,
+            "longitude": self.y_pos
+        })
 
+    def export(self) -> dict:
+        return {
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.x_pos, self.y_pos]),
+            "itemtype": self.itemtype,
+            "quantity": self.quantity,
+            "latitude": self.x_pos,
+            "longitude": self.y_pos
+        }
     def __gtr__(self, other):
         return self.quantity > other.quantity
 
@@ -67,9 +82,20 @@ class Path:
         self.xposition = path[0].x_pos
         self.yposition = path[0].y_pos
 
-    def __repr__(self) -> str:
-        return f"Path: {self.path} with distance {self.distance}"
+    def __repr__(self):
+        return str({
+            "pathidentifier": self.identifier,
+            "distance": self.distance,
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition])
+        })
     
+    def export(self):
+        return {
+            "pathidentifier": self.identifier,
+            "distance": self.distance,
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition])
+        }
+        
     def getPath(self):
         return self.path
 
@@ -92,6 +118,20 @@ class Path:
         print(f"Number of nodes in path: {len(self.path)}")
         plt.show()
 
+    def constructdatabaseobject(self) -> dict:
+        preliminaryinfodict = self.export()
+        nodeinformation = []
+        
+        for node in self.path:
+            nodeinformation.append(node.export())
+        
+        return {
+            "pathinformation": preliminaryinfodict,
+            "nodeinformation": nodeinformation
+        }
+        
+        
+        
 
 class Cluster:
     """
@@ -252,6 +292,7 @@ class Cluster:
         return freepool
 
     def getpath(self, curpos: Node = None) -> List[Node]:
+        self.subpaths = list()
         distance = 0
         visited = set()
         available = defaultdict(int)
@@ -630,6 +671,7 @@ class PathComputationObject:
         print("Reconstruction successful, creating freepool system")
         self.freepoolsystem = self.system.createfreepool()
         print("Freepool system created, extracting all paths")
+        self.paths = []
         for cluster in self.system.clusterlist:
             cluster.getpath()
             self.paths.append(cluster.path)
@@ -657,3 +699,14 @@ class PathComputationObject:
     
     #TODO: functionality to handle paths in the different layers (available, in progress, completed) with no inconsistencies
     # probably the hardest thing :)
+
+    def formatpathoutput(self, bulkexportobject) -> List[dict]:
+        numberofpaths = len(bulkexportobject)
+        baseobject = {
+            "numberofpaths": numberofpaths
+        }
+        
+        for pathexport in bulkexportobject:
+            baseobject[pathexport["pathinformation"]['pathidentifier']] = pathexport
+        
+        return baseobject

@@ -52,7 +52,7 @@ class LabelledTextField extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20),
           child: TextField(
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
             ),
             obscureText: hidden ?? false,
@@ -62,7 +62,7 @@ class LabelledTextField extends StatelessWidget {
                 gapPadding: 5.0,
               ),
               labelText: label,
-              labelStyle: TextStyle(
+              labelStyle: const TextStyle(
                 color: Colors.white70,
               ),
             ),
@@ -752,7 +752,9 @@ Future<Map<String, dynamic>> loadPaths() async {
   return json['paths'];
 }
 
+
 Future<List<LatLng>> loadLocations(int index) async {
+
   Map<String, dynamic> paths = await loadPaths();
   List<LatLng> toLocations = [];
   paths.forEach((key, value) {
