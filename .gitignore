@@ -10,5 +10,7 @@
 AlgorithmLogic/hackfest
 AlgorithmLogic/__pycache__
 AlgorithmLogic/.env
+AlgorithmLogic/chroma.log
+AlgorithmLogic/chroma_data
 .idea
 .vscode

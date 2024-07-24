@@ -3,6 +3,9 @@ from typing import List
 from dotenv import load_dotenv
 import os
 import mysql.connector
+from chromadb import Client
+from chromadb.config import Settings
+from chromadb.api import Collection
 
 load_dotenv()
 
@@ -132,3 +135,43 @@ class GoogleAPI:
         }
 
         return output
+
+class ChromaDBAgent:
+    def __init__(self) -> None:
+        self.client = Client(Settings())
+        self.collection_name = "path_objects"
+        if self.collection_name not in self.client.list_collections():
+            self.collection = self.client.create_collection(self.collection_name)
+        else:
+            self.collection = self.client.get_collection(self.collection_name)
+    
+    def insertpathobject(self, pathobjectid: str, coordinates):
+        vectorobject = {
+            "id": pathobjectid,
+            "vector": coordinates
+        }
+        
+        self.collection.upsert(vectorobject["id"], vectorobject["vector"])
+    
+    def getnearestneighbors(self, coordinates, kval=5):
+        return self.collection.query(coordinates, n_results=kval)['ids']
+
+    def clearindex(self):
+        self.client.delete_collection(self.collection_name)
+        self.collection = self.client.create_collection(self.collection_name)
+    
+    # select and display all the vectors in the collection
+    def getallvectors(self):
+        return self.collection.list()
+
+if __name__ == "__main__":
+    vdb = ChromaDBAgent()
+    vdb.insertpathobject("1", [1, 1])
+    vdb.insertpathobject("2", [2, 2])
+    vdb.insertpathobject("3", [3, 3])
+    vdb.insertpathobject("4", [4, 4])
+    vdb.insertpathobject("5", [5, 5])
+    vdb.insertpathobject("100", [100, 100])
+    vdb.insertpathobject("200", [200, 200])
+
+    print(vdb.getnearestneighbors([1, 1],2))

@@ -5,10 +5,9 @@ import 'package:flutter/services.dart';
 import 'utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:geolocator/geolocator.dart';
-import 'homePage.dart';
 
-class SignUpPageGU extends StatelessWidget {
-  SignUpPageGU({
+class SignUpPage extends StatelessWidget {
+  SignUpPage({
     super.key,
   }) {
     location = _determinePosition();

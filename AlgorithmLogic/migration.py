@@ -243,7 +243,7 @@ class Cluster:
 
         if len(self.sourcenodes) == 0 or len(self.sinknodes) == 0:
             return []
-
+        
         # function to get the closest node
         closest = lambda node, possibilities: min(
             [(node.getdistance(_), _) for _ in possibilities if _ not in visited],
@@ -352,7 +352,7 @@ class Cluster:
         statslist["Number of Source Nodes"] = len(self.sourcenodes)
         statslist["Number of Sink Nodes"] = len(self.sinknodes)
         statslist["Center"] = (self.centerxpos, self.centerypos)
-
+        statslist["Number of Sub Paths"] = len(self.subpaths)
         return statslist
 
 
@@ -416,7 +416,7 @@ class System:
         self.listofitems.append(node.itemtype)
         self.listofnodes.append(node)
         self.numberofnodes += 1
-        
+        print(f"Adding node {node.identifier} to the system")
         if node.nodetype == "Sink":
             self.numberofsinknodes += 1
         else:
@@ -586,9 +586,9 @@ class System:
             print(f"Request total for {item} is {request[item]}")
             print(f"Offer total for {item} is {offer[item]}")
 
-class Algorithm:
+class PathComputationObject:
     def __init__(self) -> None:
-        self.system = None
+        self.system = System(distancelimit=5)
         self.freepoolsystem = None
         self.paths = []
 
@@ -616,7 +616,12 @@ class Algorithm:
     #will automatically set the system and recalculate all paths
     def addNode(self, node: Node) -> None:
         self.system.addrequest(node)
-        self.setSystem(self.system)
+        print("Passing the below system to the system setter")
+        print(self.system.stats())
+        try:
+            self.setSystem(self.system)
+        except ValueError as e:
+            print("Could not set the system")
 
     #function to be called when a path is satisfied
     def removePath(self, path: Path) -> None:
@@ -631,29 +636,25 @@ class Algorithm:
     # probably the hardest thing :)
 
 nodelist = [
-    Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1), 
-    Node(x_pos=0, y_pos=2, item="Flashlight", quantity=-1), 
-    Node(x_pos=3, y_pos=3, item="Canned Food", quantity=-1),
-    Node(x_pos=4, y_pos=4, item="Canned Food", quantity=1),
-    Node(x_pos=5, y_pos=5, item="Water Bottle", quantity=1),
-    Node(x_pos=6, y_pos=6, item="Water Bottle", quantity=-1),
-    Node(x_pos=7, y_pos=7, item="Water Bottle", quantity=-1),
-    Node(x_pos=8, y_pos=8, item="Water Bottle", quantity=1)
+    Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1),
+    Node(x_pos=2, y_pos=2, item="Flashlight", quantity=-1),
+    Node(x_pos=3, y_pos=3, item="Flashlight", quantity=1),
+    Node(x_pos=4, y_pos=4, item="Flashlight", quantity=-1),
 ]
 
 
-alg = Algorithm()
+alg = PathComputationObject()
 samplesystem = System(distancelimit=5)
 
 for node in nodelist:
     print(f"Trying to add node {node.x_pos}, {node.y_pos} to the node system")
     samplesystem.addrequest(node)
 
-print(f'Sample System is now all done and set with {samplesystem.numberofnodes} nodes')
-alg.setSystem(samplesystem)
-paths = alg.getPaths()
+    # print(f'Sample System is now all done and set with {samplesystem.numberofnodes} nodes')
+    alg.addNode(node)
+    paths = alg.getPaths()
 
-for path in paths:
-    print("Printing path")
-    for node in path.getPath():
-        print(node)
+    newsystem = alg.system
+    for path in paths:
+        print(path)
+        path.plotpath()
