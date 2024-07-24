@@ -1,7 +1,7 @@
 from flask import Flask
 from algorithm import System, Cluster, Node, PathComputationObject
 from flask import request,jsonify
-from services import DatabaseObject, VectorDatabaseObject
+from services import DatabaseObject, ChromaDBAgent
 import json
 
 def read_json_file(file_path):
@@ -12,7 +12,7 @@ def read_json_file(file_path):
 computepathobject = PathComputationObject()
 centralsystemobject = System(distancelimit=5)
 databaseobject = DatabaseObject()
-vectordatabase = VectorDatabaseObject()
+chromadbagent = ChromaDBAgent()
 
 centralsystemobject.addrequest(Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1))
 centralsystemobject.addrequest(Node(x_pos=1, y_pos=1, item="Flashlight", quantity=-1))
@@ -51,15 +51,13 @@ def addrequest():
 
     recomputedpaths = computepathobject.getPaths()
     
-    vectordatabase.removepathobjects()
+    chromadbagent.clearindex()
+    
     for path in recomputedpaths:
         if not path:
             continue
         print(path)
-        vectordatabase.insertpathobject(
-            pathobjectid=path.identifier,
-            coordinates=[path.xposition, path.yposition], 
-        )
+        chromadbagent.insertpathobject(path.identifier, [path.xposition, path.yposition])
     
     return centralsystemobject.stats()
 
@@ -73,19 +71,17 @@ from flask import jsonify, request
 @app.route("/get/paths", methods=["POST"])
 def getactualpaths():
     body = request.get_json()
-    result = vectordatabase.getnearestneighbors([body["xposition"], body["yposition"]])
 
-    # Convert the result to a JSON-serializable format
-    json_serializable_result = {
-        "neighbors": [neighbor.to_dict() for neighbor in result]
-    }
-
-    return jsonify(json_serializable_result)
+    return chromadbagent.getnearestneighbors([body["xposition"], body["yposition"]])
 
 
 @app.route("/get/stats")
 def stats():
     return centralsystemobject.stats()
+
+@app.route("/get/db/stats", methods=["GET"])
+def dbstats():
+    return chromadbagent.getallvectors()
 
 
 if __name__ == "__main__":
