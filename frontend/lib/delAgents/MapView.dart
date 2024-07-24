@@ -149,47 +149,6 @@ class _MapViewState extends State<MapView> {
                                       ),
                                     ),
                                     SizedBox(height: 5),
-                                    if (_acceptPressed)
-                                      Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: isCompleted
-                                            ? Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 5),
-                                                child: Text(
-                                                  'Completed',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                ),
-                                              )
-                                            : OutlinedButton(
-                                                onPressed: () {
-                                                  setState(() {
-                                                    _completedStatus[index] =
-                                                        true;
-                                                  });
-                                                },
-                                                style: OutlinedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Color.fromARGB(
-                                                          255, 0, 255, 255),
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10,
-                                                      horizontal: 15),
-                                                ),
-                                                child: Text(
-                                                  'Mark as Completed',
-                                                  style: TextStyle(
-                                                    color: Colors.black87,
-                                                  ),
-                                                ),
-                                              ),
-                                      ),
                                   ],
                                 ),
                               );
@@ -204,12 +163,35 @@ class _MapViewState extends State<MapView> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ClaimedRoutes(pathIndex: widget.pathIndex),
-                          ),
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Confirm Acceptance'),
+                              content: Text('Are you sure you want to accept?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ClaimedRoutes(
+                                            pathIndex: widget.pathIndex),
+                                      ),
+                                    );
+                                  },
+                                  child: Text('Accept'),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -222,12 +204,13 @@ class _MapViewState extends State<MapView> {
                       child: Text(
                         'Accept',
                         style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
-                  ),
+                  )
               ],
             );
           }
