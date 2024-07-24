@@ -101,7 +101,7 @@ class homePageGU extends StatelessWidget {
                 ),
                 child: ClipOval(
                   child: Image.asset(
-                    'assets/prof1.jpeg',
+                    'assets/profile.png',
                     fit: BoxFit.cover,
                     width: 200,
                     height: 200,
