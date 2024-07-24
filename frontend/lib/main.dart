@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
       initialRoute: loggedIn ? '/homegu' : '/login',
       routes: {
         '/login': (context) => LoginPage(),
-        '/signupGU': (context) => SignUpPageGU(),
+        '/signup': (context) => SignUpPage(),
         '/homegu': (context) => homePageGU(),
         '/homedel': (context) => homePageDel(),
         '/provide': (context) => providePage(),
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
         '/claimed': (context) => claimed(),
         '/cartstatic': (context) => cartPageStatic(),
         '/completed': (context) => completed(),
-        '/cart': (context) => Cartpage(),
+        '/cart': (context) => cartPage(),
         //   '/mapview': (context) => MapView(),
       },
       title: 'youSupply',
