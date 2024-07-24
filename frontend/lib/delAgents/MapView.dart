@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/delAgents/claimed.dart';
 import 'package:frontend/utilities.dart';
 
 class MapView extends StatefulWidget {
@@ -202,9 +203,13 @@ class _MapViewState extends State<MapView> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          _acceptPressed = true;
-                        });
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ClaimedRoutes(pathIndex: widget.pathIndex),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -230,6 +235,13 @@ class _MapViewState extends State<MapView> {
     );
   }
 }
+
+
+
+
+
+
+
 
 
 
