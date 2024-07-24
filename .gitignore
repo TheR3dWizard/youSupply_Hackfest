@@ -14,3 +14,4 @@ AlgorithmLogic/chroma.log
 AlgorithmLogic/chroma_data
 .idea
 .vscode
+frontend/android/app/src/main/AndroidManifest.xml
