@@ -169,7 +169,7 @@ class _cartPageState extends State<cartPage> {
                               );
                             },
                             child: const Text(
-                              "Accept Cart",
+                              "Confirm Cart",
                               style: TextStyle(
                                   color: Color.fromARGB(225, 0, 225, 255)),
                             )),
