@@ -753,6 +753,19 @@ Future<Map<String, dynamic>> loadPaths() async {
   return json['paths'];
 }
 
+Future<Map<String, dynamic>> loadNewPaths() async {
+  var url = Uri.parse('https://algorithm.akashshanmugaraj.com/get/paths');
+  var response = await http.post(url,
+      body: jsonEncode(
+          {
+    "xposition": 42.989979,
+    "yposition": 53.004152
+      }),
+      headers: {"Content-Type": "application/json"});
+  Map<String, dynamic> json = jsonDecode(response.body);
+  print(json);
+  return json;
+}
 
 Future<List<LatLng>> loadLocations(int index) async {
 
