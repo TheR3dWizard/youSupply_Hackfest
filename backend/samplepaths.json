@@ -5,44 +5,50 @@
             {
                 "itemtype":"water",
                 "quantity":10,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.025155757439432,
+                "longitude": 77.00250346910578
+
             },
             {
                 "itemtype":"food",
                 "quantity":5,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.032504717571637,
+                "longitude": 77.03926152632621 
+
             },
             {
                 "itemtype":"water",
                 "quantity":-7,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.016142986991982,
+                "longitude": 76.93155488986325
+
             },
             {
                 "itemtype":"water",
                 "quantity":-3,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.001435522610695,
+                "longitude": 76.97205676537195
+
             },
             {
                 "itemtype":"clothing",
                 "quantity":3,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.074189713577693,
+                "longitude": 76.93627108978536
+
             },
             {
                 "itemtype":"clothing",
                 "quantity":-3,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.026175926862441,
+                "longitude": 76.94238814923393
             },
             {
                 "itemtype":"food",
                 "quantity":-5,
-                "latitude": 37.7749,
-                "longitude": -122.4194
+                "latitude": 11.053054637456986,
+                "longitude": 76.98442416977423
+
             }
             
         ],
