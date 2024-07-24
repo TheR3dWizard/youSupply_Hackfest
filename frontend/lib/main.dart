@@ -42,6 +42,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: loggedIn ? '/homegu' : '/login',
       onGenerateRoute: (settings) {
         if (settings.name == '/claimed') {
