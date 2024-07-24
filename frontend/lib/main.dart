@@ -6,6 +6,7 @@ import 'package:frontend/delAgents/claimed.dart';
 import 'package:frontend/delAgents/completed.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/cartPageStatic.dart';
 import 'package:frontend/generalUsers/providePage.dart';
 import 'package:frontend/generalUsers/requestPage.dart';
 import 'package:frontend/generalUsers/cartPage.dart';
@@ -55,6 +56,7 @@ class _MyAppState extends State<MyApp> {
         '/accepted': (context) => accepted(),
         '/available': (context) => Available(),
         '/claimed': (context) => claimed(),
+        '/cartstatic': (context) => cartPageStatic(),
         '/completed': (context) => completed(),
         '/cart': (context) => Cartpage(),
         //   '/mapview': (context) => MapView(),

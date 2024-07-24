@@ -146,9 +146,9 @@ class homePageGU extends StatelessWidget {
                   Select(
                       label: 'Cart', // Navigate to provide page
                       icon: Icons.card_travel,
-                      route: '/cart',
+                      route: '/cartstatic',
                       onpressed: () {
-                        Navigator.pushNamed(context, '/cart');
+                        Navigator.pushNamed(context, '/cartstatic');
                       }),
                 ],
               ),
