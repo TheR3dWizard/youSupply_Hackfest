@@ -3,6 +3,8 @@ from typing import List
 from dotenv import load_dotenv
 import os
 import mysql.connector
+from pinecone.grpc import PineconeGRPC as Pinecone
+from pinecone import ServerlessSpec
 
 load_dotenv()
 
@@ -132,3 +134,48 @@ class GoogleAPI:
         }
 
         return output
+
+from pinecone.grpc import PineconeGRPC as Pinecone
+import os
+
+class VectorDatabaseObject:
+    def __init__(self) -> None:
+        self.pinecodeobject = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+        self.indexname = "pathobjects"
+        self.pathobject = self.pinecodeobject.Index(self.indexname)
+    
+    def insertpathobject(self, pathobjectid: str, coordinates):
+        vectorobject = {
+            "id": pathobjectid,
+            "values": coordinates
+        }
+        
+        self.pathobject.upsert(vectors=[
+        vectorobject
+        ])
+        
+    def removepathobjects(self):
+        for ids in self.pathobject.list():
+            self.pathobject.delete(ids=ids)
+    
+    
+    # get neerest neighbors by passing the coordinates of the point
+    def getnearestneighbors(self, coordinates, kval=5):
+        return self.pathobject.query(vector=coordinates, top_k=kval)
+
+    def clearindex(self):
+        self.pinecodeobject.delete_index(self.indexname)
+        # After deleting the index, recreate it
+        self.pinecodeobject.create_index(self.indexname,2,ServerlessSpec(cloud="aws", region="us-east-1"),metric="euclidean")
+        self.pathobject = self.pinecodeobject.Index(self.indexname)
+
+vdb = VectorDatabaseObject()
+vdb.insertpathobject("1", [1, 1])
+vdb.insertpathobject("2", [2, 2])
+vdb.insertpathobject("3", [3, 3])
+vdb.insertpathobject("4", [4, 4])
+vdb.insertpathobject("5", [5, 5])
+vdb.insertpathobject("100", [100, 100])
+vdb.insertpathobject("200", [200, 200])
+
+print(vdb.getnearestneighbors([1, 1]))
