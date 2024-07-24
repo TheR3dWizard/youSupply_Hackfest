@@ -241,6 +241,9 @@ class Cluster:
         available = defaultdict(int)
         path = []
 
+        if len(self.sourcenodes) == 0 or len(self.sinknodes) == 0:
+            return []
+
         # function to get the closest node
         closest = lambda node, possibilities: min(
             [(node.getdistance(_), _) for _ in possibilities if _ not in visited],
