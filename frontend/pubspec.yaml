@@ -76,6 +76,7 @@ flutter:
     - assets/foodparcel.jpg
     - assets/firstaidkit.jpg
     - assets/flashlight.jpg
+    - assets/prof1.jpeg
     #- .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
