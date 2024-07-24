@@ -46,6 +46,7 @@ class _MapViewState extends State<MapView> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No data available'));
@@ -61,14 +62,14 @@ class _MapViewState extends State<MapView> {
                   child: Container(
                     height: MediaQuery.of(context).size.height / 3,
                     width: double.infinity,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.grey,
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(10),
                         bottom: Radius.circular(10),
                       ),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         "Map",
                         style: TextStyle(

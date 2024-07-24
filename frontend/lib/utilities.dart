@@ -546,11 +546,11 @@ Future<List<String>> getCoords() async {
   return [json['location']['xpos'], json['location']['ypos']];
 }
 
-List<String> getrandomCoords() {
+List<double> getrandomCoords() {
   Random random = new Random();
   double x = random.nextDouble() * 100;
   double y = random.nextDouble() * 100;
-  return [x.toString(), y.toString()];
+  return [x,y];
 }
 
 Future<void> removeFromCart(String item) async {
@@ -595,22 +595,27 @@ Future<List<Map<String, dynamic>>> readCart() async {
 // Backend Functions
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
+String basealgoUrl = 'https://algorithm.akashshanmugaraj.com';
+
 
 //item id and item name map
 
 Map<String, String> itemnameToID = {
   'First Aid Kit': 'c8b1d27f-e9c4-4c28-a7db-332daba4ac42',
-  'Water Bottles': '9fdb9531-29d9-41e6-aeb3-5e1fdf79c867',
-  'Blankets': '6674ea86-9340-4a81-bf7a-d583b054f7a0',
-  'Flashlights': '619d8b87-a67c-4769-bbf0-839715a3603d',
+  'water bottle': '9fdb9531-29d9-41e6-aeb3-5e1fdf79c867',
+  'Water Bottle': '9fdb9531-29d9-41e6-aeb3-5e1fdf79c867',
+  'Blanket': '6674ea86-9340-4a81-bf7a-d583b054f7a0',
+  'Flashlight': '619d8b87-a67c-4769-bbf0-839715a3603d',
   'Food Packages': '754788e4-a944-44d3-ad80-f3e5c6a8b689'
 };
 
 List<String> items = [
   'First Aid Kit',
-  'Water Bottles',
-  'Blankets',
-  'Flashlights',
+  'Water Bottle',
+  'water bottle',
+
+  'Blanket',
+  'Flashlight',
   'Food Packages'
 ];
 
@@ -673,15 +678,21 @@ Future<void> sendcart() async {
   print("File before sending:");
   printFile();
 
+  // print("Dictionary is");
+  // print(itemnameToID);
+  
   // List<String> coords = await getCoords();
-  List<String> coords = getrandomCoords();
+  List<double> coords = getrandomCoords();
 
   json['cart'].forEach((element) async {
     if (element['quantity'] == 0) {
-      return;
     }
 
-    var url = Uri.parse('$baseUrl/add/node');
+    var url = Uri.parse('$basealgoUrl/add/node');
+    
+    // print("KEY is ${element['item']}");
+    // print("VALUE is ${itemnameToID[element['item']]}");
+    
     String itemid = itemnameToID[element['item']] ?? "";
     if (itemid == "") {
       print("Item ID not found for ${element['item']}");
@@ -694,25 +705,27 @@ Future<void> sendcart() async {
     var response = await http.post(url,
         body: jsonEncode({
           'itemid': itemid,
-          'quantity': element['quantity'].toString(),
-          'xposition': coords[0].toString(),
-          'yposition': coords[1].toString(),
+          'quantity': element['quantity'],
+          'xposition': coords[0],
+          'yposition': coords[1],
           'username': json['username'],
         })
-        // ,headers: {"Content-Type": "application/json"}
+        ,headers: {"Content-Type": "application/json"}
         );
 
     print(jsonEncode({
-      'item': element['item'],
-      'quantity': element['quantity'].toString(),
-      'xposition': coords[0].toString(),
-      'yposition': coords[1].toString(),
-    }));
+          'itemid': itemid,
+          'quantity': element['quantity'],
+          'xposition': coords[0],
+          'yposition': coords[1],
+          'username': json['username'],
+        }));
 
     if (response.statusCode == 200) {
       print("Successfully sent ${element['item']}");
       removeFromCart(element['item']);
     } else {
+      print(response.statusCode);
       print("Failed to send ${element['item']}");
       print(response.body);
     }
@@ -727,8 +740,8 @@ Future<Map<String, dynamic>> loadPaths() async {
       body: jsonEncode(
           {"username": "abc", "password": "abc", "userrole": "client"}),
       headers: {"Content-Type": "application/json"});
-  print(response.body);
   Map<String, dynamic> json = jsonDecode(response.body);
+  print(json['paths']);
   return json['paths'];
 }
 
@@ -777,60 +790,41 @@ class Tuple {
   String resources;
 
   Tuple(this.startLoc, this.endLoc, this.resources);
+
+  void printData() {
+    print('Start Location: $startLoc');
+    print('End Location: $endLoc');
+    print('Resources: $resources');
+  }
 }
 
 //It takes an index as the parameter and generates all the tuples for the path that is referenced by that index
 //The index is the key of the path in the paths json
 //Call this function via a future builder in the MapView widget and use a list view builder or smtng to create it (similar to cartpage)
-// Future<List<Tuple>> loadPathsTuple(int index) async {
-//   Map<String, dynamic> paths = await loadPaths();
-//   List<Tuple> pathList = [];
-//   paths.forEach((key, value) {
-//     if (key == index.toString()) {
-//       int length = value.length;
-//       for (int i = 1; i < length; i++) {
-//         String startLoc =
-//             value[i - 1]['latitude'] + ',' + value[i - 1]['longitude'];
-//         String endLoc = value[i]['latitude'] + ',' + value[i]['longitude'];
-//         String resources;
-//         if (value[i - 1]['quantity'] < 0) {
-//           resources =
-//               "${-1 * value[i]['quantity']}  ${value[i]['itemtype']} to deliver";
-//         } else {
-//           resources =
-//               "${value[i]['quantity']}  ${value[i]['itemtype']} to collect";
-//         }
-//         pathList.add(Tuple(startLoc, endLoc, resources));
-//       }
-//     }
-//   });
 
-//   return pathList;
-// }
 Future<List<Tuple>> loadPathsTuple(int index) async {
   Map<String, dynamic> paths = await loadPaths();
   List<Tuple> pathList = [];
-  paths.forEach((key, value) {
-    if (key == index.toString()) {
-      int length = value.length;
-      for (int i = 1; i < length; i++) {
-        String startLoc =
-            value[i - 1]['latitude'] + ',' + value[i - 1]['longitude'];
-        String endLoc = value[i]['latitude'] + ',' + value[i]['longitude'];
-        String resources;
-        if (value[i - 1]['quantity'] < 0) {
-          resources =
-              "${-1 * value[i]['quantity']}  ${value[i]['itemtype']} to deliver";
-        } else {
-          resources =
-              "${value[i]['quantity']}  ${value[i]['itemtype']} to collect";
-        }
-        pathList.add(Tuple(startLoc, endLoc, resources));
-      }
+  List<dynamic> pathDynamic = paths[index.toString()];
+  List<Map<String, dynamic>> path = pathDynamic.map((item) => item as Map<String, dynamic>).toList();
+  for (int i = 1; i < path.length; i++) {
+    print("Here");
+    String startLoc = "${path[i - 1]['latitude']},${path[i - 1]['longitude']}";
+    String endLoc = "${path[i]['latitude']},${path[i]['longitude']}";
+    String resources;
+    if (path[i - 1]['quantity'] < 0) {
+      resources =
+          "${-1 * path[i-1]['quantity']}  ${path[i-1]['itemtype']} to deliver";
+    } else {
+      resources = "${path[i-1]['quantity']}  ${path[i-1]['itemtype']} to collect";
     }
-  });
+    pathList.add(Tuple(startLoc, endLoc, resources));
+  }
 
-  print('Path List: $pathList');
+  print('Path List: ');
+  for (int i = 0; i < pathList.length; i++) {
+    pathList[i].printData();
+  }
   return pathList;
 }
 
