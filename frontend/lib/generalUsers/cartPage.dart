@@ -125,12 +125,12 @@ class _cartPageState extends State<cartPage> {
                                 builder: (context) {
                                   return AlertDialog(
                                     backgroundColor: Colors.black,
-                                    title: const Text("Accept Cart",
+                                    title: const Text("Confirm Cart",
                                         style: TextStyle(
                                             color: Color.fromARGB(
                                                 225, 0, 225, 255))),
                                     content: const Text(
-                                      "Are you sure you want to accept this cart?",
+                                      "Are you sure you want to confirm this cart?",
                                       style: TextStyle(
                                           color:
                                               Color.fromARGB(255, 0, 255, 255)),
@@ -159,7 +159,7 @@ class _cartPageState extends State<cartPage> {
                                             emptyCart();
                                             Navigator.pop(context, '/homegu');
                                           },
-                                          child: const Text("Accept Cart",
+                                          child: const Text("Yes",
                                               style: TextStyle(
                                                   color: Color.fromARGB(
                                                       225, 0, 225, 255)))),
