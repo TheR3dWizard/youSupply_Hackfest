@@ -3,7 +3,7 @@ import 'package:frontend/settings.dart';
 import 'package:frontend/utilities.dart';
 
 // This is the type used by the popup menu below.
-enum GUMenu { History, Settings, ProfileView, SwitchAccount, Logout }
+enum GUMenu { History, Settings, ProfileView, Logout }
 
 class homePageGU extends StatelessWidget {
   const homePageGU({Key? key}) : super(key: key);
@@ -38,9 +38,6 @@ class homePageGU extends StatelessWidget {
                       Navigator.pushNamed(context, '/profile');
                       // Navigate to '/profile' or perform related action
                       break;
-                    case GUMenu.SwitchAccount:
-                      // Navigate to '/switch_account' or perform related action
-                      break;
                     case GUMenu.Logout:
                       Navigator.pushNamed(context, '/');
                       // Navigate to '/logout' or perform related action
@@ -69,13 +66,6 @@ class homePageGU extends StatelessWidget {
                     child: ListTile(
                       leading: Icon(Icons.person),
                       title: Text('Profile View'),
-                    ),
-                  ),
-                  const PopupMenuItem<GUMenu>(
-                    value: GUMenu.SwitchAccount,
-                    child: ListTile(
-                      leading: Icon(Icons.swap_horiz),
-                      title: Text('Switch Account'),
                     ),
                   ),
                   const PopupMenuItem<GUMenu>(
@@ -121,7 +111,7 @@ class homePageGU extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 100),
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
