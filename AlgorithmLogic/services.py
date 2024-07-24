@@ -7,6 +7,8 @@ from chromadb import Client
 from chromadb.config import Settings
 from chromadb.api import Collection
 from pprint import pprint
+from math import sin, cos, sqrt, atan2, radians
+
 load_dotenv()
 
 
@@ -149,10 +151,18 @@ class GoogleAPI:
 
         distance_matrix = response.json()
 
-        output = {
-            "distance": distance_matrix["rows"][0]["elements"][0]["distance"]["text"],
-            "duration": distance_matrix["rows"][0]["elements"][0]["duration"]["text"],
-        }
+        try:
+            output = {
+                "distance": distance_matrix["rows"][0]["elements"][0]["distance"]["text"],
+                "duration": distance_matrix["rows"][0]["elements"][0]["duration"]["text"],
+            }
+        except KeyError:
+            # print(distance_matrix)
+            # print(origin, destination)
+            return {
+                "distance": "1000 km",
+                "duration": "3.1 mins",
+            }
 
         return output
 
@@ -170,6 +180,30 @@ class GoogleAPI:
             raise Exception(f"Error making request: {response.status_code}")
 
         return response.json()['results'][0]['formatted_address'][:26]
+
+class MathFunctions:
+    def __init__(self) -> None:
+        self.earthradius = 6373.0
+    
+    def euclideandistance(self, point1: List[float], point2: List[float]):
+        return ((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2) ** 0.5
+    
+    def distancebetweentwopoints(self, origin: List[float], destination: List[float]):
+        orglat, orglon = origin
+        destlat, destlon = destination
+        
+        orglat = radians(orglat)
+        orglon = radians(orglon)
+        destlat = radians(destlat)
+        destlon = radians(destlon)
+        
+        dlon = destlon - orglon
+        dlat = destlat - orglat
+        
+        a = sin(dlat / 2) ** 2 + cos(orglat) * cos(destlat) * sin(dlon / 2) ** 2
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        
+        return self.earthradius * c
 
 class ChromaDBAgent:
     def __init__(self) -> None:
@@ -207,3 +241,11 @@ class ChromaDBAgent:
 
     def whatallclienthas(self):
         return dir(self.client)
+
+
+if __name__ == "__main__":
+    gmapi = GoogleAPI()
+    mf = MathFunctions()
+    
+    print(gmapi.returndistancebetweentwopoints([10.990018, 76.002040],[10.991982, 77.008117]))
+    print(mf.distancebetweentwopoints([10.990018, 76.002040],[10.991982, 77.008117]))

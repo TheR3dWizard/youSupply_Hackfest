@@ -6,9 +6,10 @@ import pprint
 from services import GoogleAPI
 import numpy as np
 from scipy.spatial import ConvexHull, QhullError
-from services import GoogleAPI
+from services import GoogleAPI, MathFunctions
 
 globalgooglemapsobject = GoogleAPI()
+globalmathfunctionsobject = MathFunctions()
 
 class Node:
     """
@@ -74,14 +75,15 @@ class Node:
 
 
 class Path:
-    def __init__(self, path: List[Node], distance: float) -> None:
+    def __init__(self, path: List[Node], distance: float, clusterid: str) -> None:
         self.identifier = str(uuid.uuid4())
         self.path = path
         self.distance = distance
         self.identifier = str(uuid.uuid4())
         self.xposition = path[0].x_pos
         self.yposition = path[0].y_pos
-
+        self.associatedcluster = None
+        
     def __repr__(self):
         return str({
             "pathidentifier": self.identifier,
@@ -93,7 +95,8 @@ class Path:
         return {
             "pathidentifier": self.identifier,
             "distance": self.distance,
-            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition])
+            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition]),
+            "clusterid": self.associatedcluster
         }
         
     def getPath(self):
@@ -171,7 +174,8 @@ class Cluster:
     def addnode(self, newnode: Node):
         # self.allnodes.append([newnode.x_pos, newnode.y_pos])
         self.allnodes = np.vstack([self.allnodes, [newnode.x_pos, newnode.y_pos]]) 
-        self.updatecentroid()
+        self.centerxpos = (self.centerxpos + newnode.x_pos) / 2
+        self.centerypos = (self.centerypos + newnode.y_pos) / 2
         
         if newnode.nodetype == "Source":
             self.sourcenodes.append(newnode)
@@ -353,7 +357,7 @@ class Cluster:
             path.append(next)
             current = next
 
-        self.path = Path(path, distance)
+        self.path = Path(path, distance, self.identifier)
 
     def plotallpaths(self):
         self.getpath()
@@ -383,16 +387,14 @@ class Cluster:
         return self.sourcenodes
 
     def getdistance(self, nodeobject: Node) -> int:
+        print(f"Getting distance between {self.centerxpos}, {self.centerypos} and {nodeobject.x_pos}, {nodeobject.y_pos}")
         if self.usegooglemapsapi:
             googleapi = GoogleAPI()
             return float(googleapi.returndistancebetweentwopoints(
                 [self.centerxpos, self.centerypos], [nodeobject.x_pos, nodeobject.y_pos]
             )['distance'][:-3])
 
-        return (
-            abs(nodeobject.x_pos - self.centerxpos) ** 2
-            + abs(nodeobject.y_pos - self.centerypos) ** 2
-        ) ** 0.5
+        return globalmathfunctionsobject.distancebetweentwopoints([self.centerxpos, self.centerypos], [nodeobject.x_pos, nodeobject.y_pos])
 
     def getcenter(self):
         return self.centerxpos, self.centerypos
@@ -705,8 +707,9 @@ class PathComputationObject:
         baseobject = {
             "numberofpaths": numberofpaths
         }
-        
+        counter = 0
         for pathexport in bulkexportobject:
-            baseobject[pathexport["pathinformation"]['pathidentifier']] = pathexport
+            baseobject[str(counter)] = pathexport
+            counter += 1
         
         return baseobject
