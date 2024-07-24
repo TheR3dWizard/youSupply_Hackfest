@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pprint
 from services import GoogleAPI
 import numpy as np
-from scipy.spatial import ConvexHull
+from scipy.spatial import ConvexHull, QhullError
 
 
 class Node:
@@ -49,7 +49,7 @@ class Node:
         ) ** 0.5
 
     def __repr__(self):
-        return f"{self.x_pos},{self.y_pos},{self.itemtype},{self.quantity};"
+        return self.__str__()
 
     def __gtr__(self, other):
         return self.quantity > other.quantity
@@ -60,10 +60,16 @@ class Node:
 
 class Path:
     def __init__(self, path: List[Node], distance: float) -> None:
+        self.identifier = str(uuid.uuid4())
         self.path = path
         self.distance = distance
         self.identifier = str(uuid.uuid4())
+        self.xposition = path[0].x_pos
+        self.yposition = path[0].y_pos
 
+    def __repr__(self) -> str:
+        return f"Path: {self.path} with distance {self.distance}"
+    
     def getPath(self):
         return self.path
 
@@ -119,12 +125,13 @@ class Cluster:
         self.inventory = defaultdict(int)
         self.usegooglemapsapi = usegooglemapsapi
         self.clustermetric = 0  # TODO: Implement a metric to evaluate the cluster
-        self.allnodes = []
+        self.allnodes = np.empty((0, 2))
         self.convexhullobject = None
         
     def addnode(self, newnode: Node):
-        self.allnodes.append([newnode.x_pos, newnode.y_pos])
-        self.updatecentroid(newnode.x_pos, newnode.y_pos)
+        # self.allnodes.append([newnode.x_pos, newnode.y_pos])
+        self.allnodes = np.vstack([self.allnodes, [newnode.x_pos, newnode.y_pos]]) 
+        self.updatecentroid()
         
         if newnode.nodetype == "Source":
             self.sourcenodes.append(newnode)
@@ -145,24 +152,26 @@ class Cluster:
         else:
             raise ValueError("Node not in cluster")
 
-    def updatecentroid(self, addxpos = 0, addypos = 0):
-        if len(self.allnodes) == 1:
-            self.centerxpos = self.allnodes[0][0]
-            self.centerypos = self.allnodes[0][1]
-            return
-        elif len(self.allnodes) == 2:
-            self.centerxpos = (self.allnodes[0][0] + self.allnodes[1][0]) / 2
-            self.centerypos = (self.allnodes[0][1] + self.allnodes[1][1]) / 2
-            return
+    def updatecentroid(self):
+        if len(self.allnodes) > 2:
+            try:
+                self.convexhullobject = ConvexHull(self.allnodes)
+                hull_points = self.allnodes[self.convexhullobject.vertices]
+                self.centerxpos, self.centerypos = self.polygon_centroid(hull_points)
+            except QhullError:
+                self.centerxpos, self.centerypos = np.mean(self.allnodes, axis=0)
         else:
-            if not self.convexhullobject:
-                self.convexhullobject = ConvexHull(self.allnodes, incremental=True)
-            
-            self.convexhullobject.add_points([[addxpos, addypos]])
-            self.centerxpos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 0])
-            self.centerypos = np.mean(self.convexhullobject.points[self.convexhullobject.vertices, 1])
+            self.centerxpos, self.centerypos = np.mean(self.allnodes, axis=0)
 
-            return
+    def polygon_centroid(self, points):
+        if len(points) == 1:
+            return points[0]
+        x = points[:, 0]
+        y = points[:, 1]
+        a = np.sum(x[:-1] * y[1:] - x[1:] * y[:-1]) / 2
+        cx = np.sum((x[:-1] + x[1:]) * (x[:-1] * y[1:] - x[1:] * y[:-1])) / (6 * a)
+        cy = np.sum((y[:-1] + y[1:]) * (x[:-1] * y[1:] - x[1:] * y[:-1])) / (6 * a)
+        return np.array([cx, cy])
     '''
     For a more accurate calculation of the centroid after adding each new node, you would need to keep track of the total number of nodes and use that in your calculation. Here's a corrected approach in pseudocode:
 
@@ -190,7 +199,13 @@ class Cluster:
         freepool = []
         deficits = []
         excesses = []
+        ivnlen = len(self.inventory)
+        dfclen = len(deficits)
+        excenlen = len(excesses)
+        counter = 0
         for i in self.inventory:
+            print(f"Invetory checking {counter} of {ivnlen}")
+            counter += 1
             if self.inventory[i] < 0:
                 # TYPE: (QUANTITY, [NODES])
                 deficits.append(
@@ -203,8 +218,11 @@ class Cluster:
                         [_ for _ in self.sourcenodes if _.itemtype == i],
                     ]
                 )
-
+        
+        counter = 0
+        
         for deficit, nodes in deficits:
+            print(f"Deficit checking {counter} of {dfclen}")
             while deficit < 0:
                 node = min(nodes, key=lambda x: x.quantity)
 
@@ -213,18 +231,24 @@ class Cluster:
                 self.removesink(node)
                 freepool.append(node)
 
+        counter = 0
         for excess, nodes in excesses:
-            while excess > 0:
+            print(f"Excess checking {counter} of {excenlen}")
+            while excess > 0 and nodes:
                 node = max(nodes, key=lambda x: x.quantity)
                 if excess - node.quantity >= 0:
                     excess -= node.quantity
                     nodes.remove(node)
                     self.removesource(node)
                     freepool.append(node)
+                else:
+                    break
         # TODO: write functionality to change a half excess node into a full excess and fitting node
         # if deficit is -3, and sink is -5, then sink should be converted to a -2 node and freepool should have a -3 node
 
+        print("Feasible pool created")
         self.updateinventory()
+        print("Updated Inventory")
         return freepool
 
     def getpath(self, curpos: Node = None) -> List[Node]:
@@ -233,6 +257,9 @@ class Cluster:
         available = defaultdict(int)
         path = []
 
+        if len(self.sourcenodes) == 0 or len(self.sinknodes) == 0:
+            return []
+        
         # function to get the closest node
         closest = lambda node, possibilities: min(
             [(node.getdistance(_), _) for _ in possibilities if _ not in visited],
@@ -364,23 +391,52 @@ class System:
         return self.__str__()
 
     # can be initialized with a list of nodes or generate based on a probability factor
-    def __init__(self, distancelimit) -> None:
+    def __init__(self, distancelimit, listofnodes:List[Node] = []) -> None:
+        
         self.identifier = str(uuid.uuid4())
         self.threshold = distancelimit
-        self.listofitems = set()
+        self.listofitems = ["Water Bottle", "Flashlight", "Canned Food"]
 
-        self.numberofnodes: int = 0
-        self.listofnodes: List[Node] = []
-
+        self.numberofnodes: int = len(listofnodes)
+        self.listofnodes: List[Node] = listofnodes
+        self.listofpositions = (
+            [
+                (x,y)
+                for x,y in zip(
+                    [node.x_pos for node in listofnodes],
+                    [node.y_pos for node in listofnodes],
+                )
+            ]
+        )
+        
+        self.sourcenodes = list()
+        self.sinknodes = list()
+        self.numberofsourcenodes = 0
+        self.numberofsinknodes = 0
+        
+        for node in self.listofnodes:
+            if node.nodetype == "Source":
+                self.sourcenodes.append(node)
+                self.numberofsourcenodes += 1
+            else:
+                self.sinknodes.append(node)
+                self.numberofsinknodes += 1
+                
+        
         self.clusterlist: List[Cluster] = []
         self.numberofclusters: int = 0
 
         self.freepool: List[Node] = []
 
     def addrequest(self, node: Node) -> Cluster:
-        self.listofitems.add(node.itemtype)
+        self.listofitems.append(node.itemtype)
         self.listofnodes.append(node)
-        self.numberofnodes = 0
+        self.numberofnodes += 1
+        
+        if node.nodetype == "Sink":
+            self.numberofsinknodes += 1
+        else:
+            self.numberofsourcenodes += 1
 
         if not self.numberofclusters:
             newcluster = Cluster(centerx=node.x_pos, centery=node.y_pos)
@@ -401,6 +457,47 @@ class System:
             self.numberofclusters += 1
             print(f"New Cluster Created: {newcluster.identifier}")
             return newcluster
+    
+    def betterremovenode(self, node: Node):
+        self.listofnodes.remove(node)
+
+        for cluster in self.clusterlist:
+            if node.nodetype == "Sink" and node in cluster.getsinklist():
+                cluster.removesink(node)
+                self.numberofsinknodes -= 1
+                return
+            elif node.nodetype == "Source" and node in cluster.getsourcelist():
+                cluster.removesource(node)
+                self.numberofsourcenodes -= 1
+                return
+    
+    def removeNode(self, node: Node):
+        self.listofnodes.remove(node)
+        if node.nodetype == "Sink":
+            self.numberofsinknodes -= 1
+        else:
+            self.numberofsourcenodes -= 1
+    
+    def removePath(self, path: Path):
+        for cluster in self.clusterlist:
+            if path in cluster.subpaths:
+                cluster.removepath(path)
+        for node in path.path:
+            self.removeNode(node)
+    
+    # TODO AKASH: check if this function needs to return a new System or if changes can be modified in place
+    def reconstructsystem(self):
+        print("Reconstructing the system")
+        newsystem = System(distancelimit=self.threshold, listofnodes=[])
+        print(f"New System from {self.listofnodes}")
+        
+        # for node in self.listofnodes:
+            # print(node)
+        
+        for node in self.listofnodes:
+            newsystem.addrequest(node)
+        
+        return newsystem
 
     def stats(self) -> dict:
         statslist = dict()
@@ -416,9 +513,14 @@ class System:
         return statslist
 
     def createfreepool(self):
+        clen = len(self.clusterlist)
+        counter = 0
         for cluster in self.clusterlist:
+            print(f"Cluster {counter} of {clen}")
+            counter += 1
             self.freepool += cluster.getfeasible()
-        return System(listofnodes=self.freepool)
+        print("Freepool created")
+        return System(listofnodes=self.freepool, distancelimit=self.threshold)
 
     def isfeasiblesystem(self):
         return self.numberofsinknodes != 0 and self.numberofsourcenodes != 0
@@ -504,3 +606,54 @@ class System:
             print(f"Total number of nodes related to {item} is {itemcounter[item]}")
             print(f"Request total for {item} is {request[item]}")
             print(f"Offer total for {item} is {offer[item]}")
+
+class PathComputationObject:
+    def __init__(self) -> None:
+        self.system = None
+        self.freepoolsystem = None
+        self.paths = []
+
+    #function to set the system, will be called by the backend only when initializing the system
+    #after initialization, the system will be set by the addNode function only and should not be called again
+    def setSystem(self, targetsystem: System) -> None:
+        self.system = targetsystem
+        if not targetsystem.isfeasiblesystem():
+            raise ValueError("System does not contain sinks or sources and is not feasible")
+        
+        print("Attempting reconstruction of the system")
+        self.system = targetsystem.reconstructsystem()
+        #figure out what to do with the freepool system
+        #possible solutions:
+        #1) maybe create a new system 
+        #2) change it from a system into just a list of nodes
+        #3) change addNode to add a node to the freepool system and not the main system
+        print("Reconstruction successful, creating freepool system")
+        self.freepoolsystem = self.system.createfreepool()
+        print("Freepool system created, extracting all paths")
+        for cluster in self.system.clusterlist:
+            cluster.getpath()
+            self.paths.append(cluster.path)
+        print("All paths extracted")
+
+    #function to add a node to the system
+    #will automatically set the system and recalculate all paths
+    def addNode(self, node: Node) -> None:
+        self.system.addrequest(node)
+        print("Passing the below system to the system setter")
+        print(self.system.stats())
+        try:
+            self.setSystem(self.system)
+        except ValueError as e:
+            print("Could not set the system")
+
+    #function to be called when a path is satisfied
+    def removePath(self, path: Path) -> None:
+        self.paths.remove(path)
+        self.system.removePath(path)
+
+    #function to get all the paths
+    def getPaths(self) -> List[Path]:
+        return self.paths
+    
+    #TODO: functionality to handle paths in the different layers (available, in progress, completed) with no inconsistencies
+    # probably the hardest thing :)
