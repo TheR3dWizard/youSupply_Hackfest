@@ -3,7 +3,7 @@ import 'package:frontend/settings.dart';
 import 'package:frontend/utilities.dart';
 
 // This is the type used by the popup menu below.
-enum DeliveryMenu { History, Settings, ProfileView, SwitchAccount, Logout }
+enum DeliveryMenu { History, Settings, ProfileView, Logout }
 
 class homePageDel extends StatelessWidget {
   const homePageDel({Key? key}) : super(key: key);
@@ -34,9 +34,6 @@ class homePageDel extends StatelessWidget {
                     case DeliveryMenu.ProfileView:
                       Navigator.pushNamed(context, '/profile');
                       break;
-                    case DeliveryMenu.SwitchAccount:
-                      // Navigate to '/switch_account' or perform related action
-                      break;
                     case DeliveryMenu.Logout:
                       Navigator.pushNamed(context, '/');
                       break;
@@ -65,13 +62,6 @@ class homePageDel extends StatelessWidget {
                     child: ListTile(
                       leading: Icon(Icons.person),
                       title: Text('Profile View'),
-                    ),
-                  ),
-                  const PopupMenuItem<DeliveryMenu>(
-                    value: DeliveryMenu.SwitchAccount,
-                    child: ListTile(
-                      leading: Icon(Icons.swap_horiz),
-                      title: Text('Switch Account'),
                     ),
                   ),
                   const PopupMenuItem<DeliveryMenu>(

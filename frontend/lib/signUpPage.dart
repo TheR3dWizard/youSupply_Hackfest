@@ -19,6 +19,8 @@ class SignUpPage extends StatelessWidget {
       TextEditingController();
   final TextEditingController contactController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController vehicleTypeController = TextEditingController();
+  final TextEditingController licenseNumberController = TextEditingController();
   final ValueNotifier<String> typeNotifier = ValueNotifier<String>("Client");
   late Future<Position> location;
 
@@ -29,9 +31,6 @@ class SignUpPage extends StatelessWidget {
     // Test if location services are enabled.
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
       return Future.error('Location services are disabled.');
     }
 
@@ -39,28 +38,16 @@ class SignUpPage extends StatelessWidget {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
         return Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
     return await Geolocator.getCurrentPosition();
-  }
-
-  void initState() {
-    location = _determinePosition();
   }
 
   @override
@@ -74,7 +61,6 @@ class SignUpPage extends StatelessWidget {
           child: Center(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  // crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 const Padding(
                     padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
@@ -156,21 +142,31 @@ class SignUpPage extends StatelessWidget {
                       label1: "Confirm Password",
                       controller: confirmPasswordController,
                     ),
-                    // LabelledTextField.readable(
-                    //   label: "Address",
-                    //   controller: addressController,
-                    // ),
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                      IconButton(
-                          onPressed: () {
-                            print('pressed');
-                          },
-                          icon: Icon(Icons.photo),
-                          color: Colors.grey),
-                      const Text('Upload Profile Picture'),
-                    ]),
+                    // Additional fields for delivery agents
+                    ValueListenableBuilder<String>(
+                      valueListenable: typeNotifier,
+                      builder: (context, value, child) {
+                        if (value == "Delivery Agent") {
+                          return Column(
+                            children: [
+                              LabelledTextField.readable(
+                                label: "Vehicle Registration Number",
+                                controller: vehicleTypeController,
+                              ),
+                              LabelledTextField.readable(
+                                label: "License Number",
+                                controller: licenseNumberController,
+                              ),
+                            ],
+                          );
+                        } else {
+                          return SizedBox.shrink();
+                        }
+                      },
+                    ),
                   ],
                 ),
+                SizedBox(height: 20),
                 OutlinedButton(
                   onPressed: () {
                     authenticateUser(context, usernameController,
@@ -181,9 +177,7 @@ class SignUpPage extends StatelessWidget {
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.black,
                   ),
-                  child: const Text(
-                    'Sign Up',
-                  ),
+                  child: const Text('Sign Up'),
                 ),
               ])),
         ));
@@ -194,7 +188,6 @@ class SignUpPage extends StatelessWidget {
       TextEditingController username,
       TextEditingController setPassword,
       TextEditingController confirmPassword) {
-    //TODO authentication
     if (setPassword.text == confirmPassword.text) {
       print('User Authenticated');
       if (typeNotifier.value == 'Client') {
@@ -207,5 +200,3 @@ class SignUpPage extends StatelessWidget {
     }
   }
 }
-
-// Delivery agents vehicle?

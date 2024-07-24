@@ -5,7 +5,7 @@ class requestPage extends StatelessWidget {
   requestPage({Key? key}) : super(key: key);
 
   final List<dynamic> items = [
-    ['Drinking Water', 'assets/water.jpg'],
+    ['Water Bottle', 'assets/water.jpg'],
     ['Flashlight', 'assets/flashlight.jpg'],
     ['Blanket', 'assets/blanket.jpg'],
     ['First Aid Kit', 'assets/firstaidkit.jpg'],
