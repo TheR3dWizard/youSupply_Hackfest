@@ -43,6 +43,20 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: loggedIn ? '/homegu' : '/login',
+      onGenerateRoute: (settings) {
+        if (settings.name == '/claimed') {
+          final pathIndex = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) => ClaimedRoutes(pathIndex: pathIndex),
+          );
+        } else if (settings.name == '/mapview') {
+          final pathIndex = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) => MapView(pathIndex: pathIndex),
+          );
+        }
+        return null; // Let `routes` handle the rest
+      },
       routes: {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
@@ -55,11 +69,9 @@ class _MyAppState extends State<MyApp> {
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
         '/available': (context) => Available(),
-        '/claimed': (context) => claimed(),
-        '/cartstatic': (context) => cartPageStatic(),
+        '/cartstatic': (context) => cartPage(),
         '/completed': (context) => completed(),
         '/cart': (context) => cartPage(),
-        //   '/mapview': (context) => MapView(),
       },
       title: 'youSupply',
       theme: ThemeData(

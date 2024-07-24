@@ -14,8 +14,13 @@ class DeliveryDetails {
 
 class DeliveryDetailsWidget extends StatelessWidget {
   final DeliveryDetails deliveryDetails;
+  final int pathIndex;
 
-  const DeliveryDetailsWidget({super.key, required this.deliveryDetails});
+  const DeliveryDetailsWidget({
+    Key? key,
+    required this.deliveryDetails,
+    required this.pathIndex,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +83,13 @@ class DeliveryDetailsWidget extends StatelessWidget {
             Spacer(),
             OutlinedButton(
               onPressed: () {
-                //Navigator.push(context, MaterialPageRoute(builder: (context=> )));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MapView(pathIndex: pathIndex), // Use pathIndex
+                  ),
+                );
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.black87,
@@ -101,7 +112,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
 }
 
 class Available extends StatefulWidget {
-  const Available({super.key});
+  const Available({Key? key}) : super(key: key);
 
   @override
   State<Available> createState() => _AvailableState();
@@ -147,12 +158,16 @@ class _AvailableState extends State<Available> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     ...deliveryDetailsList
+                        .asMap()
+                        .entries
                         .map(
-                          (details) => Padding(
+                          (entry) => Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 7, horizontal: 2),
-                            child:
-                                DeliveryDetailsWidget(deliveryDetails: details),
+                            child: DeliveryDetailsWidget(
+                              deliveryDetails: entry.value,
+                              pathIndex: entry.key, // Pass the index
+                            ),
                           ),
                         )
                         .toList(),
@@ -166,6 +181,13 @@ class _AvailableState extends State<Available> {
     );
   }
 }
+
+
+
+
+
+
+
 // class DeliveryDetails {
 //   final String fromLoc;
 //   final double distanceFromDelAgent;

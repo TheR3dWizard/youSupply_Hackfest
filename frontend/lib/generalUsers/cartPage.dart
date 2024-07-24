@@ -182,6 +182,7 @@ class _cartPageState extends State<cartPage> {
   }
 
   Future<Map<String, List<Map<String, dynamic>>>> segregateCart() async {
+    print("Segregating cart");
     List<dynamic> cartDynamic = await readCart();
     List<Map<String, dynamic>> cart =
         cartDynamic.map((item) => item as Map<String, dynamic>).toList();
