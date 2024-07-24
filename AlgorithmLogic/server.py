@@ -16,8 +16,8 @@ centralsystemobject = System(distancelimit=5)
 databaseobject = DatabaseObject()
 chromadbagent = ChromaDBAgent()
 masterpathlist: List[Path] = list()
-centralsystemobject.addrequest(Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1))
-centralsystemobject.addrequest(Node(x_pos=1, y_pos=1, item="Flashlight", quantity=-1))
+centralsystemobject.addrequest(Node(x_pos=40.646984, y_pos=-73.789450, item="Flashlight", quantity=1))
+centralsystemobject.addrequest(Node(x_pos=42.646984, y_pos=-73.789450, item="Flashlight", quantity=-1))
 
 app = Flask(__name__)
 
@@ -114,11 +114,9 @@ def getactualpaths():
         return {
             "message": "No paths in the masterpathlist"
         }
-    print(nearestids)
-    print(masterpathlist)
+
     for path in masterpathlist:
-        
-        if path and path.identifier in nearestids:
+        if path and path.identifier in nearestids[0]:
             nearestpaths.append(path)
     
     if len(nearestpaths) == 0:
