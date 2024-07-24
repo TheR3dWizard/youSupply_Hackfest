@@ -51,6 +51,7 @@ class _MapViewState extends State<MapView> {
           } else {
             List<Tuple> pathTuples = snapshot.data!;
             _completedStatus = List<bool>.filled(pathTuples.length, false);
+            print('Path Tuples: $pathTuples'); // Debug print
             return Column(
               children: [
                 // Map Container
@@ -229,6 +230,7 @@ class _MapViewState extends State<MapView> {
     );
   }
 }
+
 
 
 

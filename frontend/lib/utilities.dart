@@ -778,6 +778,31 @@ class Tuple {
 //It takes an index as the parameter and generates all the tuples for the path that is referenced by that index
 //The index is the key of the path in the paths json
 //Call this function via a future builder in the MapView widget and use a list view builder or smtng to create it (similar to cartpage)
+// Future<List<Tuple>> loadPathsTuple(int index) async {
+//   Map<String, dynamic> paths = await loadPaths();
+//   List<Tuple> pathList = [];
+//   paths.forEach((key, value) {
+//     if (key == index.toString()) {
+//       int length = value.length;
+//       for (int i = 1; i < length; i++) {
+//         String startLoc =
+//             value[i - 1]['latitude'] + ',' + value[i - 1]['longitude'];
+//         String endLoc = value[i]['latitude'] + ',' + value[i]['longitude'];
+//         String resources;
+//         if (value[i - 1]['quantity'] < 0) {
+//           resources =
+//               "${-1 * value[i]['quantity']}  ${value[i]['itemtype']} to deliver";
+//         } else {
+//           resources =
+//               "${value[i]['quantity']}  ${value[i]['itemtype']} to collect";
+//         }
+//         pathList.add(Tuple(startLoc, endLoc, resources));
+//       }
+//     }
+//   });
+
+//   return pathList;
+// }
 Future<List<Tuple>> loadPathsTuple(int index) async {
   Map<String, dynamic> paths = await loadPaths();
   List<Tuple> pathList = [];
@@ -801,6 +826,7 @@ Future<List<Tuple>> loadPathsTuple(int index) async {
     }
   });
 
+  print('Path List: $pathList');
   return pathList;
 }
 
