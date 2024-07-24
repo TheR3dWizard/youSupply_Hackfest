@@ -124,9 +124,10 @@ class _MapViewState extends State<MapView> {
                                         ),
                                         Icon(
                                           Icons.arrow_forward,
-                                          color: Colors.white70,
+                                          color: Colors.white,
                                           size: 20,
                                         ),
+                                        SizedBox(width: 3),
                                         Expanded(
                                           child: Text(
                                             nextLocation,
