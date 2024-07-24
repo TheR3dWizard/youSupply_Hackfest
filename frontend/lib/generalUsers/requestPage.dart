@@ -6,9 +6,10 @@ class requestPage extends StatelessWidget {
 
   final List<dynamic> items = [
     ['Drinking Water', 'assets/water.jpg'],
-    ['Rice', 'assets/rice.jpg'],
-    ['Milk', 'assets/milk_bottle.jpg'],
-    ['Bread', 'assets/bread.jpg'],
+    ['Flashlight', 'assets/flashlight.jpg'],
+    ['Blanket', 'assets/blanket.jpg'],
+    ['First Aid Kit', 'assets/firstaidkit.jpg'],
+    ['Food Packages', 'assets/foodparcel.jpg']
   ];
 
   @override
@@ -17,15 +18,16 @@ class requestPage extends StatelessWidget {
       backgroundColor: Colors.black12,
       floatingActionButton: ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/cart');
+            Navigator.pushNamed(context, '/cartstatic');
           },
           child: SizedBox(
             width: 100,
             height: 50,
             child: Row(
               children: [
-                const Icon(Icons.shopping_cart_checkout_outlined),
-                Text('View Cart'),
+                const Icon(Icons.shopping_cart_checkout_outlined,
+                    color: Colors.black),
+                Text('View Cart', style: TextStyle(color: Colors.black)),
               ],
             ),
           )),
@@ -73,7 +75,7 @@ class requestPage extends StatelessWidget {
                 children: items
                     .map((item) => Item(
                           label1: item[0],
-                          label2: 'Description',
+                          label2: 'In stock',
                           image: Image.asset(
                             item[1],
                             width: 100,

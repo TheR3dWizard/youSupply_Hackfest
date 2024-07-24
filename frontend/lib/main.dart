@@ -6,6 +6,7 @@ import 'package:frontend/delAgents/claimed.dart';
 import 'package:frontend/delAgents/completed.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/cartPageStatic.dart';
 import 'package:frontend/generalUsers/providePage.dart';
 import 'package:frontend/generalUsers/requestPage.dart';
 import 'package:frontend/generalUsers/cartPage.dart';
@@ -40,29 +41,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final deliveryDetailsList = [
-      DeliveryDetails(
-          fromLoc: '123 Main St, Springfield', distanceFromDelAgent: 4.5),
-      DeliveryDetails(
-          fromLoc: '456 Elm St, Shelbyville', distanceFromDelAgent: 3.2),
-      DeliveryDetails(
-          fromLoc: '789 Oak St, Capital City', distanceFromDelAgent: 5.8),
-      DeliveryDetails(
-          fromLoc: '321 Pine St, Springfield', distanceFromDelAgent: 2.5),
-      DeliveryDetails(
-          fromLoc: '654 Maple St, Shelbyville', distanceFromDelAgent: 6.1),
-      DeliveryDetails(
-          fromLoc: '987 Cedar St, Capital City', distanceFromDelAgent: 1.7),
-      DeliveryDetails(
-          fromLoc: '135 Birch St, Springfield', distanceFromDelAgent: 4.9),
-      DeliveryDetails(
-          fromLoc: '246 Walnut St, Shelbyville', distanceFromDelAgent: 3.3),
-      DeliveryDetails(
-          fromLoc: '357 Ash St, Capital City', distanceFromDelAgent: 5.2),
-      DeliveryDetails(
-          fromLoc: '468 Beech St, Springfield', distanceFromDelAgent: 2.8),
-    ];
-
     return MaterialApp(
       initialRoute: loggedIn ? '/homegu' : '/login',
       routes: {
@@ -76,13 +54,12 @@ class _MyAppState extends State<MyApp> {
         '/settings': (context) => settings(),
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
-        '/available': (context) =>
-            available(deliveryDetailsList: deliveryDetailsList),
+        '/available': (context) => Available(),
         '/claimed': (context) => claimed(),
+        '/cartstatic': (context) => cartPageStatic(),
         '/completed': (context) => completed(),
         '/cart': (context) => Cartpage(),
-        '/mapview': (context) =>
-            MapView(toLocations: [], resourcesToCollect: []),
+        //   '/mapview': (context) => MapView(),
       },
       title: 'youSupply',
       theme: ThemeData(
