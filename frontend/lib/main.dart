@@ -16,6 +16,7 @@ import 'package:frontend/profile.dart';
 import 'package:frontend/utilities.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
+import 'package:frontend/delAgents/completed_routes.dart';
 
 void main() {
   runApp(MyApp());
@@ -71,8 +72,9 @@ class _MyAppState extends State<MyApp> {
         '/accepted': (context) => accepted(),
         '/available': (context) => Available(),
         '/cartstatic': (context) => cartPage(),
-        '/completed': (context) => completed(),
+        '/completed': (context) => Completed(),
         '/cart': (context) => cartPage(),
+        '/completed_routes': (context) => CompletedRoutes(),
       },
       title: 'youSupply',
       theme: ThemeData(
