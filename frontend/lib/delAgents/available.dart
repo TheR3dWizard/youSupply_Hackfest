@@ -129,7 +129,7 @@ class _AvailableState extends State<Available> {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-          'Available Deliveries',
+          'Available Routes',
           style: TextStyle(
             letterSpacing: 1.5,
             color: Colors.white70,

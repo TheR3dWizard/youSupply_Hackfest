@@ -7,13 +7,14 @@ import 'package:frontend/utilities.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+
 // This is the type used by the popup menu below.
 enum DeliveryMenu { History, Settings, ProfileView, Logout }
 
 class homePageDel extends StatelessWidget {
   homePageDel({Key? key}) : super(key: key);
 
-    final Completer<GoogleMapController> _controller =
+  final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
   static const CameraPosition _kGooglePlex = CameraPosition(
@@ -104,19 +105,19 @@ class homePageDel extends StatelessWidget {
               children: <Widget>[
                 //map container
                 SizedBox(
-                      height: 200,
-                      child: GoogleMap(
-                        mapType: MapType.hybrid,
-                        initialCameraPosition: _kGooglePlex,
-                        onMapCreated: (GoogleMapController controller) {
-                          _controller.complete(controller);
-                        },
-                      ),
-                    ),
+                  height: 200,
+                  child: GoogleMap(
+                    mapType: MapType.hybrid,
+                    initialCameraPosition: _kGooglePlex,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                  ),
+                ),
                 SizedBox(height: 10),
                 Option(label: 'Available Routes', route: '/available'),
-                Option(label: 'Accepted Route', route: '/claimed'),
-                Option(label: 'Completed Delivery ', route: '/completed_del'),
+                Option(label: 'Accepted Route', route: '/accepted'),
+                Option(label: 'Completed Delivery ', route: '/completed'),
                 Option(label: 'Completed Routes', route: '/completed_routes'),
                 //SizedBox(height: 7),
               ],
