@@ -21,22 +21,22 @@
     "username": "JaneDoe"
 },
 {
-    "xposition": 42.989979,
-    "yposition": 53.004152,
+    "xposition": 9.585080,
+    "yposition": 76.549819,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": -1,
     "username": "JaneDoe"
 },
 {
-    "xposition": 42.989979,
-    "yposition": 53.004152,
+    "xposition": 9.584708, 
+    "yposition": 76.553949,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": -1,
     "username": "JaneDoe"
 },
 {
-    "xposition": 42.989979,
-    "yposition": 53.004152,
+    "xposition": 9.577480,
+    "yposition": 76.552911,
     "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": 2,
     "username": "JaneDoe"
