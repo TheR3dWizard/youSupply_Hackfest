@@ -93,21 +93,19 @@ class homePageGU extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Container(
-                width:
-                    200, // Both width and height should be the same to form a circle
+                width: 200,
                 height: 200,
                 decoration: BoxDecoration(
                   color: Color.fromARGB(255, 0, 225, 255),
-                  shape: BoxShape.circle, // Makes the container circular
+                  shape: BoxShape.circle,
                 ),
-                child: const ClipOval(
-                  child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Image(
-                        image: AssetImage('assets/profile.png'),
-                        width: 150,
-                        height: 150,
-                      )),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/profile.png',
+                    fit: BoxFit.cover,
+                    width: 200,
+                    height: 200,
+                  ),
                 ),
               ),
             ),
@@ -126,20 +124,22 @@ class homePageGU extends StatelessWidget {
                   ),
                   SizedBox(width: 20),
                   Select(
-                      label: 'Provide', // Navigate to provide page
-                      icon: Icons.volunteer_activism_rounded,
-                      route: '/provide',
-                      onpressed: () {
-                        Navigator.pushNamed(context, '/provide');
-                      }),
+                    label: 'Provide',
+                    icon: Icons.volunteer_activism_rounded,
+                    route: '/provide',
+                    onpressed: () {
+                      Navigator.pushNamed(context, '/provide');
+                    },
+                  ),
                   SizedBox(width: 20),
                   Select(
-                      label: 'Cart', // Navigate to provide page
-                      icon: Icons.card_travel,
-                      route: '/cartstatic',
-                      onpressed: () {
-                        Navigator.pushNamed(context, '/cartstatic');
-                      }),
+                    label: 'Cart',
+                    icon: Icons.card_travel,
+                    route: '/cartstatic',
+                    onpressed: () {
+                      Navigator.pushNamed(context, '/cartstatic');
+                    },
+                  ),
                 ],
               ),
             ),

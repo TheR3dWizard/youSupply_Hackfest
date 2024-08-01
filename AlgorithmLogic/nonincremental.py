@@ -394,6 +394,8 @@ class System:
         else:
             self.numberofsourcenodes += 1
 
+    
+
     def removeNode(self, node: Node):
         self.listofnodes.remove(node)
         if node.nodetype == "Sink":
@@ -470,6 +472,17 @@ class System:
             x = [node.x_pos for node in cluster.tolist()]
             y = [node.y_pos for node in cluster.tolist()]
             plt.scatter(x, y)
+        plt.show()
+
+    def plotsystem(self):
+        plt.figure(figsize=(10, 10))
+        
+        x_source = [node.x_pos for node in self.sourcenodes]
+        y_source = [node.y_pos for node in self.sourcenodes]
+        x_sink = [node.x_pos for node in self.sinknodes]
+        y_sink = [node.y_pos for node in self.sinknodes]
+        plt.scatter(x_source, y_source, color='blue', label='Source')
+        plt.scatter(x_sink, y_sink, color='red', label='Sink')
         plt.show()
 
     def getnodes(self):
@@ -583,19 +596,23 @@ class Algorithm:
             raise ValueError("System does not contain sinks or sources and is not feasible")
         
         #implement distance based clustering here
-        # self.system.spectralclustering(num_points=75)
-        
+        # self.system.plotsystem()
+
+        self.system.spectralclustering(num_points=75)
+        self.system.plotclusters()
         #this function just changes the clusterlist to one cluster containing all the nodes
-        self.system.changeSytemtoCluster()
+        # self.system.changeSytemtoCluster()
         #figure out what to do with the freepool system
         #possible solutions:
         #1) maybe create a new system 
         #2) change it from a system into just a list of nodes
         #3) change addNode to add a node to the freepool system and not the main system
         self.freepoolsystem = self.system.createfreepool()
+        self.system.plotclusters()
+
         for cluster in self.system.clusterlist:
             cluster.getpath()
-            self.paths.extend(cluster.subpaths)
+            self.paths.append([cluster.path,cluster.subpaths])
 
     #function to add a node to the system
     #will automatically set the system and recalculate all paths
@@ -615,16 +632,14 @@ class Algorithm:
     #TODO: functionality to handle paths in the different layers (available, in progress, completed) with no inconsistencies
     # probably the hardest thing :)
 
-nodelist = [
-    Node(x_pos=1, y_pos=1, item="Flashlight", quantity=1), 
-    Node(x_pos=2, y_pos=2, item="Flashlight", quantity=-1), 
-    Node(x_pos=3, y_pos=3, item="Canned Food", quantity=-1),
-    Node(x_pos=3, y_pos=0, item="Canned Food", quantity=1)
-]
 
 alg = Algorithm()
-alg.setSystem(System(totalnodes= 500,pfactor = 0.4))
+alg.setSystem(System(totalnodes= 500,pfactor = 0.8))
 paths = alg.getPaths()
 
-for path in paths:
-    path.plotpath()
+for mainpath,subpaths in paths:
+    print("Main Path")
+    mainpath.plotpath()
+    for subpath in subpaths:
+        print("Subpath")
+        subpath.plotpath()

@@ -6,7 +6,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:http/http.dart' as http;
+import 'package:geocoding/geocoding.dart';
 import 'package:path_provider/path_provider.dart';
 
 class LabelledTextField extends StatelessWidget {
@@ -716,6 +719,8 @@ Future<void> sendcart() async {
         ,headers: {"Content-Type": "application/json"}
         );
 
+    await Future.delayed(const Duration(seconds: 1));
+
     print(jsonEncode({
           'itemid': itemid,
           'quantity': element['quantity'],
@@ -748,19 +753,49 @@ Future<Map<String, dynamic>> loadPaths() async {
   return json['paths'];
 }
 
-Future<List<String>> loadLocations(int index) async {
+Future<Map<String, dynamic>> loadNewPaths() async {
+  var url = Uri.parse('https://algorithm.akashshanmugaraj.com/get/paths');
+  var response = await http.post(url,
+      body: jsonEncode(
+          {
+    "xposition": 42.989979,
+    "yposition": 53.004152
+      }),
+      headers: {"Content-Type": "application/json"});
+  Map<String, dynamic> json = jsonDecode(response.body);
+  print(json);
+  return json;
+}
+
+Future<List<LatLng>> loadLocations(int index) async {
+
   Map<String, dynamic> paths = await loadPaths();
-  List<String> toLocations = [];
+  List<LatLng> toLocations = [];
   paths.forEach((key, value) {
     if (key == index.toString()) {
       value.forEach((element) {
-        String location = element['latitude'] + ',' + element['longitude'];
-        toLocations.add(location);
+        toLocations.add(LatLng(element['latitude'], element['longitude']));
       });
     }
   });
 
   return toLocations;
+  
+}
+
+Future<Set<Marker>> setMarkers(int index) async {
+  List<LatLng> coordinates = await loadLocations(index);
+  Set<Marker> _markers = {};
+  for (int i = 0; i < coordinates.length; i++) {
+    _markers.add(
+      Marker(
+        markerId: MarkerId('marker_$i'),
+        position: coordinates[i],
+      ),
+    );
+  }
+
+  return _markers;
 }
 
 Future<List<String>> loadResourcesToCollect(int index) async {
@@ -812,6 +847,7 @@ Future<List<Tuple>> loadPathsTuple(int index) async {
   List<Map<String, dynamic>> path = pathDynamic.map((item) => item as Map<String, dynamic>).toList();
   for (int i = 1; i < path.length; i++) {
     print("Here");
+    // String startLoc = await getAddress(path[i - 1]['latitude'], path[i - 1]['longitude']);
     String startLoc = "${path[i - 1]['latitude']},${path[i - 1]['longitude']}";
     String endLoc = "${path[i]['latitude']},${path[i]['longitude']}";
     String resources;
@@ -853,4 +889,28 @@ Future<List<List<String>>> loadPathsNames() async {
   });
 
   return pathNames;
+}
+
+
+Future<String> getAddress(double lat,double lng) async {
+  List<Placemark> placemarks = await placemarkFromCoordinates(lat,lng);
+  Placemark place = placemarks[0];
+  return place.name ?? place.locality ?? place.subLocality ?? place.administrativeArea ?? "Unknown";
+}
+
+Future<Set<Polyline>> setPolylines(int index) async {
+  List<LatLng> coordinates = await loadLocations(index);
+  Set<Polyline> _polylines = {};
+  List<LatLng> polylineCoordinates = [];
+  for (int i = 0; i < coordinates.length; i++) {
+    polylineCoordinates.add(coordinates[i]);
+  }
+  _polylines.add(Polyline(
+    polylineId: PolylineId('polyline_$index'),
+    color: Colors.blue,
+    points: polylineCoordinates,
+    width: 5,
+  ));
+
+  return _polylines;
 }
