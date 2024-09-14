@@ -11,6 +11,16 @@ from services import GoogleAPI, MathFunctions
 globalgooglemapsobject = GoogleAPI()
 globalmathfunctionsobject = MathFunctions()
 
+class Item:
+    def __init__(self,name:str,size:float) -> None:
+        self.name = name
+        self.size = size
+
+    def getname(self):
+        return self.name
+
+    def getsize(self):
+        return self.size
 class Node:
     """
     represents a request from a user for one item type
@@ -18,13 +28,14 @@ class Node:
     """
 
     def __init__(
-        self, x_pos: int = 0, y_pos: int = 0, item: str = "", quantity: int = 1
+        self, x_pos: int = 0, y_pos: int = 0, item: Item = Item("",0), quantity: int = 1
     ):
         self.identifier = str(uuid.uuid4())
         self.x_pos = x_pos
         self.y_pos = y_pos
-        self.itemtype = item
+        self.itemtype = item.getname()
         self.quantity = quantity
+        self.size = self.quantity * item.getsize()
         self.nodetype = ""
 
         if quantity < 0:
