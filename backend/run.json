@@ -1,9 +1,0 @@
-{
-    "apps" : [
-        {
-            "name": "yousupply-backend",
-            "script": "npm",
-            "args" : "run dev"
-        }
-    ]
-}
