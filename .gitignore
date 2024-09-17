@@ -18,3 +18,6 @@ backend/staticfiles
 frontend/android/app/src/main/AndroidManifest.xml
 frontend/lib/testfunctions.dart
 AlgorithmLogic/myalgorithm.py
+backend/algorithm/__pycache__
+__pycache__
+backend/backend/__pycache__
