@@ -10,7 +10,10 @@ services:
     name: mysite
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "python -m gunicorn backend.asgi:application -k uvicorn.workers.UvicornWorker"
+    rootDir: backend
+    workingDir: backend
+    workingDirectory: backend
+    startCommand: "python -m gunicorn backend.backend.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -20,3 +23,4 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+
