@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': config(default = 'postgresql://yousupply_database_user:jSZZQg2D7O0Y5uImUseBeatIlBW6gxS5@dpg-crcnbd3v2p9s73cj6kq0-a.singapore-postgres.render.com/yousupply_database',conn_max_age=600)
+    'default': config(default = 'postgresql://postgres:root@localhost:5432/yousupply')
 }
 
 
