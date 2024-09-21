@@ -6,15 +6,18 @@ import 'package:frontend/delAgents/claimed.dart';
 import 'package:frontend/delAgents/completed.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
+import 'package:frontend/generalUsers/cartPageStatic.dart';
 import 'package:frontend/generalUsers/providePage.dart';
 import 'package:frontend/generalUsers/requestPage.dart';
 import 'package:frontend/generalUsers/cartPage.dart';
 import 'package:frontend/delAgents/history.dart';
 import 'package:frontend/settings.dart';
 import 'package:frontend/profile.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:frontend/utilities.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
+import 'package:frontend/delAgents/completed_routes.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,34 +43,26 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final deliveryDetailsList = [
-      DeliveryDetails(
-          fromLoc: '123 Main St, Springfield', distanceFromDelAgent: 4.5),
-      DeliveryDetails(
-          fromLoc: '456 Elm St, Shelbyville', distanceFromDelAgent: 3.2),
-      DeliveryDetails(
-          fromLoc: '789 Oak St, Capital City', distanceFromDelAgent: 5.8),
-      DeliveryDetails(
-          fromLoc: '321 Pine St, Springfield', distanceFromDelAgent: 2.5),
-      DeliveryDetails(
-          fromLoc: '654 Maple St, Shelbyville', distanceFromDelAgent: 6.1),
-      DeliveryDetails(
-          fromLoc: '987 Cedar St, Capital City', distanceFromDelAgent: 1.7),
-      DeliveryDetails(
-          fromLoc: '135 Birch St, Springfield', distanceFromDelAgent: 4.9),
-      DeliveryDetails(
-          fromLoc: '246 Walnut St, Shelbyville', distanceFromDelAgent: 3.3),
-      DeliveryDetails(
-          fromLoc: '357 Ash St, Capital City', distanceFromDelAgent: 5.2),
-      DeliveryDetails(
-          fromLoc: '468 Beech St, Springfield', distanceFromDelAgent: 2.8),
-    ];
-
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: loggedIn ? '/homegu' : '/login',
+      onGenerateRoute: (settings) {
+        if (settings.name == '/claimed') {
+          final pathIndex = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) => ClaimedRoutes(pathIndex: pathIndex),
+          );
+        } else if (settings.name == '/mapview') {
+          final pathIndex = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) => MapView(pathIndex: pathIndex),
+          );
+        }
+        return null; // Let `routes` handle the rest
+      },
       routes: {
         '/login': (context) => LoginPage(),
-        '/signupGU': (context) => SignUpPageGU(),
+        '/signup': (context) => SignUpPage(),
         '/homegu': (context) => homePageGU(),
         '/homedel': (context) => homePageDel(),
         '/provide': (context) => providePage(),
@@ -76,13 +71,11 @@ class _MyAppState extends State<MyApp> {
         '/settings': (context) => settings(),
         '/profile': (context) => profile(),
         '/accepted': (context) => accepted(),
-        '/available': (context) =>
-            available(deliveryDetailsList: deliveryDetailsList),
-        '/claimed': (context) => claimed(),
-        '/completed': (context) => completed(),
-        '/cart': (context) => Cartpage(),
-        '/mapview': (context) =>
-            MapView(toLocations: [], resourcesToCollect: []),
+        '/available': (context) => Available(),
+        '/cartstatic': (context) => cartPage(),
+        '/completed': (context) => Completed(),
+        '/cart': (context) => cartPage(),
+        '/completed_routes': (context) => CompletedRoutes(),
       },
       title: 'youSupply',
       theme: ThemeData(

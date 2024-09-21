@@ -39,6 +39,11 @@ dependencies:
   flutter_dotenv: ^5.1.0
   http: ^1.2.2
   path_provider: ^2.1.3
+  google_maps_flutter: ^2.7.0
+  google_maps_flutter_android: ^2.12.0
+  google_maps_flutter_platform_interface: ^2.8.0
+  geocoding: ^3.0.0
+  flutter_polyline_points: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +76,11 @@ flutter:
     - assets/account.json
     - assets/milk_bottle.jpg
     - assets/bread.jpg
+    - assets/blanket.jpg
+    - assets/foodparcel.jpg
+    - assets/firstaidkit.jpg
+    - assets/flashlight.jpg
+    - assets/prof1.jpeg
     #- .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:frontend/utilities/customWidgets.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
+
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -47,6 +50,30 @@ class LoginPage extends StatelessWidget {
                 ),
               ],
             ),
+            Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ToggleSwitch(
+                    activeFgColor: Colors.black,
+                    customTextStyles: [TextStyle(fontWeight: FontWeight.bold)],
+                    inactiveFgColor: Colors.black,
+                    borderColor: [Colors.black45],
+                    borderWidth: 1.5,
+                    minWidth: 140,
+                    minHeight: 50,
+                    initialLabelIndex: 0,
+                    totalSwitches: 2,
+                    labels: const ['Client', 'Delivery Agent'],
+                    activeBgColor: const [Color.fromARGB(255, 0, 225, 255)],
+                    inactiveBgColor: Colors.grey[400],
+                    onToggle: (index) {
+                      if (index == 0) {
+                        typeNotifier.value = "Client";
+                      } else {
+                        typeNotifier.value = "delagent";
+                      }
+                    },
+                  ),
+                ),
             OutlinedButton(
               onPressed: () {
                 authenticateUser(context);
@@ -65,7 +92,7 @@ class LoginPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 1.0),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/signupGU');
+                  Navigator.pushNamed(context, '/signup');
                 },
                 child: const Text(
                   'Sign Up',

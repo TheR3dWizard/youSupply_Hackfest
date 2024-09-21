@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utilities.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
 
 class providePage extends StatelessWidget {
   providePage({Key? key}) : super(key: key);
 
-  //should be takenb from the backend
+  //should be taken from the backend
   final List<dynamic> items = [
-    ['Drinking Water', 'assets/water.jpg'],
-    ['Rice', 'assets/rice.jpg'],
-    ['Milk', 'assets/milk_bottle.jpg'],
-    ['Bread', 'assets/bread.jpg'],
+    ['Water Bottle', 'assets/water.jpg'],
+    ['Flashlight', 'assets/flashlight.jpg'],
+    ['Blanket', 'assets/blanket.jpg'],
+    ['First Aid Kit', 'assets/firstaidkit.jpg'],
+    ['Food Packages', 'assets/foodparcel.jpg']
   ];
 
   @override
@@ -18,15 +20,19 @@ class providePage extends StatelessWidget {
       backgroundColor: Colors.black12,
       floatingActionButton: ElevatedButton(
           onPressed: () {
-            Navigator.pushNamed(context, '/cart');
+            Navigator.pushNamed(context, '/cartstatic');
           },
           child: SizedBox(
             width: 100,
             height: 50,
             child: Row(
               children: [
-                const Icon(Icons.shopping_cart_checkout_outlined),
-                Text('View Cart'),
+                const Icon(Icons.shopping_cart_checkout_outlined,
+                    color: Colors.black),
+                Text(
+                  'View Cart',
+                  style: TextStyle(color: Colors.black),
+                ),
               ],
             ),
           )),
@@ -74,8 +80,12 @@ class providePage extends StatelessWidget {
                   children: List.generate(items.length, (context) {
                 return Item(
                   label1: items[context][0],
-                  label2: 'Description',
-                  image: Image.asset(items[context][1]),
+                  label2: 'In stock',
+                  image: Image.asset(
+                    items[context][1],
+                    width: 100,
+                    height: 100,
+                  ),
                 );
               })),
               SizedBox(height: 7),
@@ -224,7 +234,7 @@ class _ItemState extends State<Item> {
                           foregroundColor: Colors.black,
                           backgroundColor: Color.fromARGB(255, 0, 225, 255),
                         ),
-                        child: const Text('Add to cart'),
+                        child: const Text('Provide'),
                       ),
                       SizedBox(width: 10),
                       OutlinedButton(

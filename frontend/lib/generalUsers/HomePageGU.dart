@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/settings.dart';
 import 'package:frontend/utilities.dart';
+import 'package:frontend/utilities/customWidgets.dart';
 
 // This is the type used by the popup menu below.
-enum GUMenu { History, Settings, ProfileView, SwitchAccount, Logout }
+enum GUMenu { History, Settings, ProfileView, Logout }
 
 class homePageGU extends StatelessWidget {
   const homePageGU({Key? key}) : super(key: key);
@@ -38,9 +39,6 @@ class homePageGU extends StatelessWidget {
                       Navigator.pushNamed(context, '/profile');
                       // Navigate to '/profile' or perform related action
                       break;
-                    case GUMenu.SwitchAccount:
-                      // Navigate to '/switch_account' or perform related action
-                      break;
                     case GUMenu.Logout:
                       Navigator.pushNamed(context, '/');
                       // Navigate to '/logout' or perform related action
@@ -72,13 +70,6 @@ class homePageGU extends StatelessWidget {
                     ),
                   ),
                   const PopupMenuItem<GUMenu>(
-                    value: GUMenu.SwitchAccount,
-                    child: ListTile(
-                      leading: Icon(Icons.swap_horiz),
-                      title: Text('Switch Account'),
-                    ),
-                  ),
-                  const PopupMenuItem<GUMenu>(
                     value: GUMenu.Logout,
                     child: ListTile(
                       leading: Icon(Icons.logout),
@@ -103,25 +94,23 @@ class homePageGU extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
               child: Container(
-                width:
-                    200, // Both width and height should be the same to form a circle
+                width: 200,
                 height: 200,
                 decoration: BoxDecoration(
                   color: Color.fromARGB(255, 0, 225, 255),
-                  shape: BoxShape.circle, // Makes the container circular
+                  shape: BoxShape.circle,
                 ),
-                child: const ClipOval(
-                  child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Image(
-                        image: AssetImage('assets/profile.png'),
-                        width: 150,
-                        height: 150,
-                      )),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/profile.png',
+                    fit: BoxFit.cover,
+                    width: 200,
+                    height: 200,
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 100),
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -136,20 +125,22 @@ class homePageGU extends StatelessWidget {
                   ),
                   SizedBox(width: 20),
                   Select(
-                      label: 'Provide', // Navigate to provide page
-                      icon: Icons.volunteer_activism_rounded,
-                      route: '/provide',
-                      onpressed: () {
-                        Navigator.pushNamed(context, '/provide');
-                      }),
+                    label: 'Provide',
+                    icon: Icons.volunteer_activism_rounded,
+                    route: '/provide',
+                    onpressed: () {
+                      Navigator.pushNamed(context, '/provide');
+                    },
+                  ),
                   SizedBox(width: 20),
                   Select(
-                      label: 'Cart', // Navigate to provide page
-                      icon: Icons.card_travel,
-                      route: '/cart',
-                      onpressed: () {
-                        Navigator.pushNamed(context, '/cart');
-                      }),
+                    label: 'Cart',
+                    icon: Icons.card_travel,
+                    route: '/cartstatic',
+                    onpressed: () {
+                      Navigator.pushNamed(context, '/cartstatic');
+                    },
+                  ),
                 ],
               ),
             ),

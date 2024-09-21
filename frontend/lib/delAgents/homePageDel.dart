@@ -1,12 +1,26 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/settings.dart';
+import 'package:frontend/utilities/customWidgets.dart';
 import 'package:frontend/utilities.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
 // This is the type used by the popup menu below.
-enum DeliveryMenu { History, Settings, ProfileView, SwitchAccount, Logout }
+enum DeliveryMenu { History, Settings, ProfileView, Logout }
 
 class homePageDel extends StatelessWidget {
-  const homePageDel({Key? key}) : super(key: key);
+  homePageDel({Key? key}) : super(key: key);
+
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(11.025155757439432, 77.00250346910578),
+    zoom: 14.4746,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +47,6 @@ class homePageDel extends StatelessWidget {
                           MaterialPageRoute(builder: (context) => settings()));
                     case DeliveryMenu.ProfileView:
                       Navigator.pushNamed(context, '/profile');
-                      break;
-                    case DeliveryMenu.SwitchAccount:
-                      // Navigate to '/switch_account' or perform related action
                       break;
                     case DeliveryMenu.Logout:
                       Navigator.pushNamed(context, '/');
@@ -68,13 +79,6 @@ class homePageDel extends StatelessWidget {
                     ),
                   ),
                   const PopupMenuItem<DeliveryMenu>(
-                    value: DeliveryMenu.SwitchAccount,
-                    child: ListTile(
-                      leading: Icon(Icons.swap_horiz),
-                      title: Text('Switch Account'),
-                    ),
-                  ),
-                  const PopupMenuItem<DeliveryMenu>(
                     value: DeliveryMenu.Logout,
                     child: ListTile(
                       leading: Icon(Icons.logout),
@@ -99,20 +103,22 @@ class homePageDel extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  width: 380,
-                  height: 300,
-                  color: Colors.grey,
-                  child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Center(child: Text('map')),
+                //map container
+                SizedBox(
+                  height: 200,
+                  child: GoogleMap(
+                    mapType: MapType.hybrid,
+                    initialCameraPosition: _kGooglePlex,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
                   ),
                 ),
                 SizedBox(height: 10),
-                Option(label: 'Available Deliveries', route: '/available'),
-                Option(label: 'Accepted Deliveries', route: '/accepted'),
-                Option(label: 'Claimed Deliveries', route: '/claimed'),
-                Option(label: 'Completed Deliveries', route: '/completed'),
+                Option(label: 'Available Routes', route: '/available'),
+                Option(label: 'Accepted Route', route: '/accepted'),
+                Option(label: 'Completed Delivery ', route: '/completed'),
+                Option(label: 'Completed Routes', route: '/completed_routes'),
                 //SizedBox(height: 7),
               ],
             ),
@@ -124,7 +130,7 @@ class homePageDel extends StatelessWidget {
 }
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     home: homePageDel(),
   ));
 }

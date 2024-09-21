@@ -23,25 +23,7 @@ When a disaster strikes, the main bottleneck for recovery is resources, or the l
 15. Route - A path through a cluster that satisfies all the nodes
 16. Delivery - A route is built of individual deliveries
 
-## Functional Requirements
 
-- Users should be able to post their needs and surpluses
-
-- Delivery agents should be able to pick what requests they can satisfy
-
-- There should be an algorithm to optimize requests and supplies to satisfy all requests
-
-- The process for users to post requirements should be easy
-
-## Non-Functional Requirements
-
-- The app should be integrated with pre-existing NGOs to help their efforts
-
-- Measures should be implemented to prevent misuse
-
-- There should be features to foster a sense of community among the users
-
-- Users should be able to directly connect with other users bypassing the algorithm if they so choose
 
 ## System Architecture
 
@@ -53,37 +35,40 @@ A backend is also required for integration with other organizations, it can be a
 
 ## System Requirements Specification
 
+### Functional Requirements
+
 Users should be able to post their needs and surpluses
 
-​It should be a very simple process for a user to add a request to the system. There should also be measures in place to restrict the kinds of items that can be requested
+Users will only be able to add items from a pre defined list
 
 Delivery agents should be able to pick what requests they can satisfy
 
-​It is important that delivery agents can pick how to satisfy requests themselves so that they aren’t tied to the algorithm
-
 There should be an algorithm to optimize requests and supplies to satisfy all requests
 
-​The algorithm should have an accuracy of over 95% and take current situations into account such as inaccessible areas. It should be possible for delivery agents to override the recommendation if they feel the algorithm is not correct
-
-The process for users to post requirements should be easy
-
-​The app should be very accessible to users so it is very important that the main functionality must be user friendly and easy to do. There should be minimal region for error
-
-The app should be integrated with pre-existing NGOs to help their efforts
-
-​The database functions as a repository of all the requirements of all users in a region so its information is incredibly useful for the planning of centralized efforts by NGOs and can save a lot of time and manpower. Other organizations should be able to access this data and interact with the database as well
+NGOs will be able to view overall system info and useful metrics (such as number of requests, number of deliveries, etc) to help them plan their efforts
 
 Measures should be implemented to prevent misuse
 
-​Users should be able to report other users for a variety of reasons such as not reporting their actual requirements or other misuse. The reporting system should also be factored into the algorithm to decide optimal routes
+​Users should be able to report other users for a variety of reasons such as not reporting their actual requirements or other misuse. 
 
-There should be features to foster a sense of community among the users
+The reporting system should  be factored into the algorithm to decide optimal routes
 
 ​Misuse prevention starts from the user’s mindset and as such, users should be encouraged to participate in a genuine manner through positive feedback systems such as likes or reviews
 
 Users should be able to directly connect with other users bypassing the algorithm if they so choose
 
-​The algorithm as a system can fail some users, so it should be possible for users to find people who can satisfy their requirements and directly contact them, through the app or by other means
+
+### Non Functional Requirements
+​The app should be very accessible to users so it is very important that the main functionality must be user friendly and easy to do. There should be minimal region for error
+
+There should be features to foster a sense of community among the users
+
+​It should be a very simple process for a user to add a request to the system. The user should be able to add a request in under 2 minutes
+
+​The algorithm should have an accuracy of over 95% and take current situations into account such as inaccessible areas. 
+
+
+
 
 ## System Evolution
 
@@ -122,18 +107,6 @@ DFD for Delivery Agent
 
 ![WhatsApp Image 2024-07-04 at 14 28 14](https://github.com/akashShanmugraj/programming-notes/assets/65720968/e6d348cc-b745-40fa-a1d1-d794e1db057d)
 
-#  System Requirements
 
-## Functional Requirements
-
-### 1 Users can register an account as a client or delievery agent
-
-### 2 Clients can post items they require or items they wish to donate
-
-### 3 Delivery Agents can view available routes
-
-### 4 Delivery Agents can accept available routes
-
-### 5 Delivery Agents will be able to partially fulfill a route
 
 
