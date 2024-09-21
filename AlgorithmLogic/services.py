@@ -103,6 +103,73 @@ class DatabaseObject:
         query = f"TRUNCATE TABLE pathstore"
         self.cursor.execute(query)
         self.connection.commit()
+    
+    def insert_user(
+        self,
+        userid: int,
+        username: str,
+        contact_number: str,
+        password: str,
+        userrole: str = 'user',  
+        latitude: float = None,
+        longitude: float = None
+    ):
+        query = f"INSERT INTO users (UserID, username, contact_number, password, userrole, latitude, longitude) VALUES ({userid}, '{username}', '{contact_number}', '{password}', '{userrole}', {latitude}, {longitude})"
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    
+    def insert_delivery_volunteer(
+        self,
+        userid: int,
+        cur_latitude: float,
+        cur_longitude: float
+    ):
+       
+        query = f"SELECT * FROM users WHERE UserID = {userid} AND userrole = 'delvol'"
+        self.cursor.execute(query)
+        result = self.cursor.fetchall()
+
+       
+        if not result:
+            raise ValueError(f"UserID {userid} does not exist or is not a delivery agent.")
+        
+       
+        query = f"INSERT INTO DeliveryVolunteers (UserID, cur_latitude, cur_longitude) VALUES ({userid}, {cur_latitude}, {cur_longitude})"
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    def insert_general_user(
+        self,
+        userid: int,
+        cartid: int = None
+    ):
+       
+        query = f"SELECT * FROM users WHERE UserID = {userid} AND userrole = 'user'"
+        self.cursor.execute(query)
+        result = self.cursor.fetchall()
+
+        if not result:
+            raise ValueError(f"UserID {userid} does not exist or is not a user.")
+
+
+        if cartid:
+            query = f"SELECT * FROM CartEntries WHERE CartID = {cartid}"
+            self.cursor.execute(query)
+            result = self.cursor.fetchall()
+
+          
+            if not result:
+                raise ValueError(f"CartID {cartid} does not exist.")
+        
+       
+        query = f"INSERT INTO GeneralUsers (UserID, cartid) VALUES ({userid}, {cartid})"
+        self.cursor.execute(query)
+        self.connection.commit()
+
+
+
+
 
 
 class GoogleAPI:
