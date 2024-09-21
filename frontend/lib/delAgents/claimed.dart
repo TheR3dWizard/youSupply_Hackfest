@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utilities.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
 
 class ClaimedRoutes extends StatefulWidget {
   final int pathIndex;

@@ -13,6 +13,7 @@ import 'package:frontend/generalUsers/cartPage.dart';
 import 'package:frontend/delAgents/history.dart';
 import 'package:frontend/settings.dart';
 import 'package:frontend/profile.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:frontend/utilities.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/settings.dart';
 import 'package:frontend/utilities.dart';
+import 'package:frontend/utilities/customWidgets.dart';
 
 // This is the type used by the popup menu below.
 enum GUMenu { History, Settings, ProfileView, Logout }

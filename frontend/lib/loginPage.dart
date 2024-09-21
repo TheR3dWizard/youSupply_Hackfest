@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'utilities.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:frontend/utilities/customWidgets.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
+
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});

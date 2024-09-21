@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/utilities.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
 
 class cartPage extends StatefulWidget {
   const cartPage({super.key});
