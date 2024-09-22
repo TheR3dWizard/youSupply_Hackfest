@@ -12,9 +12,9 @@ class MapView extends StatefulWidget {
   final int pathIndex;
 
   const MapView({
-    Key? key,
+    super.key,
     required this.pathIndex,
-  }) : super(key: key);
+  });
 
   @override
   _MapViewState createState() => _MapViewState();
@@ -23,7 +23,7 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
   late Future<List<Tuple>> _pathTuplesFuture;
   late List<bool> _completedStatus;
-  bool _acceptPressed = false;
+  final bool _acceptPressed = false;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _MapViewState extends State<MapView> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           'Map View',
           style: TextStyle(
             letterSpacing: 1.5,
@@ -62,12 +62,12 @@ class _MapViewState extends State<MapView> {
         future: _pathTuplesFuture,
         builder: (BuildContext context, AsyncSnapshot<List<Tuple>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             print(snapshot.error);
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           } else {
             List<Tuple> pathTuples = snapshot.data!;
             _completedStatus = List<bool>.filled(pathTuples.length, false);
@@ -82,13 +82,13 @@ class _MapViewState extends State<MapView> {
                       future: setPolylines(widget.pathIndex),
                       builder: (context,snapshot2) {
                         if (snapshot.connectionState == ConnectionState.waiting || snapshot2.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(child: CircularProgressIndicator());
                         } else if (snapshot.hasError || snapshot2.hasError) {
                           print(snapshot.error);
                           print(snapshot2.error);
                           return Center(child: Text('Error: ${snapshot.error}'));
                         } else if (!snapshot.hasData || !snapshot2.hasData) {
-                          return Center(child: Text('No data available'));
+                          return const Center(child: Text('No data available'));
                         }
                         return SizedBox(
                           height: 200,
@@ -140,7 +140,7 @@ class _MapViewState extends State<MapView> {
                                         Expanded(
                                           child: Text(
                                             currentTuple.startLoc,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 18,
                                               color: Colors.white70,
@@ -148,16 +148,16 @@ class _MapViewState extends State<MapView> {
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
-                                        Icon(
+                                        const Icon(
                                           Icons.arrow_forward,
                                           color: Colors.white,
                                           size: 20,
                                         ),
-                                        SizedBox(width: 3),
+                                        const SizedBox(width: 3),
                                         Expanded(
                                           child: Text(
                                             nextLocation,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 18,
                                               color: Colors.white70,
@@ -167,15 +167,15 @@ class _MapViewState extends State<MapView> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     Text(
                                       currentTuple.resources,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.white60,
                                       ),
                                     ),
-                                    SizedBox(height: 5),
+                                    const SizedBox(height: 5),
                                   ],
                                 ),
                               );
@@ -194,14 +194,14 @@ class _MapViewState extends State<MapView> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('Confirm Acceptance'),
-                              content: Text('Are you sure you want to accept?'),
+                              title: const Text('Confirm Acceptance'),
+                              content: const Text('Are you sure you want to accept?'),
                               actions: [
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text('Cancel'),
+                                  child: const Text('Cancel'),
                                 ),
                                 TextButton(
                                   onPressed: () {
@@ -214,7 +214,7 @@ class _MapViewState extends State<MapView> {
                                       ),
                                     );
                                   },
-                                  child: Text('Accept'),
+                                  child: const Text('Accept'),
                                 ),
                               ],
                             );
@@ -224,11 +224,11 @@ class _MapViewState extends State<MapView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         padding:
-                            EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-                        shape: ContinuousRectangleBorder(),
-                        minimumSize: Size(450, 25),
+                            const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                        shape: const ContinuousRectangleBorder(),
+                        minimumSize: const Size(450, 25),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Accept',
                         style: TextStyle(
                           fontSize: 20,

@@ -11,6 +11,8 @@ from services import GoogleAPI, MathFunctions
 globalgooglemapsobject = GoogleAPI()
 globalmathfunctionsobject = MathFunctions()
 
+
+
 class Node:
     """
     represents a request from a user for one item type

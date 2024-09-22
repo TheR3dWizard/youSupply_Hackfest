@@ -2,7 +2,6 @@ import requests
 from typing import List
 from dotenv import load_dotenv
 import os
-from algorithm import Node
 import mysql.connector
 from chromadb import Client
 from chromadb.config import Settings
@@ -119,8 +118,6 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
 
-
-
 class GoogleAPI:
     def __init__(self):
         self.api_key = os.getenv("GOOGLE_API_KEY")
@@ -224,20 +221,21 @@ class MathFunctions:
 class ChromaDBAgent:
     def __init__(self) -> None:
         self.client = Client(Settings())
-        self.collection_name = "path_objects"
+        self.collection_name = "node_objects"
         if self.collection_name not in self.client.list_collections():
             self.collection = self.client.create_collection(self.collection_name)
         else:
             self.collection = self.client.get_collection(self.collection_name)
     
-    def insertpathobject(self, pathobjectid: str, coordinates):
+    
+    def insertnodeobject(self, nodeobjectid: str, nodeobject):
         vectorobject = {
-            "id": pathobjectid,
-            "vector": coordinates
+            "id": nodeobjectid,
+            "vector": nodeobject
         }
         
         self.collection.upsert(vectorobject["id"], vectorobject["vector"])
-    
+
     def getnearestneighbors(self, coordinates, kval=5):
         return self.collection.query(coordinates, n_results=kval)['ids']
 
