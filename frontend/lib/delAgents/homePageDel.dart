@@ -117,7 +117,6 @@ class homePageDel extends StatelessWidget {
                 SizedBox(height: 10),
                 Option(label: 'Available Routes', route: '/available'),
                 Option(label: 'Accepted Route', route: '/accepted'),
-                Option(label: 'Completed Delivery ', route: '/completed'),
                 Option(label: 'Completed Routes', route: '/completed_routes'),
                 //SizedBox(height: 7),
               ],
