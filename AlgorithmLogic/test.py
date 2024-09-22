@@ -1,9 +1,17 @@
 from dotenv import load_dotenv
 import os
 import psycopg2
+
+if os.name == "posix":
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from services import ChromaDBAgent
 from algorithm import Node
 from random import random,randrange
+
+
 
 agent = ChromaDBAgent()
 nodes = []

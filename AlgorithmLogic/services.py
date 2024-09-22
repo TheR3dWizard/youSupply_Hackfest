@@ -2,15 +2,20 @@ import requests
 from typing import List
 from dotenv import load_dotenv
 import os
-from chromadb import Client
-from chromadb.config import Settings
-from chromadb.api import Collection
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
 
 load_dotenv()
 
+if os.name == "posix":
+    __import__('pysqlite3')
+    import sys
+    sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+from chromadb import Client
+from chromadb.config import Settings
+from chromadb.api import Collection
 
 class DatabaseObject:
     def __init__(self) -> None:
