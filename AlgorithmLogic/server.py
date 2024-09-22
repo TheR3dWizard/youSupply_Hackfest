@@ -102,7 +102,7 @@ from flask import jsonify, request
 def getactualpaths():
     body = request.get_json()
 
-    nearestids = chromadbagent.getnearestneighbors([body["xposition"], body["yposition"]])
+    nearestids = chromadbagent.getnearestneighbors([body["xposition"], body["yposition"]])  #gets nearest paths not nodes
     nearestpaths: List[Path] = list()
     if len(nearestids) == 0:
         return {
@@ -138,6 +138,26 @@ def stats():
 @app.route("/get/db/stats", methods=["GET"])
 def dbstats():
     return chromadbagent.getallvectors()
+
+@app.route("/get/computepaths",methods=["GET"])
+def computepaths():
+    body = request.get_json()
+    latitude = body["latitude"]
+    longitude = body["longitude"]
+
+    nearestnodeids = chromadbagent.getnearestneighbors([latitude, longitude])  #should get nearest nodes
+    nearestnodes = list()
+    if len(nearestnodeids) == 0:
+        return {
+            "message": "No nodes returned from the database"
+        }
+    
+    for i in nearestnodeids:
+        nearestnodes.append(databaseobject.getNodeObject(i))
+    
+    computepathobject.setCluster(nearestnodes)
+    paths =  computepathobject.getPaths()
+    
 
 
 if __name__ == "__main__":

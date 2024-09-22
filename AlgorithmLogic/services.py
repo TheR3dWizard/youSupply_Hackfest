@@ -2,25 +2,40 @@ import requests
 from typing import List
 from dotenv import load_dotenv
 import os
+from algorithm import Node
 import mysql.connector
 from chromadb import Client
 from chromadb.config import Settings
 from chromadb.api import Collection
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
-
+import psycopg2
 load_dotenv()
 
 
 class DatabaseObject:
     def __init__(self) -> None:
-        self.connection = mysql.connector.connect(
-            host=os.getenv("HOST"),
-            user=os.getenv("UNAME"),
-            password=os.getenv("PASSWORD"),
-            database=os.getenv("DATABASE"),
-        )
+        self.connection = psycopg2.connect(os.getenv("DB_URL"))
         self.cursor = self.connection.cursor()
+
+    def getNode(self, nodeid: str):
+        query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getNodeObject(self, nodeid: str):
+        query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
+        self.cursor.execute(query)
+        result = self.cursor.fetchall()
+        if not result:
+            return None
+        result = result[0]
+        return Node(
+            x_pos=result[1],
+            y_pos=result[2],
+            item=result[3],
+            quantity=result[4],
+        )
 
     def insertrequest(
         self,
@@ -103,6 +118,7 @@ class DatabaseObject:
         query = f"TRUNCATE TABLE pathstore"
         self.cursor.execute(query)
         self.connection.commit()
+
 
 
 class GoogleAPI:
