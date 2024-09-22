@@ -2,7 +2,6 @@ import requests
 from typing import List
 from dotenv import load_dotenv
 import os
-import mysql.connector
 from chromadb import Client
 from chromadb.config import Settings
 from chromadb.api import Collection
@@ -85,9 +84,10 @@ class DatabaseObject:
             for result in self.connection.cmd_query_iter(query):
                 pass  # Iterate through results to ensure all queries are executed
             self.connection.commit()
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
+        except:
             self.connection.rollback()
+            raise
+        
 
     def removecluster(self, clusterid: str):
         query = f"DELETE FROM clusters WHERE cluster_id='{clusterid}'"
