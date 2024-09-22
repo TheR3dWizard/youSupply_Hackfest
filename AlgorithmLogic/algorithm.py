@@ -652,6 +652,7 @@ class System:
 
 class PathComputationObject:
     def __init__(self) -> None:
+        self.cluster = None
         self.system = None
         self.freepoolsystem = None
         self.paths = []
@@ -713,3 +714,12 @@ class PathComputationObject:
             counter += 1
         
         return baseobject
+    
+    def setCluster(self, nodes: List[Node]) -> None:
+        self.cluster = Cluster()
+        for node in nodes:
+            self.cluster.addnode(node)
+    
+    def getPathsFromCluster(self)-> List[Path]:
+        self.cluster.getpath()
+        return self.cluster.subpaths

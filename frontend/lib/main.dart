@@ -3,7 +3,6 @@ import 'package:frontend/delAgents/MapView.dart';
 import 'package:frontend/delAgents/accepted.dart';
 import 'package:frontend/delAgents/available.dart';
 import 'package:frontend/delAgents/claimed.dart';
-import 'package:frontend/delAgents/completed.dart';
 import 'package:frontend/delAgents/homePageDel.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
 import 'package:frontend/generalUsers/cartPageStatic.dart';
@@ -73,7 +72,6 @@ class _MyAppState extends State<MyApp> {
         '/accepted': (context) => accepted(),
         '/available': (context) => Available(),
         '/cartstatic': (context) => cartPage(),
-        '/completed': (context) => Completed(),
         '/cart': (context) => cartPage(),
         '/completed_routes': (context) => CompletedRoutes(),
       },
