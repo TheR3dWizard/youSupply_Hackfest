@@ -9,6 +9,7 @@ from chromadb.api import Collection
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
+
 load_dotenv()
 
 
