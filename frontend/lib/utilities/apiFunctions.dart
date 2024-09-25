@@ -137,7 +137,11 @@ Future<List<Map<String, dynamic>>> readCart() async {
 }
 
 
-
+Future<String> getUsername() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  return json['username'];
+}
 
 
 // Backend Functions
@@ -223,65 +227,18 @@ Future<bool> addnode(String itemtype, int quantity) async {
 Future<void> sendcart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  print("File before sending:");
-  printFile();
-
-  // print("Dictionary is");
-  // print(itemnameToID);
-  
-  // List<String> coords = await getCoords();
-  List<double> coords = getrandomCoords();
-
-  json['cart'].forEach((element) async {
-    if (element['quantity'] == 0) {
-    }
-
-    var url = Uri.parse('$basealgoUrl/add/node');
-    
-    // print("KEY is ${element['item']}");
-    // print("VALUE is ${itemnameToID[element['item']]}");
-    
-    String itemid = itemnameToID[element['item']] ?? "";
-    if (itemid == "") {
-      print("Item ID not found for ${element['item']}");
-      return;
-    }
-
-    print(
-        "Item: ${element['item']}, quantity: ${element['quantity']},xposition: ${coords[0]}, yposition: ${coords[1]}");
-
-    var response = await http.post(url,
-        body: jsonEncode({
-          'itemid': itemid,
-          'quantity': element['quantity'],
-          'xposition': coords[0],
-          'yposition': coords[1],
-          'username': json['username'],
-        })
-        ,headers: {"Content-Type": "application/json"}
-        );
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    print(jsonEncode({
-          'itemid': itemid,
-          'quantity': element['quantity'],
-          'xposition': coords[0],
-          'yposition': coords[1],
-          'username': json['username'],
-        }));
-
-    if (response.statusCode == 200) {
-      print("Successfully sent ${element['item']}");
-      removeFromCart(element['item']);
-    } else {
-      print(response.statusCode);
-      print("Failed to send ${element['item']}");
-      print(response.body);
-    }
-  });
-  print("File after sending:");
-  printFile();
+  List<Map<String, dynamic>> nodelist = [];
+  for (var item in json['cart']) {
+    nodelist.add({
+      'xposition': json['location']['xpos'],
+      'yposition': json['location']['ypos'],
+      'itemid': item['item'],
+      'quantity': item['quantity'],
+      'username': json['username']
+    });
+  }
+  Map<String, dynamic> payload = {'nodelist': nodelist};
+  print(jsonEncode(payload));
 }
 
 Future<Map<String, dynamic>> loadPaths() async {

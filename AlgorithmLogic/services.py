@@ -273,7 +273,8 @@ class DatabaseObject:
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
     
-    def markstep(self, userid: int):
+    def markstep(self, username: str):
+        userID = self.getuserid(username)
         routeid = self.getrouteid(userid)
         completedstep = self.getcompletedstep(routeid)
         query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = {routeid}"
