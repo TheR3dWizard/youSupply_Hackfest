@@ -18,7 +18,13 @@ from chromadb.config import Settings
 from chromadb.api import Collection
 class DatabaseObject:
     def __init__(self) -> None:
-        self.connection = psycopg2.connect(os.getenv("DB_URL"))
+        self.connection = psycopg2.connect(
+            dbname="hackfest",
+            user="rootuser",
+            password="rootroot",
+            host="127.0.0.1",
+            port=5432,
+        )
         self.cursor = self.connection.cursor()
 
     def create_user(self, username: str, contact_number: str, password: str, userrole: str = 'client', latitude: float = None, longitude: float = None):
@@ -66,11 +72,22 @@ class DatabaseObject:
         self.cursor.execute(query, (cluster_id, latitude, longitude))
         self.connection.commit()
 
-    def create_node(self, node_id: str, resource_id: str, quantity: int, username: str, latitude: float, longitude: float, status: str = 'FREE', action: str = 'PICKUP', cluster_id:str="NULL"):
+    def create_node(self, 
+                    node_id: str, 
+                    resource_id: str, 
+                    quantity: int, 
+                    username: str, 
+                    latitude: float, 
+                    longitude: float, 
+                    status: str = 'FREE', 
+                    action: str = 'PICKUP', 
+                    cluster_id:str="NULL"
+                    ):
         query = """
         INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
+        print(query.format(node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
         self.cursor.execute(query, (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
         self.connection.commit()
 
