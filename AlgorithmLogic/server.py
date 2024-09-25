@@ -84,7 +84,7 @@ def serveassortment():
             assortednodeslist.append(node)
     
     # TODO AKASH: check if distancelimit = inf is fine
-    pathsystem = System(distancelimit=float('inf'))
+    # pathsystem = System(distancelimit=float('inf'))
     
     # TODO AKASH: check if we can do setSystem mutiple times on the 
     # same object with every time a different system
@@ -123,7 +123,7 @@ def getpath():
         nodeid = step[2]
         node = databaseobject.getNodeObject(nodeid)
         output["nodes"].append(node.export())
-        output["completed"] = databaseobject.getcompletedsteps(route_id)
+        output["completed"] = databaseobject.getcompletedstep(route_id)
 
     return output
 

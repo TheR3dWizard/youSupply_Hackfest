@@ -254,6 +254,38 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
 
+    def getresourceid(self, resourcename: str):
+        query = f"SELECT resource_id FROM resources WHERE resource_name = '{resourcename}'"
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
+    
+    def getlocfordelagent(self, userid: int):
+        query = f"SELECT cur_latitude, cur_longitude FROM DeliveryVolunteers WHERE UserID = {userid}"
+        self.cursor.execute(query)
+        return self.cursor.fetchone()
+    
+    def getrouteid(self, userid: int):
+        query = f"SELECT RouteID FROM RouteAssignments WHERE UserID = {userid}"
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
+    
+    def getsteps(self, routeid: int):
+        query = f"SELECT * FROM RouteSteps WHERE RouteID = {routeid} ORDER BY StepID"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getcompletedstep(self, routeid: int):
+        query = f"SELECT CompletedStep FROM RouteAssignments WHERE RouteID = {routeid}"
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
+    
+    def markstep(self, userid: int):
+        routeid = self.getrouteid(userid)
+        completedstep = self.getcompletedstep(routeid)
+        query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = {routeid}"
+        self.cursor.execute(query)
+        self.connection.commit()
+        return completedstep + 1
 
 class GoogleAPI:
     def __init__(self):
