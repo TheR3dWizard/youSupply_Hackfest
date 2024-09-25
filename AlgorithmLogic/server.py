@@ -1,5 +1,5 @@
 from flask import Flask
-from algorithm import System, Path, Node, PathComputationObject
+from algorithm import System, Path, Node, PathComputationObject, Cluster
 from flask import request,jsonify
 from services import DatabaseObject, ChromaDBAgent
 import json
@@ -58,6 +58,7 @@ def addrequest():
             item=node["itemid"],
             quantity=node["quantity"],
         )
+        
         updatedcluster = centralsystemobject.addrequest(newnode)
     
         databaseobject.insertrequest(
@@ -69,27 +70,70 @@ def addrequest():
             newlat=updatedcluster.centerxpos,
             newlon=updatedcluster.centerxpos,
         )
-    computepathobject.setSystem(centralsystemobject)
-
-    masterpathlist = computepathobject.getPaths()
-    
-    print("Before clearing", chromadbagent.numberofvectors())
-    
-    chromadbagent.clearindex()
-    databaseobject.truncatepath()
-    print("After clearing", chromadbagent.numberofvectors())
-    
-    
-    for path in masterpathlist:
-        if not path:
-            continue
-        print("\n")
-        databaseobject.insertpath(path.identifier, path.constructdatabaseobject())
-        chromadbagent.insertpathobject(path.identifier, [path.xposition, path.yposition])
-        print("\n")
-    
-    
+        
+        
     return centralsystemobject.stats()
+
+@app.route("/assortment/serve", methods=["GET"])
+def serveassortment():
+    example='''
+        {
+            userid:
+        }
+    '''
+
+    body = request.get_json()
+    xposition,yposition = databaseobject.getlocfordelagent(body['userid'])
+    
+    nodeidlist = chromadbagent.getnearestneighbors([xposition, yposition], kval=100)
+    
+    masternodeslist = centralsystemobject.getnodes()
+    assortednodeslist: List[Node] = []
+    
+    for node in masternodeslist:
+        if node and node.identifier in nodeidlist:
+            assortednodeslist.append(node)
+    
+    # TODO AKASH: check if distancelimit = inf is fine
+    pathsystem = System(distancelimit=float('inf'))
+    
+    # TODO AKASH: check if we can do setSystem mutiple times on the 
+    # same object with every time a different system
+    computepathobject.setCluster(assortednodeslist)
+    paths = computepathobject.getPathsFromCluster()
+    
+    exampleoutput= '''
+    {
+        pathinfo:
+        nodes:[
+        {},
+        {},
+        {}
+        ]
+    }
+    '''
+
+    # TODO AKASH: formart the paths properly
+    return paths.constructdatabaseobject()
+
+@app.route("/obtain/paths", methods=["GET"])
+def getpaths():
+    exampleinput='''
+    {
+        userid:
+    }
+    '''
+    body = request.get_json()
+    route_id = databaseobject.getrouteid(body['userid'])
+    steps = databaseobject.getsteps(body['routeid'])
+    output = {}
+    for step in steps:
+        nodeid = step[2]
+        item = databaseobject.getnodename(nodeid)
+        quantity = databaseobject.getnodequantity(nodeid)
+        
+
+
 
 @app.route("/sample/paths", methods=["POST"])
 def getpaths():
@@ -158,13 +202,7 @@ def computepaths():
     computepathobject.setCluster(nearestnodes)
     paths =  computepathobject.getPaths()
     
-@app.route( '/create/generaluser',methods = ['POST'])
-def createuser():
-    body = request.get_json()
-    username = body["username"]
-    password = body["password"]
-    
 
 
 if __name__ == "__main__":
-    app.run(port=4160)
+    app.run(host='0.0.0.0',port='4160')

@@ -5,7 +5,7 @@ import os
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
-
+from algorithm import Node,path
 load_dotenv()
 
 if os.name == "posix":
@@ -97,6 +97,11 @@ class DatabaseObject:
 
     def getNode(self, nodeid: str):
         query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def getAllNodes(self):
+        query = "SELECT * FROM nodes"
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
@@ -261,9 +266,6 @@ class DatabaseObject:
         self.connection.commit()
 
 
-
-
-
 class GoogleAPI:
     def __init__(self):
         self.api_key = os.getenv("GOOGLE_API_KEY")
@@ -393,6 +395,9 @@ class ChromaDBAgent:
     def getallvectors(self):
         return self.collection.get()['ids']
     
+    def deletevector(self, vectorid):
+        self.collection.delete(id=vectorid)
+    
     def numberofvectors(self):
         return len(self.collection.get()['ids'])
 
@@ -412,7 +417,6 @@ if __name__ == "__main__":
 
 
 dbschema = '''
-
 CREATE TYPE userrole AS ENUM ('delagent', 'client');
 CREATE TYPE routestatus AS ENUM ('ASSIGNED', 'COMPLETED');
 CREATE TYPE node_status AS ENUM ('FREE', 'INPATH', 'SATISFIED');
@@ -426,22 +430,17 @@ CREATE TABLE users (
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8)
 );
-
 CREATE TABLE DeliveryVolunteers(
     UserID INT PRIMARY KEY,
     cur_latitude DECIMAL(10, 8),
     cur_longitude DECIMAL(11, 8),
     FOREIGN KEY (UserID) REFERENCES users(UserID)
 );
-
-
-
 CREATE TABLE resources (
     resource_id CHAR(36) PRIMARY KEY,
     resource_name VARCHAR(100) NOT NULL,
     resource_type VARCHAR(50)
 );
-
 CREATE TABLE CartEntries(
     CartID INT UNIQUE,
     resource_id CHAR(36),
@@ -450,14 +449,12 @@ CREATE TABLE CartEntries(
     PRIMARY KEY (CartID, resource_id),
     FOREIGN KEY (resource_id) REFERENCES resources(resource_id)
 );
-
 CREATE TABLE GeneralUsers(
     UserID INT PRIMARY KEY,
     cartid INT,
     FOREIGN KEY (cartid) REFERENCES CartEntries(CartID),
     FOREIGN KEY (UserID) REFERENCES users(UserID)
 );
-
 CREATE TABLE RouteAssignments(
     UserID INT,
     RouteID INT PRIMARY KEY,
@@ -465,13 +462,11 @@ CREATE TABLE RouteAssignments(
     CompletedStep INT,
     FOREIGN KEY (UserID) REFERENCES DeliveryVolunteers(UserID)
 );
-
 CREATE TABLE clusters (
     cluster_id CHAR(36) PRIMARY KEY,
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8)
 );
-
 CREATE TABLE Nodes (
     node_id CHAR(36) PRIMARY KEY,
     resource_id CHAR(36),
@@ -486,7 +481,6 @@ CREATE TABLE Nodes (
     FOREIGN KEY (cluster_id) REFERENCES clusters(cluster_id),
     FOREIGN KEY (username) REFERENCES users(username)
 );
-
 create TABLE RouteSteps(
     RouteID INT,
     StepID INT,
@@ -495,5 +489,4 @@ create TABLE RouteSteps(
     FOREIGN KEY (RouteID) REFERENCES RouteAssignments(RouteID),
     FOREIGN KEY (NodeID) REFERENCES Nodes(node_id)
 );
-
 '''
