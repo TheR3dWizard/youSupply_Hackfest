@@ -5,7 +5,7 @@ import os
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
-
+from algorithm import Node
 load_dotenv()
 
 if os.name == "posix":
@@ -97,6 +97,11 @@ class DatabaseObject:
 
     def getNode(self, nodeid: str):
         query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def getAllNodes(self):
+        query = "SELECT * FROM nodes"
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
@@ -261,9 +266,6 @@ class DatabaseObject:
         self.connection.commit()
 
 
-
-
-
 class GoogleAPI:
     def __init__(self):
         self.api_key = os.getenv("GOOGLE_API_KEY")
@@ -392,6 +394,9 @@ class ChromaDBAgent:
     # select and display all the vectors in the collection
     def getallvectors(self):
         return self.collection.get()['ids']
+    
+    def deletevector(self, vectorid):
+        self.collection.delete(id=vectorid)
     
     def numberofvectors(self):
         return len(self.collection.get()['ids'])
