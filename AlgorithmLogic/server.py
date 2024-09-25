@@ -42,7 +42,7 @@ def getNodeObject(self, nodeid: str):
 def home():
     return "this API will be used to natively interact with the algorithm logic"
 
-
+#WORKS
 @app.route("/add/node", methods=["POST"])
 def addrequest():
     body = request.get_json()
@@ -55,21 +55,29 @@ def addrequest():
                 "yposition": 1,
                 "itemid": "Flashlight",
                 "quantity": 1,
-                "username": "JohnDoe"
+                "username": "john_doe"
             },
             {
                 "xposition": 1,
                 "yposition": 1,
                 "itemid": "Flashlight",
                 "quantity": -1,
-                "username": "JohnDoe"
+                "username": "john_doe"
             }
         ]
     }
     '''
 
+
     for node in body["nodelist"]:
+        node_obj = Node(
+            x_pos=node["xposition"],
+            y_pos=node["yposition"],
+            item=node["itemid"],
+            quantity=node["quantity"]
+        )
         nodeid = str(uuid.uuid4())
+        chromadbagent.insertnodeobject(nodeid,node_obj)
         resource_id = databaseobject.getresourceid(node["itemid"])
         quantity = node["quantity"]
         username = node["username"]
@@ -78,16 +86,20 @@ def addrequest():
         action = "PICKUP" if quantity > 0 else "DROP"
         databaseobject.create_node(node_id=nodeid,resource_id=resource_id,quantity=quantity,username=username,latitude=latitude,longitude=longitude,action=action)
 
+    return "Worked"
+
+
 @app.route("/path/get", methods=["GET"])
 def serveassortment():
     example='''
         {
-            userid:
+            username :"john_doe"
         }
     '''
 
     body = request.get_json()
-    xposition,yposition = databaseobject.getlocfordelagent(body['userid'])
+    userid = databaseobject.getuserid(body['username'])
+    xposition,yposition = databaseobject.getlocfordelagent(userid)
     
     nodeidlist = chromadbagent.getnearestneighbors([xposition, yposition], kval=100)
     
@@ -165,6 +177,7 @@ def acceptpath():
     step = 0
     for nodeid in nodeids:
         databaseobject.create_route_step(routeid=routeid,nodeid=nodeid,step_id=step)
+    return "Worked"
 
 @app.route("/path/markstep",methods=["POST"])
 def markstep():

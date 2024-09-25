@@ -27,9 +27,9 @@ class DatabaseObject:
         VALUES (%s, %s, %s, %s, %s, %s)
         RETURNING UserID
         """
-        self.db.cursor.execute(query, (username, contact_number, password, userrole, latitude, longitude))
-        self.db.connection.commit()
-        return self.db.cursor.fetchone()[0]
+        self.cursor.execute(query, (username, contact_number, password, userrole, latitude, longitude))
+        self.connection.commit()
+        return self.cursor.fetchone()[0]
 
 
 
@@ -38,16 +38,16 @@ class DatabaseObject:
         INSERT INTO resources (resource_id, resource_name, resource_type)
         VALUES (%s, %s, %s)
         """
-        self.db.cursor.execute(query, (resource_id, resource_name, resource_type))
-        self.db.connection.commit()
+        self.cursor.execute(query, (resource_id, resource_name, resource_type))
+        self.connection.commit()
 
     def create_cart_entry(self, cart_id: int, resource_id: str, quantity: int, is_request: bool):
         query = """
         INSERT INTO CartEntries (CartID, resource_id, quantity, isRequest)
         VALUES (%s, %s, %s, %s)
         """
-        self.db.cursor.execute(query, (cart_id, resource_id, quantity, is_request))
-        self.db.connection.commit()
+        self.cursor.execute(query, (cart_id, resource_id, quantity, is_request))
+        self.connection.commit()
 
 
     def create_route_assignment(self, userid: int, routeid: int, routestatus: str = 'ASSIGNED', completedstep: int = 0):
@@ -55,32 +55,32 @@ class DatabaseObject:
         INSERT INTO RouteAssignments (UserID, RouteID, RouteStatus, CompletedStep)
         VALUES (%s, %s, %s, %s)
         """
-        self.db.cursor.execute(query, (userid, routeid, routestatus, completedstep))
-        self.db.connection.commit()
+        self.cursor.execute(query, (userid, routeid, routestatus, completedstep))
+        self.connection.commit()
 
     def create_cluster(self, cluster_id: str, latitude: float, longitude: float):
         query = """
         INSERT INTO clusters (cluster_id, latitude, longitude)
         VALUES (%s, %s, %s)
         """
-        self.db.cursor.execute(query, (cluster_id, latitude, longitude))
-        self.db.connection.commit()
+        self.cursor.execute(query, (cluster_id, latitude, longitude))
+        self.connection.commit()
 
     def create_node(self, node_id: str, resource_id: str, quantity: int, username: str, latitude: float, longitude: float, status: str = 'FREE', action: str = 'PICKUP', cluster_id:str="NULL"):
         query = """
         INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        self.db.cursor.execute(query, (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
-        self.db.connection.commit()
+        self.cursor.execute(query, (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
+        self.connection.commit()
 
     def create_route_step(self, route_id: int, step_id: int, node_id: str):
         query = """
         INSERT INTO RouteSteps (RouteID, StepID, NodeID)
         VALUES (%s, %s, %s)
         """
-        self.db.cursor.execute(query, (route_id, step_id, node_id))
-        self.db.connection.commit()
+        self.cursor.execute(query, (route_id, step_id, node_id))
+        self.connection.commit()
 
     def getNode(self, nodeid: str):
         query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
@@ -280,6 +280,11 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
         return completedstep + 1
+    
+    def getuserid(self, username: str):
+        query = f"SELECT UserID FROM users WHERE username = '{username}'"
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
 
 class GoogleAPI:
     def __init__(self):
@@ -390,7 +395,7 @@ class ChromaDBAgent:
         else:
             self.collection = self.client.get_collection(self.collection_name)
     
-    
+    #error here
     def insertnodeobject(self, nodeobjectid: str, nodeobject):
         vectorobject = {
             "id": nodeobjectid,
