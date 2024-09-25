@@ -6,7 +6,6 @@ from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
 from algorithm import Node
-from algorithm import Node,path
 load_dotenv()
 
 if os.name == "posix":
@@ -32,13 +31,7 @@ class DatabaseObject:
         self.db.connection.commit()
         return self.db.cursor.fetchone()[0]
 
-    def create_delivery_volunteer(self, userid: int, cur_latitude: float, cur_longitude: float):
-        query = """
-        INSERT INTO DeliveryVolunteers (UserID, cur_latitude, cur_longitude)
-        VALUES (%s, %s, %s)
-        """
-        self.db.cursor.execute(query, (userid, cur_latitude, cur_longitude))
-        self.db.connection.commit()
+
 
     def create_resource(self, resource_id: str, resource_name: str, resource_type: str):
         query = """
@@ -56,13 +49,6 @@ class DatabaseObject:
         self.db.cursor.execute(query, (cart_id, resource_id, quantity, is_request))
         self.db.connection.commit()
 
-    def create_general_user(self, userid: int, cartid: int = None):
-        query = """
-        INSERT INTO GeneralUsers (UserID, cartid)
-        VALUES (%s, %s)
-        """
-        self.db.cursor.execute(query, (userid, cartid))
-        self.db.connection.commit()
 
     def create_route_assignment(self, userid: int, routeid: int, routestatus: str = 'ASSIGNED', completedstep: int = 0):
         query = """
@@ -80,7 +66,7 @@ class DatabaseObject:
         self.db.cursor.execute(query, (cluster_id, latitude, longitude))
         self.db.connection.commit()
 
-    def create_node(self, node_id: str, resource_id: str, cluster_id: str, quantity: int, username: str, latitude: float, longitude: float, status: str = 'FREE', action: str = 'PICKUP'):
+    def create_node(self, node_id: str, resource_id: str, quantity: int, username: str, latitude: float, longitude: float, status: str = 'FREE', action: str = 'PICKUP', cluster_id:str="NULL"):
         query = """
         INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -113,11 +99,13 @@ class DatabaseObject:
         if not result:
             return None
         result = result[0]
+        nodeid = result[0]
+        resource_id = self.getnodename(nodeid)
         return Node(
-            x_pos=result[1],
-            y_pos=result[2],
-            item=result[3],
-            quantity=result[4],
+            x_pos=result[5],
+            y_pos=result[6],
+            item=resource_id,
+            quantity=result[3],
         )
 
     def insertrequest(
@@ -218,7 +206,7 @@ class DatabaseObject:
         self.connection.commit()
 
     
-    def insert_delivery_volunteer(
+    def create_delivery_volunteer(
         self,
         userid: int,
         cur_latitude: float,
@@ -238,7 +226,7 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
 
-    def insert_general_user(
+    def create_general_user(
         self,
         userid: int,
         cartid: int = None

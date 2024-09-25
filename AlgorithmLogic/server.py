@@ -76,8 +76,14 @@ def addrequest():
 
 @app.route("/assortment/serve", methods=["GET"])
 def serveassortment():
+    example='''
+        {
+            userid:
+        }
+    '''
+
     body = request.get_json()
-    xposition, yposition = body["xposition"], body["yposition"]
+    xposition,yposition = databaseobject.getlocfordelagent(body['userid'])
     
     nodeidlist = chromadbagent.getnearestneighbors([xposition, yposition], kval=100)
     
@@ -96,22 +102,37 @@ def serveassortment():
     computepathobject.setCluster(assortednodeslist)
     paths = computepathobject.getPathsFromCluster()
     
+    exampleoutput= '''
+    {
+        pathinfo:
+        nodes:[
+        {},
+        {},
+        {}
+        ]
+    }
+    '''
+
     # TODO AKASH: formart the paths properly
     return paths.constructdatabaseobject()
 
 @app.route("/obtain/paths", methods=["GET"])
 def getpaths():
+    exampleinput='''
+    {
+        userid:
+    }
+    '''
     body = request.get_json()
-    pathobject = body["pathobject"]
-    agentid = body["agentid"]
-    
-    # TODO AKASH: correct the below line, like adding agent id
-    databaseobject.insertpath(pathobject.identifier, pathobject.constructdatabaseobject())
-    nodeslist: List[Node] = body["nodeslist"]
-    for node in nodeslist:
-        chromadbagent.deletevector(node.identifier)
-        
-    return pathobject.identifier
+    route_id = databaseobject.getrouteid(body['userid'])
+    steps = databaseobject.getsteps(route_id)
+    output = {}
+    for step in steps:
+        nodeid = step[2]
+        item = databaseobject.getnodename(nodeid)
+        quantity = databaseobject.getnodequantity(nodeid)
+
+
 @app.route("/sample/paths", methods=["POST"])
 def getpaths():
     body = request.get_json()
