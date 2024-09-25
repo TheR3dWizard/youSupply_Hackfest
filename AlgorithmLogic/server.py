@@ -22,6 +22,21 @@ centralsystemobject.addrequest(Node(x_pos=42.646984, y_pos=-73.789450, item="Fla
 
 app = Flask(__name__)
 
+def getNodeObject(self, nodeid: str):
+    result = databaseobject.getNode(nodeid)
+    if not result:
+        return None
+    result = result[0]
+    resource_id = result[1]
+
+    resource_name = databaseobject.getresourcename(resource_id)
+    return Node(
+        x_pos=result[5],
+        y_pos=result[6],
+        item=resource_name,
+        quantity=result[3],
+    )
+
 
 @app.route("/")
 def home():

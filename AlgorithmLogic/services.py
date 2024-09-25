@@ -5,7 +5,7 @@ import os
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
-from algorithm import Node
+
 load_dotenv()
 
 if os.name == "posix":
@@ -92,21 +92,15 @@ class DatabaseObject:
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
-    def getNodeObject(self, nodeid: str):
+    def getNode(self, nodeid: str):
         query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
         self.cursor.execute(query)
-        result = self.cursor.fetchall()
-        if not result:
-            return None
-        result = result[0]
-        nodeid = result[0]
-        resource_id = self.getnodename(nodeid)
-        return Node(
-            x_pos=result[5],
-            y_pos=result[6],
-            item=resource_id,
-            quantity=result[3],
-        )
+        return self.cursor.fetchall()
+
+    def getresourcename(self, resourceid: str):
+        query = f"SELECT resource_name FROM resources WHERE resource_id='{resourceid}'"
+        self.cursor.execute(query)
+        return self.cursor.fetchone()[0]
 
     def insertrequest(
         self,
