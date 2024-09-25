@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 import psycopg2
-
+from typing import List
 if os.name == "posix":
     __import__('pysqlite3')
     import sys
@@ -14,7 +14,7 @@ from random import random,randrange
 
 
 agent = ChromaDBAgent()
-nodes = []
+nodes:List[Node] = []
 n = 100  # specify the number of nodes you want to create
 
 for _ in range(n):
@@ -24,7 +24,8 @@ for _ in range(n):
     nodes.append(node)
 
 for node in nodes:
-    agent.insertnodeobject(f"{random()}",node)
+    id = random()
+    agent.insertnodeobject(f'{id}',[node.x_pos,node.y_pos])
 
 neighbors = agent.getnearestneighbors([50,50],5)
 print(neighbors)

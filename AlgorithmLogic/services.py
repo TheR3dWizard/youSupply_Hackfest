@@ -399,10 +399,12 @@ class ChromaDBAgent:
     def insertnodeobject(self, nodeobjectid: str, nodeobject):
         vectorobject = {
             "id": nodeobjectid,
-            "vector": nodeobject
+            "vector": [nodeobject.x_pos,nodeobject.y_pos]
         }
         
         self.collection.upsert(vectorobject["id"], vectorobject["vector"])
+
+    
 
     def getnearestneighbors(self, coordinates, kval=5):
         return self.collection.query(coordinates, n_results=kval)['ids']
