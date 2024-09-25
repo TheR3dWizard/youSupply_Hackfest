@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    image: akashshanmugaraj/hackfestbackend:pgrs
+    platform: linux/amd64
+    ports:
+      - "4160:4160"
+    depends_on:
+      - postgres_service
+    environment:
+      DB_HOST: postgres_service
+      DB_USER: rootuser
+      DB_PASSWORD: rootroot
+      DB_NAME: hackfestpgrs
+
+  postgres_service:
+    image: postgres:13
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: hackfestpgrs
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: rootroot
+    ports:
+      - "5432:5432"
