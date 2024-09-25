@@ -70,8 +70,7 @@ def addrequest():
             newlat=updatedcluster.centerxpos,
             newlon=updatedcluster.centerxpos,
         )
-        
-        
+    
     return centralsystemobject.stats()
 
 @app.route("/assortment/serve", methods=["GET"])
@@ -79,22 +78,27 @@ def serveassortment():
     body = request.get_json()
     xposition, yposition = body["xposition"], body["yposition"]
     
-    nodeidlist = chromadbagent.getnearestneighbors([xposition, yposition], kval=100)
+    return chromadbagent.getnearestneighbors([xposition, yposition], kval=100)
+
+@app.route('/assortment/obtain', methods=["GET"])
+def obtainassortment():
+    body = request.get_json()
+    nodelist = body["nodelist"]
     
     masternodeslist = centralsystemobject.getnodes()
     assortednodeslist: List[Node] = []
     
     for node in masternodeslist:
-        if node and node.identifier in nodeidlist:
+        if node and node.identifier in nodelist:
             assortednodeslist.append(node)
     
     # TODO AKASH: check if distancelimit = inf is fine
-    pathsystem = System(distancelimit=float('inf'))
+    pathsystem = System(distancelimit=float('inf'), listofnodes=assortednodeslist)
     
     # TODO AKASH: check if we can do setSystem mutiple times on the 
     # same object with every time a different system
-    computepathobject.setCluster(assortednodeslist)
-    paths = computepathobject.getPathsFromCluster()
+    computepathobject.setSystem(pathsystem)
+    paths = computepathobject.getPaths()
     
     # TODO AKASH: formart the paths properly
     return paths.constructdatabaseobject()

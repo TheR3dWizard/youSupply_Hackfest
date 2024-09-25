@@ -5,6 +5,7 @@ import os
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
+from algorithm import Node
 from algorithm import Node,path
 load_dotenv()
 
@@ -394,6 +395,9 @@ class ChromaDBAgent:
     # select and display all the vectors in the collection
     def getallvectors(self):
         return self.collection.get()['ids']
+    
+    def deletevector(self, vectorid):
+        self.collection.delete(id=vectorid)
     
     def deletevector(self, vectorid):
         self.collection.delete(id=vectorid)
