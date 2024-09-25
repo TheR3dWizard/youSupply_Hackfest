@@ -158,6 +158,12 @@ def computepaths():
     computepathobject.setCluster(nearestnodes)
     paths =  computepathobject.getPaths()
     
+@app.route( '/create/generaluser',methods = ['POST'])
+def createuser():
+    body = request.get_json()
+    username = body["username"]
+    password = body["password"]
+    
 
 
 if __name__ == "__main__":
