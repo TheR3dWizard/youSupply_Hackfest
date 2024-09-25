@@ -1,0 +1,34 @@
+show available deliveries:
+	take location, find 100-150 nearest nodes that are marked Free
+	make PathComputationObject with the nodes
+	take paths from PathComputationObject
+	send routeinfo to user
+
+accept delivery:
+	take route info and userID
+	create entry in routeassignment table
+	create entries in routesteps table for every step of the route
+	mark all the nodes in the route info as InPath
+
+show accepted route:
+	take userID
+    find routeID from routeassignment table where routestatus is Assigned (there should only be one entry)
+	find all entries with the routeID from routesteps table
+	find stepscompleted from routeassignment table
+	mark steps as completed/not completed
+	send all steps to user
+
+markstepascompleted:
+	take routeID
+	increment stepscompleted in routeassignment table
+	mark node as satisfied in nodes table
+	if stepscompleted == final step in routesteps table for that routeID
+		mark route as completed
+
+showcompletedroutes:
+    take userID
+    find all routeIDs from routeassignment table where routestatus is Completed
+    find all steps from routesteps table for those routeIDs
+    send all steps to user
+	
+	
