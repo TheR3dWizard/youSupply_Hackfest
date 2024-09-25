@@ -1,8 +1,9 @@
 from flask import Flask
 from algorithm import System, Path, Node, PathComputationObject, Cluster
-from flask import request,jsonify
+from flask import request
 from services import DatabaseObject, ChromaDBAgent
 import json
+import uuid
 from pprint import pprint
 from typing import List
 
@@ -51,30 +52,18 @@ def addrequest():
         ]
     }
     '''
-    for node in body["nodelist"]:
-        newnode = Node(
-            x_pos=node["xposition"],
-            y_pos=node["yposition"],
-            item=node["itemid"],
-            quantity=node["quantity"],
-        )
-        
-        updatedcluster = centralsystemobject.addrequest(newnode)
-    
-        databaseobject.insertrequest(
-            requestid=newnode.identifier,
-            resourceid=node["itemid"],
-            clusterid=updatedcluster.identifier,
-            username=node["username"],
-            quantity=node["quantity"],
-            newlat=updatedcluster.centerxpos,
-            newlon=updatedcluster.centerxpos,
-        )
-        
-        
-    return centralsystemobject.stats()
 
-@app.route("/assortment/serve", methods=["GET"])
+    for node in body["nodelist"]:
+        nodeid = str(uuid.uuid4())
+        resource_id = databaseobject.getresourceid(node["itemid"])
+        quantity = node["quantity"]
+        username = node["username"]
+        latitude = node["xposition"]
+        longitude = node["yposition"]
+        action = "PICKUP" if quantity > 0 else "DROP"
+        databaseobject.create_node(node_id=nodeid,resource_id=resource_id,quantity=quantity,username=username,latitude=latitude,longitude=longitude,action=action)
+
+@app.route("/path/get", methods=["GET"])
 def serveassortment():
     example='''
         {
@@ -106,7 +95,9 @@ def serveassortment():
     {
         pathinfo:
         nodes:[
-        {},
+        {
+            nodeid
+        },
         {},
         {}
         ]
@@ -116,8 +107,8 @@ def serveassortment():
     # TODO AKASH: formart the paths properly
     return paths.constructdatabaseobject()
 
-@app.route("/obtain/paths", methods=["GET"])
-def getpaths():
+@app.route("/path/lookup", methods=["GET"])
+def getpath():
     exampleinput='''
     {
         userid:
@@ -127,50 +118,56 @@ def getpaths():
     route_id = databaseobject.getrouteid(body['userid'])
     steps = databaseobject.getsteps(route_id)
     output = {}
+    output["nodes"] = []
     for step in steps:
         nodeid = step[2]
-        item = databaseobject.getnodename(nodeid)
-        quantity = databaseobject.getnodequantity(nodeid)
+        node = databaseobject.getNodeObject(nodeid)
+        output["nodes"].append(node.export())
+        output["completed"] = databaseobject.getcompletedsteps(route_id)
+
+    return output
 
 
-@app.route("/sample/paths", methods=["POST"])
+@app.route("/path/accept", methods=["POST"])
+def acceptpath():
+
+    body = request.get_json()
+    '''
+    {
+        "userid": "JohnDoe",
+        nodes: [
+            nodeid1,
+            nodeid2,
+            nodeid3
+        ]    
+    }
+    '''
+    userid = body["userid"]
+    nodeids = body["nodes"]
+    routeid = str(uuid.uuid4())
+    databaseobject.create_route_assignment(userid=userid,routeid=routeid)
+
+    step = 0
+    for nodeid in nodeids:
+        databaseobject.create_route_step(routeid=routeid,nodeid=nodeid,step_id=step)
+
+@app.route("/path/markstep",methods=["POST"])
+def markstep():
+    body = request.get_json()
+    '''
+    {
+        "userid": "JohnDoe",
+    }
+    '''
+    step = databaseobject.markstep(body["userid"])
+    return step
+
+
+@app.route("/sample/paths", methods=["GET"])
 def getpaths():
     body = request.get_json()
     return read_json_file("samplepaths.json")
 
-from flask import jsonify, request
-
-@app.route("/get/paths", methods=["POST"])
-def getactualpaths():
-    body = request.get_json()
-
-    nearestids = chromadbagent.getnearestneighbors([body["xposition"], body["yposition"]])  #gets nearest paths not nodes
-    nearestpaths: List[Path] = list()
-    if len(nearestids) == 0:
-        return {
-            "message": "No paths returned from the database"
-        }
-    
-    masterpathlist = computepathobject.getPaths()
-    if not masterpathlist:
-        return {
-            "message": "No paths in the masterpathlist"
-        }
-
-    for path in masterpathlist:
-        if path and path.identifier in nearestids[0]:
-            nearestpaths.append(path)
-    
-    if len(nearestpaths) == 0:
-        return {
-            "message": "No paths matched the nearest neighbors"
-        }
-    exportlist = []
-    
-    for path in nearestpaths:
-        exportlist.append(path.constructdatabaseobject())
-    
-    return computepathobject.formatpathoutput(exportlist)
 
 
 @app.route("/get/stats")
@@ -181,24 +178,6 @@ def stats():
 def dbstats():
     return chromadbagent.getallvectors()
 
-@app.route("/get/computepaths",methods=["GET"])
-def computepaths():
-    body = request.get_json()
-    latitude = body["latitude"]
-    longitude = body["longitude"]
-
-    nearestnodeids = chromadbagent.getnearestneighbors([latitude, longitude])  #should get nearest nodes
-    nearestnodes = list()
-    if len(nearestnodeids) == 0:
-        return {
-            "message": "No nodes returned from the database"
-        }
-    
-    for i in nearestnodeids:
-        nearestnodes.append(databaseobject.getNodeObject(i))
-    
-    computepathobject.setCluster(nearestnodes)
-    paths =  computepathobject.getPaths()
     
 
 
