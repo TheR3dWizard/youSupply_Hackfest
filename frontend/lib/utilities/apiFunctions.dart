@@ -456,3 +456,26 @@ Future<Set<Polyline>> setPolylines(int index) async {
 
   return _polylines;
 }
+
+Future<Map<String, dynamic>> markStep() async {
+  final url = Uri.parse('$baseUrl/path/markstep');
+  String userId = getUsername()
+  try {
+    final response = await http.post(
+      url,
+      body: json.encode({"userid": userId}),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = json.decode(response.body);
+      return responseBody; // Return the response from the API
+    } else {
+      print('Failed to mark step. Status Code: ${response.statusCode}');
+      return {"error": "Failed to mark step"};
+    }
+  } catch (e) {
+    print('Error occurred: $e');
+    return {"error": e.toString()};
+  }
+}
