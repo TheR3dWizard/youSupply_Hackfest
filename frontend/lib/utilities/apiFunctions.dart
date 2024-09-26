@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable, avoid_print, no_logic_in_create_state
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -137,7 +138,11 @@ Future<List<Map<String, dynamic>>> readCart() async {
 }
 
 
-
+Future<String> getUsername() async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  return json['username'];
+}
 
 
 // Backend Functions
@@ -223,65 +228,18 @@ Future<bool> addnode(String itemtype, int quantity) async {
 Future<void> sendcart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  print("File before sending:");
-  printFile();
-
-  // print("Dictionary is");
-  // print(itemnameToID);
-  
-  // List<String> coords = await getCoords();
-  List<double> coords = getrandomCoords();
-
-  json['cart'].forEach((element) async {
-    if (element['quantity'] == 0) {
-    }
-
-    var url = Uri.parse('$basealgoUrl/add/node');
-    
-    // print("KEY is ${element['item']}");
-    // print("VALUE is ${itemnameToID[element['item']]}");
-    
-    String itemid = itemnameToID[element['item']] ?? "";
-    if (itemid == "") {
-      print("Item ID not found for ${element['item']}");
-      return;
-    }
-
-    print(
-        "Item: ${element['item']}, quantity: ${element['quantity']},xposition: ${coords[0]}, yposition: ${coords[1]}");
-
-    var response = await http.post(url,
-        body: jsonEncode({
-          'itemid': itemid,
-          'quantity': element['quantity'],
-          'xposition': coords[0],
-          'yposition': coords[1],
-          'username': json['username'],
-        })
-        ,headers: {"Content-Type": "application/json"}
-        );
-
-    await Future.delayed(const Duration(seconds: 1));
-
-    print(jsonEncode({
-          'itemid': itemid,
-          'quantity': element['quantity'],
-          'xposition': coords[0],
-          'yposition': coords[1],
-          'username': json['username'],
-        }));
-
-    if (response.statusCode == 200) {
-      print("Successfully sent ${element['item']}");
-      removeFromCart(element['item']);
-    } else {
-      print(response.statusCode);
-      print("Failed to send ${element['item']}");
-      print(response.body);
-    }
-  });
-  print("File after sending:");
-  printFile();
+  List<Map<String, dynamic>> nodelist = [];
+  for (var item in json['cart']) {
+    nodelist.add({
+      'xposition': json['location']['xpos'],
+      'yposition': json['location']['ypos'],
+      'itemid': item['item'],
+      'quantity': item['quantity'],
+      'username': json['username']
+    });
+  }
+  Map<String, dynamic> payload = {'nodelist': nodelist};
+  print(jsonEncode(payload));
 }
 
 Future<Map<String, dynamic>> loadPaths() async {
@@ -455,4 +413,109 @@ Future<Set<Polyline>> setPolylines(int index) async {
   ));
 
   return _polylines;
+}
+
+
+
+Future<Map<String, dynamic>> createNodeList() async {
+  List<Map<String, dynamic>> nodeList = [];
+  final file = await _localFile;
+  Map<String, dynamic> userInfo = jsonDecode(file.readAsStringSync());
+  // Extract necessary fields from userInfo
+  String username = userInfo["username"];
+  int xPosition = userInfo["location"]["xpos"];
+  int yPosition = userInfo["location"]["ypos"];
+  List cart = userInfo["cart"];
+
+  // Loop through the cart items and construct nodeList
+  for (var item in cart) {
+    Map<String, dynamic> node = {
+      "xposition": xPosition,
+      "yposition": yPosition,
+      "itemid": item["itemtype"],
+      "quantity": item["quantity"],
+      "username": username
+    };
+
+    nodeList.add(node);
+  }
+
+  return {"nodelist": nodeList};
+}
+
+Future<bool> addNodeRequest() async {
+  final url = Uri.parse('$basealgoUrl/add/node');
+  Map<String, dynamic> requestBody= await createNodeList();
+
+  try {
+    final response = await http.post(
+      url,
+      body: jsonEncode(requestBody),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode == 200) {
+      print('Nodes added successfully');
+      return true; // Success
+    } else {
+      print('Failed to add nodes. Status Code: ${response.statusCode}');
+      return false; // Failure
+    }
+  } catch (e) {
+    print('Error occurred: $e');
+    return false; // Error
+  }
+}
+
+Future<void> sendPathAcceptRequest(String userId, List<String> nodeIds) async {
+  // The API endpoint URL
+
+  // Create the request body
+  Map<String, dynamic> requestBody = {
+    "userid": userId,
+    "nodes": nodeIds
+  };
+
+  try {
+    // Send POST request
+    final response = await http.post(
+      Uri.parse(basealgoUrl + '/path/accept'),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    // Check the response status
+    if (response.statusCode == 200) {
+      print('Request successful: ${response.body}');
+    } else {
+      print('Failed to send request: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error sending request: $e');
+  }
+}
+
+Future<Map<String, dynamic>> markStep() async {
+  final url = Uri.parse('$basealgoUrl/path/markstep');
+  String userId = await getUsername();
+  try {
+    final response = await http.post(
+      url,
+      body: json.encode({"userid": userId}),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseBody = json.decode(response.body);
+      return responseBody; // Return the response from the API
+    } else {
+      print('Failed to mark step. Status Code: ${response.statusCode}');
+      return {"error": "Failed to mark step"};
+    }
+  } catch (e) {
+    print('Error occurred: $e');
+    return {"error": e.toString()};
+  }
 }
