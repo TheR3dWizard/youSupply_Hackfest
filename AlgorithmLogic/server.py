@@ -165,16 +165,13 @@ def serveassortment():
                 "latitude": node_obj.x_pos,
                 "longitude": node_obj.y_pos
             })
-        output["paths"][str(i)] = path_details
+        output["paths"][str(i)] = {
+            "path_details": path_details,
+            "nodeids": [node["nodeid"] for node in path["nodes"]]
+        }
 
     return json.dumps(output, indent=4)
-
-    return json.dumps(formatted_paths, indent=4)
-
-    
-
-
-    
+  
 
 @app.route("/path/lookup", methods=["GET"])
 def getpath():
