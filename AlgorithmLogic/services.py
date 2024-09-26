@@ -303,6 +303,12 @@ class DatabaseObject:
         query = f"SELECT UserID FROM users WHERE username = '{username}'"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
+    
+    def getallnodeids(self):
+        query = "SELECT node_id FROM Nodes"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
 
 class GoogleAPI:
     def __init__(self):
@@ -421,7 +427,6 @@ class ChromaDBAgent:
         }
         
         self.collection.upsert(vectorobject["id"], vectorobject["vector"])
-
     
 
     def getnearestneighbors(self, coordinates, kval=5):
