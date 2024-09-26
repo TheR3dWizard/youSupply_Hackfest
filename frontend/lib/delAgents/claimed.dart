@@ -41,7 +41,10 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => CompletedRoutes(),
+            builder: (context) {
+              markStep();
+              return CompletedRoutes();
+            },
           ),
         );
       }
@@ -96,7 +99,6 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Display only the start location
                               Text(
                                 currentTuple.startLoc,
                                 style: TextStyle(
@@ -139,13 +141,12 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                     ),
                   ),
                 ),
-                // "Mark as Completed" button at the bottom
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(
                     onPressed: _completedCount < _completedStatus.length
                         ? _markNextAsCompleted
-                        : null, // Disable button when all are completed
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromARGB(255, 0, 255, 255),
                       padding:
