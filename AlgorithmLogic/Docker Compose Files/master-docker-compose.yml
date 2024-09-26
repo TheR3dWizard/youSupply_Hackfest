@@ -18,7 +18,7 @@ services:
     image: postgres:13
     platform: linux/amd64
     environment:
-      POSTGRES_DB: hackfestpgrs
+      POSTGRES_DB: hackfest
       POSTGRES_USER: rootuser
       POSTGRES_PASSWORD: rootroot
     ports:
