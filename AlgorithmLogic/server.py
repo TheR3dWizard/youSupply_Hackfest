@@ -70,14 +70,16 @@ def addrequest():
 
 
     for node in body["nodelist"]:
+        randomid = str(uuid.uuid4())
         node_obj = Node(
+            identifier=randomid,
             x_pos=node["xposition"],
             y_pos=node["yposition"],
             item=node["itemid"],
-            quantity=node["quantity"]
+            quantity=node["quantity"],
         )
-        nodeid = str(uuid.uuid4())
-        chromadbagent.insertnodeobject(nodeid,node_obj)
+        
+        chromadbagent.insertnodeobject(randomid,node_obj)
         resource_id = databaseobject.getresourceid(node["itemid"])
         quantity = node["quantity"]
         username = node["username"]
@@ -85,7 +87,7 @@ def addrequest():
         longitude = node["yposition"]
         action = "PICKUP" if quantity > 0 else "DROP"
         databaseobject.create_node(
-            node_id=nodeid,
+            node_id=randomid,
             resource_id=resource_id,
             quantity=quantity,
             username=username,
@@ -93,6 +95,8 @@ def addrequest():
             longitude=longitude,
             action=action
         )
+        
+        centralsystemobject.addrequest(node_obj)
 
     return "Worked"
 
@@ -113,17 +117,24 @@ def serveassortment():
     
     masternodeslist = centralsystemobject.getnodes()
     assortednodeslist: List[Node] = []
+    print("Masternodes ",masternodeslist)
+    print("Nodeidlist ",nodeidlist)
     
     for node in masternodeslist:
-        if node and node.identifier in nodeidlist:
+        print(f"Checking now {node.identifier}")
+        if node and node.identifier in nodeidlist[0]:
             assortednodeslist.append(node)
-    
+    print("Assorted ",assortednodeslist)
     # TODO AKASH: check if distancelimit = inf is fine
     # pathsystem = System(distancelimit=float('inf'))
     
+    # for node in assortednodeslist:
+    #     pathsystem.addrequest(node)
     # TODO AKASH: check if we can do setSystem mutiple times on the 
     # same object with every time a different system
     computepathobject.setCluster(assortednodeslist)
+    
+    print("System set")
     paths = computepathobject.getPathsFromCluster()
     
     exampleoutput= '''
@@ -145,7 +156,7 @@ def serveassortment():
     for path in paths:
         formatted_path = {
             "pathinfo": str(uuid.uuid4()),
-            "nodes": [{"nodeid": node.identifier} for node in path.nodes]
+            "nodes": [{"nodeid": node.identifier} for node in path.path]
         }
         formatted_paths.append(formatted_path)
 
@@ -248,7 +259,11 @@ def stats():
 def dbstats():
     return chromadbagent.getallvectors()
 
-    
+
+@app.route("/test/chroma/all", methods=["GET"])
+def allchroma():
+    return chromadbagent.getallvectors()
+
 
 
 if __name__ == "__main__":

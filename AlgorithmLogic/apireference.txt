@@ -2,43 +2,43 @@
 [{
     "xposition": 10.991417,
     "yposition": 77.004313,
-    "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
+    "itemid": "clothes",
     "quantity": 10,
-    "username": "JaneDoe"
+    "username": "john_doe"
 },
 {
     "xposition": 10.990018,
     "yposition": 77.002040,
-    "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
+    "itemid": "clothes",
     "quantity": 10,
-    "username": "JaneDoe"
+    "username": "john_doe"
 },
 {
     "xposition": 10.991982,
     "yposition": 77.008117,
-    "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
     "quantity": -20,
-    "username": "JaneDoe"
+    "itemid": "clothes",
+    "username": "john_doe"
 },
 {
     "xposition": 9.585080,
     "yposition": 76.549819,
-    "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
+    "itemid": "clothes",
     "quantity": -1,
-    "username": "JaneDoe"
+    "username": "john_doe"
 },
 {
     "xposition": 9.584708, 
     "yposition": 76.553949,
-    "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
+    "itemid": "clothes",
     "quantity": -1,
-    "username": "JaneDoe"
+    "username": "john_doe"
 },
 {
     "xposition": 9.577480,
     "yposition": 76.552911,
-    "itemid": "619d8b87-a67c-4769-bbf0-839715a3603d",
+    "itemid": "clothes",
     "quantity": 2,
-    "username": "JaneDoe"
+    "username": "john_doe"
 }
 ]}

@@ -20,9 +20,9 @@ class Node:
     """
 
     def __init__(
-        self, x_pos: int = 0, y_pos: int = 0, item: str = "", quantity: int = 1
+        self, x_pos: int = 0, y_pos: int = 0, item: str = "", quantity: int = 1, identifier: str = ""
     ):
-        self.identifier = str(uuid.uuid4())
+        self.identifier = identifier
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.itemtype = item
@@ -77,7 +77,7 @@ class Node:
 
 
 class Path:
-    def __init__(self, path: List[Node], distance: float, clusterid: str) -> None:
+    def __init__(self, path: List[Node], distance: float=0) -> None:
         self.identifier = str(uuid.uuid4())
         self.path = path
         self.distance = distance
@@ -90,7 +90,6 @@ class Path:
         return str({
             "pathidentifier": self.identifier,
             "distance": self.distance,
-            "inwords": globalgooglemapsobject.geocodecoordinatestoaddress([self.xposition, self.yposition])
         })
     
     def export(self):
@@ -297,6 +296,19 @@ class Cluster:
         print("Updated Inventory")
         return freepool
 
+    def getclosestnode(self, node, possibilities, visited):
+        min_distance = float("inf")
+        closest_node = None
+        
+        for possibility in possibilities:
+            if possibility not in visited:
+                distance = node.getdistance(possibility)
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_node = possibility
+
+        return min_distance, closest_node
+    
     def getpath(self, curpos: Node = None) -> List[Node]:
         self.subpaths = list()
         distance = 0
@@ -314,6 +326,7 @@ class Cluster:
         )
 
         # TODO: make the first node the closest source node to the curpos
+        print(f"Trying to get current node from sourcelist : {self.sourcenodes}")
         current = self.sourcenodes[0]
         visited.add(current)
         path.append(current)
@@ -340,6 +353,8 @@ class Cluster:
             # self.subpaths[-1].plotpath()
             previndex = len(path)
             prevdistance = distance
+        
+        print(f"Trying to get current node from sourcelist : {self.sourcenodes}")
 
         while len(visited) < self.getnumberofnodes():
             available[current.itemtype] += current.quantity
@@ -351,15 +366,15 @@ class Cluster:
                 possiblesources = [
                     node for node in self.sourcenodes if node not in visited
                 ]
-                nextdistance, next = closest(current, possiblesources)
+                nextdistance, next = self.getclosestnode(current, possiblesources, visited)
             else:
-                nextdistance, next = closest(current, possiblesinks)
+                nextdistance, next = self.getclosestnode(current, possiblesinks, visited)
             distance += nextdistance
             visited.add(next)
             path.append(next)
             current = next
 
-        self.path = Path(path, distance, self.identifier)
+        self.path = Path(path, distance)
 
     def plotallpaths(self):
         self.getpath()
