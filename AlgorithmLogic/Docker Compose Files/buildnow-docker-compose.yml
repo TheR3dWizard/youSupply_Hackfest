@@ -9,7 +9,7 @@ services:
     ports:
       - "4160:4160"
     depends_on:
-      - postgres_service
+      - hackfestpostgres
     environment:
       DB_HOST: hackfestpostgres
       DB_USER: rootuser
