@@ -25,10 +25,7 @@ class CompletedRoutes extends StatelessWidget {
             coordinates: '11.025155757439432,77.0025...',
             distance: '5.0 km',
           ),
-          routeCard(
-            coordinates: '11.025155757439432,77.0025...',
-            distance: '5.0 km',
-          ),
+
           // Add more route cards as needed
         ],
       ),
