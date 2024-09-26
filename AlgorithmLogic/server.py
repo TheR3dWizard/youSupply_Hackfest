@@ -160,7 +160,31 @@ def serveassortment():
         }
         formatted_paths.append(formatted_path)
 
+    output = {
+        "numpaths": len(formatted_paths),
+        "paths": {}
+    }
+
+    for i, path in enumerate(formatted_paths):
+        path_details = []
+        for node in path["nodes"]:
+            node_obj = databaseobject.getNodeObject(node["nodeid"])
+            path_details.append({
+                "id":node["nodeid"],
+                "itemtype": node_obj.item,
+                "quantity": node_obj.quantity,
+                "latitude": node_obj.x_pos,
+                "longitude": node_obj.y_pos
+            })
+        output["paths"][str(i)] = path_details
+
+    return json.dumps(output, indent=4)
+
     return json.dumps(formatted_paths, indent=4)
+
+    
+
+
     
 
 @app.route("/path/lookup", methods=["GET"])

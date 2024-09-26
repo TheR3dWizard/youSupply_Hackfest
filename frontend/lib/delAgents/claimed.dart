@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utilities.dart';
 import 'package:frontend/utilities/apiFunctions.dart';
+import 'completed_routes.dart';
 
 class ClaimedRoutes extends StatefulWidget {
   final int pathIndex;
@@ -17,6 +18,7 @@ class ClaimedRoutes extends StatefulWidget {
 class _ClaimedRoutesState extends State<ClaimedRoutes> {
   late Future<List<Tuple>> _pathTuplesFuture;
   late List<bool> _completedStatus;
+  int _completedCount = 0;
 
   @override
   void initState() {
@@ -24,6 +26,25 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
     _pathTuplesFuture = loadPathsTuple(widget.pathIndex).then((pathTuples) {
       _completedStatus = List<bool>.filled(pathTuples.length, false);
       return pathTuples;
+    });
+  }
+
+  void _markNextAsCompleted() {
+    setState(() {
+      if (_completedCount < _completedStatus.length) {
+        _completedStatus[_completedCount] = true;
+        _completedCount++;
+      }
+
+      // Navigate to the completed routes page when all are completed
+      if (_completedCount == _completedStatus.length) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CompletedRoutes(),
+          ),
+        );
+      }
     });
   }
 
@@ -64,9 +85,6 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                       itemBuilder: (context, index) {
                         Tuple currentTuple = pathTuples[index];
                         bool isCompleted = _completedStatus[index];
-                        String nextLocation = index < pathTuples.length - 1
-                            ? pathTuples[index + 1].startLoc
-                            : 'End';
 
                         return Container(
                           padding: const EdgeInsets.all(10.0),
@@ -78,36 +96,15 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      currentTuple.startLoc,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Colors.white70,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.white70,
-                                    size: 20,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      nextLocation,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Colors.white70,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
+                              // Display only the start location
+                              Text(
+                                currentTuple.startLoc,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.white70,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                               SizedBox(height: 10),
                               Text(
@@ -133,30 +130,33 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                                           ),
                                         ),
                                       )
-                                    : ElevatedButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _completedStatus[index] = true;
-                                          });
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              Color.fromARGB(255, 0, 255, 255),
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 15),
-                                        ),
-                                        child: Text(
-                                          'Mark as Completed',
-                                          style: TextStyle(
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ),
+                                    : Container(),
                               ),
                             ],
                           ),
                         );
                       },
+                    ),
+                  ),
+                ),
+                // "Mark as Completed" button at the bottom
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: _completedCount < _completedStatus.length
+                        ? _markNextAsCompleted
+                        : null, // Disable button when all are completed
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 0, 255, 255),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    ),
+                    child: Text(
+                      'Mark as Completed',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
