@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  app:
+  hackfestapp:
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,12 +11,12 @@ services:
     depends_on:
       - postgres_service
     environment:
-      DB_HOST: postgres_service
+      DB_HOST: hackfestpostgres
       DB_USER: rootuser
       DB_PASSWORD: rootroot
       DB_NAME: hackfestpgrs
 
-  postgres_service:
+  hackfestpostgres:
     image: postgres:13
     platform: linux/amd64
     environment:

@@ -22,7 +22,7 @@ class DatabaseObject:
             dbname="hackfest",
             user="rootuser",
             password="rootroot",
-            host="127.0.0.1",
+            host=os.getenv("DB_HOST"), # while running locally, replace with 127.0.0.1 or create env var DB_HOST = 127.0.0.1
             port=5432,
         )
         self.cursor = self.connection.cursor()
