@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  postgres_service:
+    image: postgres:13
+    platform: linux/amd64
+    environment:
+      POSTGRES_DB: hackfest
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: rootroot
+    ports:
+      - "5432:5432"

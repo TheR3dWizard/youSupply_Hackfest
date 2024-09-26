@@ -84,7 +84,15 @@ def addrequest():
         latitude = node["xposition"]
         longitude = node["yposition"]
         action = "PICKUP" if quantity > 0 else "DROP"
-        databaseobject.create_node(node_id=nodeid,resource_id=resource_id,quantity=quantity,username=username,latitude=latitude,longitude=longitude,action=action)
+        databaseobject.create_node(
+            node_id=nodeid,
+            resource_id=resource_id,
+            quantity=quantity,
+            username=username,
+            latitude=latitude,
+            longitude=longitude,
+            action=action
+        )
 
     return "Worked"
 
@@ -101,7 +109,7 @@ def serveassortment():
     userid = databaseobject.getuserid(body['username'])
     xposition,yposition = databaseobject.getlocfordelagent(userid)
     
-    nodeidlist = chromadbagent.getnearestneighbors([xposition, yposition], kval=100)
+    nodeidlist = chromadbagent.getnearestneighbors([float(xposition), float(yposition)], kval=100)
     
     masternodeslist = centralsystemobject.getnodes()
     assortednodeslist: List[Node] = []
@@ -119,8 +127,8 @@ def serveassortment():
     paths = computepathobject.getPathsFromCluster()
     
     exampleoutput= '''
-    {
-        pathinfo:
+    [{
+        pathinfo:uuid.uuid4()
         nodes:[
         {
             nodeid
@@ -128,11 +136,21 @@ def serveassortment():
         {},
         {}
         ]
-    }
+    },
+    ]
     '''
-
+    print(paths)
     # TODO AKASH: formart the paths properly
-    return paths.constructdatabaseobject()
+    formatted_paths = []
+    for path in paths:
+        formatted_path = {
+            "pathinfo": str(uuid.uuid4()),
+            "nodes": [{"nodeid": node.identifier} for node in path.nodes]
+        }
+        formatted_paths.append(formatted_path)
+
+    return json.dumps(formatted_paths, indent=4)
+    
 
 @app.route("/path/lookup", methods=["GET"])
 def getpath():
