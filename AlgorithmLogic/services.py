@@ -81,7 +81,7 @@ class DatabaseObject:
                     longitude: float, 
                     status: str = 'FREE', 
                     action: str = 'PICKUP', 
-                    cluster_id:str="NULL"
+                    cluster_id:str="cluster1"
                     ):
         query = """
         INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
