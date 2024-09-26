@@ -87,7 +87,7 @@ class DatabaseObject:
         INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        print(query.format(node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
+        print((node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
         self.cursor.execute(query, (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
         self.connection.commit()
 

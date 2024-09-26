@@ -168,13 +168,15 @@ def serveassortment():
     for i, path in enumerate(formatted_paths):
         path_details = []
         for node in path["nodes"]:
-            node_obj = databaseobject.getNodeObject(node["nodeid"])
+            node_obj = databaseobject.getNode(node["nodeid"])[0]
+            # [('4352412b-bfb2-4988-8960-1ba8219f2787', '2', 'cluster1', 10, 'john_doe', Decimal('10.99141700'), Decimal('77.00431300'), 'FREE', 'PICKUP')]
+            print(node_obj)
             path_details.append({
                 "id":node["nodeid"],
-                "itemtype": node_obj.item,
-                "quantity": node_obj.quantity,
-                "latitude": node_obj.x_pos,
-                "longitude": node_obj.y_pos
+                "itemtype": node_obj[1].rstrip(),
+                "quantity": node_obj[3],
+                "latitude": float(node_obj[5]),
+                "longitude": float(node_obj[6])
             })
         output["paths"][str(i)] = {
             "path_details": path_details,
