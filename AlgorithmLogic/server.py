@@ -245,8 +245,8 @@ def markstep():
 
 @app.route("/sample/paths", methods=["GET"])
 def getpaths():
-    body = request.get_json()
-    return read_json_file("samplepaths.json")
+    fd = open("./samplepaths.json")
+    return fd.read()
 
 
 
