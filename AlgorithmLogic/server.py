@@ -242,7 +242,7 @@ def markstep():
     step = databaseobject.markstep(body["userid"])
     return step
 
-@app.route("/sample/paths", methods=["GET"])
+@app.route("/sample/paths", methods=["GET", "POST"])
 def getpaths():
     fd = open("./samplepaths.json")
     return fd.read()
