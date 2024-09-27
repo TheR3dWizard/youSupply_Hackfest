@@ -22,10 +22,122 @@ class DatabaseObject:
             dbname="hackfest",
             user="rootuser",
             password="rootroot",
-            host="127.0.0.1",
+            host=os.getenv("DB_HOST"), # while running locally, replace with 127.0.0.1 or create env var DB_HOST = 127.0.0.1
             port=5432,
         )
         self.cursor = self.connection.cursor()
+        
+        initliaize = '''
+            CREATE TYPE userrole AS ENUM ('delagent', 'client');
+            CREATE TYPE routestatus AS ENUM ('ASSIGNED', 'COMPLETED');
+            CREATE TYPE node_status AS ENUM ('FREE', 'INPATH', 'SATISFIED');
+            CREATE TYPE action AS ENUM ('PICKUP', 'DROP');
+
+            CREATE TABLE users (
+                UserID SERIAL PRIMARY KEY,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                contact_number VARCHAR(15) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                userrole userrole DEFAULT 'client',
+                latitude DECIMAL(10, 8),
+                longitude DECIMAL(11, 8)
+            );
+
+            CREATE TABLE DeliveryVolunteers(
+                UserID INT PRIMARY KEY,
+                cur_latitude DECIMAL(10, 8),
+                cur_longitude DECIMAL(11, 8),
+                FOREIGN KEY (UserID) REFERENCES users(UserID)
+            );
+
+            CREATE TABLE resources (
+                resource_id CHAR(36) PRIMARY KEY,
+                resource_name VARCHAR(100) NOT NULL,
+                resource_type VARCHAR(50)
+            );
+
+            CREATE TABLE CartEntries(
+                CartID INT UNIQUE,
+                resource_id CHAR(36),
+                quantity INT,
+                isRequest BOOLEAN,
+                PRIMARY KEY (CartID, resource_id),
+                FOREIGN KEY (resource_id) REFERENCES resources(resource_id)
+            );
+
+            CREATE TABLE GeneralUsers(
+                UserID INT PRIMARY KEY,
+                cartid INT,
+                FOREIGN KEY (cartid) REFERENCES CartEntries(CartID),
+                FOREIGN KEY (UserID) REFERENCES users(UserID)
+            );
+
+            CREATE TABLE RouteAssignments(
+                UserID INT,
+                RouteID CHAR(36) PRIMARY KEY,
+                RouteStatus routestatus DEFAULT 'ASSIGNED',
+                CompletedStep INT,
+                FOREIGN KEY (UserID) REFERENCES DeliveryVolunteers(UserID)
+            );
+
+            CREATE TABLE clusters (
+                cluster_id CHAR(36) PRIMARY KEY,
+                latitude DECIMAL(10, 8),
+                longitude DECIMAL(11, 8)
+            );
+
+            CREATE TABLE Nodes (
+                node_id CHAR(36) PRIMARY KEY,
+                resource_id CHAR(36),
+                cluster_id CHAR(36),
+                quantity INT,
+                username VARCHAR(50),
+                latitude DECIMAL(10, 8),
+                longitude DECIMAL(11, 8),
+                status node_status DEFAULT 'FREE',
+                action action DEFAULT 'PICKUP',
+                FOREIGN KEY (resource_id) REFERENCES resources(resource_id),
+                FOREIGN KEY (cluster_id) REFERENCES clusters(cluster_id),
+                FOREIGN KEY (username) REFERENCES users(username)
+            );
+
+            create TABLE RouteSteps(
+                RouteID CHAR(36),
+                StepID INT,
+                NodeID CHAR(36),
+                PRIMARY KEY (RouteID, StepID),
+                FOREIGN KEY (RouteID) REFERENCES RouteAssignments(RouteID),
+                FOREIGN KEY (NodeID) REFERENCES Nodes(node_id)
+            );
+
+            INSERT INTO users (username, contact_number, password, userrole, latitude, longitude) VALUES
+            ('john_doe', '123456789', 'password123', 'client', 40.712776, -74.005974),
+            ('jane_smith', '0987654321', 'password456', 'delagent', 34.052235, -118.243683),
+            ('alice_jones', '5555555555', 'password789', 'client', 37.774929, -122.419418),
+            ('bob_brown', '123456789', 'password123', 'client', 40.712776, -74.005974);
+
+            INSERT INTO DeliveryVolunteers (UserID, cur_latitude, cur_longitude) VALUES
+            ((SELECT UserID FROM users WHERE username = 'john_doe'), 34.052235, -118.243683);
+
+            INSERT INTO resources (resource_id, resource_name, resource_type) VALUES
+            ('1', 'food', 'grocery'),
+            ('2', 'clothes', 'apparel'),
+            ('3', 'toys', 'children');
+
+            INSERT INTO clusters (cluster_id, latitude, longitude) VALUES ('1', 0, 0);
+            INSERT INTO clusters (cluster_id, latitude, longitude) VALUES ('cluster1', 0, 0);
+
+            INSERT INTO CartEntries (CartID, resource_id, quantity, isRequest) VALUES
+            (1, '1', 5, TRUE),
+            (2, '3', 2, TRUE);
+
+            INSERT INTO GeneralUsers (UserID, cartid) VALUES
+            ((SELECT UserID FROM users WHERE username = 'john_doe'), 1),
+            ((SELECT UserID FROM users WHERE username = 'alice_jones'), 2); 
+
+            SELECT * FROM resources;
+            '''
+        # self.cursor.execute(initliaize)
 
     def create_user(self, username: str, contact_number: str, password: str, userrole: str = 'client', latitude: float = None, longitude: float = None):
         query = """
@@ -87,7 +199,7 @@ class DatabaseObject:
         INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        print(query.format(node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
+        print((node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
         self.cursor.execute(query, (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action))
         self.connection.commit()
 
@@ -188,7 +300,7 @@ class DatabaseObject:
         self.connection.commit()
     
     def insertpath(self, pathid: str, pathobject: str):
-        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', \"{pathobject}\")"
+        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', '{pathobject}')"
         self.cursor.execute(query)
         self.connection.commit()
     
@@ -281,20 +393,20 @@ class DatabaseObject:
         return self.cursor.fetchone()[0]
     
     def getsteps(self, routeid: int):
-        query = f"SELECT * FROM RouteSteps WHERE RouteID = {routeid} ORDER BY StepID"
+        query = f"SELECT * FROM RouteSteps WHERE RouteID = '{routeid}' ORDER BY StepID"
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
     def getcompletedstep(self, routeid: int):
-        query = f"SELECT CompletedStep FROM RouteAssignments WHERE RouteID = {routeid}"
+        query = f"SELECT CompletedStep FROM RouteAssignments WHERE RouteID = '{routeid}'"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
     
     def markstep(self, username: str):
         userID = self.getuserid(username)
-        routeid = self.getrouteid(userid)
+        routeid = self.getrouteid(userID)
         completedstep = self.getcompletedstep(routeid)
-        query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = {routeid}"
+        query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = '{routeid}'"
         self.cursor.execute(query)
         self.connection.commit()
         return completedstep + 1
@@ -306,6 +418,51 @@ class DatabaseObject:
     
     def getallnodeids(self):
         query = "SELECT node_id FROM Nodes"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getusers(self):
+        query = "SELECT * FROM users"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getdeliveryvolunteers(self):
+        query = "SELECT * FROM DeliveryVolunteers"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def getresources(self):
+        query = "SELECT * FROM resources"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getcartentries(self):
+        query = "SELECT * FROM CartEntries"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getgeneralusers(self):
+        query = "SELECT * FROM GeneralUsers"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getrouteassignments(self):
+        query = "SELECT * FROM RouteAssignments"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getclusters(self):
+        query = "SELECT * FROM clusters"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def getnodes(self):
+        query = "SELECT * FROM Nodes"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getroutesteps(self):
+        query = "SELECT * FROM RouteSteps"
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
