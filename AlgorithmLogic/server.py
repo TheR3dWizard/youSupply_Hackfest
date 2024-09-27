@@ -206,7 +206,6 @@ def getpath():
 
     return output
 
-
 @app.route("/path/accept", methods=["POST"])
 def acceptpath():
 
@@ -228,7 +227,8 @@ def acceptpath():
 
     step = 0
     for nodeid in nodeids:
-        databaseobject.create_route_step(routeid=routeid,nodeid=nodeid,step_id=step)
+        databaseobject.create_route_step(route_id=routeid,node_id=nodeid,step_id=step)
+        step += 1
     return "Worked"
 
 @app.route("/path/markstep",methods=["POST"])
@@ -242,13 +242,10 @@ def markstep():
     step = databaseobject.markstep(body["userid"])
     return step
 
-
 @app.route("/sample/paths", methods=["GET"])
 def getpaths():
     fd = open("./samplepaths.json")
     return fd.read()
-
-
 
 @app.route("/get/stats")
 def stats():
@@ -263,7 +260,41 @@ def dbstats():
 def allchroma():
     return chromadbagent.getallvectors()
 
+@app.route('/config/database/get/users')
+def getusers():
+    return databaseobject.getusers()
 
+@app.route('/config/database/get/deliveryvolunteers')
+def getdeliveryvolunteers():
+    return databaseobject.getdeliveryvolunteers()
+
+@app.route('/config/database/get/resources')
+def getresources():
+    return databaseobject.getresources()
+
+@app.route('/config/database/get/cartentries')
+def getcartentries():
+    return databaseobject.getcartentries()
+
+@app.route('/config/database/get/generalusers')
+def getgeneralusers():
+    return databaseobject.getgeneralusers()
+
+@app.route('/config/database/get/routeassignments')
+def getrouteassignments():
+    return databaseobject.getrouteassignments()
+
+@app.route('/config/database/get/clusters')
+def getclusters():
+    return databaseobject.getclusters()
+
+@app.route('/config/database/get/nodes')
+def getnodes():
+    return databaseobject.getnodes()
+
+@app.route('/config/database/get/routesteps')
+def getroutesteps():
+    return databaseobject.getroutesteps()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=4160)

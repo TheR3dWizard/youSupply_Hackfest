@@ -50,8 +50,6 @@ class DatabaseObject:
                 FOREIGN KEY (UserID) REFERENCES users(UserID)
             );
 
-
-
             CREATE TABLE resources (
                 resource_id CHAR(36) PRIMARY KEY,
                 resource_name VARCHAR(100) NOT NULL,
@@ -139,7 +137,7 @@ class DatabaseObject:
 
             SELECT * FROM resources;
             '''
-        self.cursor.execute(initliaize)
+        # self.cursor.execute(initliaize)
 
     def create_user(self, username: str, contact_number: str, password: str, userrole: str = 'client', latitude: float = None, longitude: float = None):
         query = """
@@ -302,7 +300,7 @@ class DatabaseObject:
         self.connection.commit()
     
     def insertpath(self, pathid: str, pathobject: str):
-        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', \"{pathobject}\")"
+        query = f"INSERT INTO pathstore (path_id, pathjson) VALUES ('{pathid}', '{pathobject}')"
         self.cursor.execute(query)
         self.connection.commit()
     
@@ -395,20 +393,20 @@ class DatabaseObject:
         return self.cursor.fetchone()[0]
     
     def getsteps(self, routeid: int):
-        query = f"SELECT * FROM RouteSteps WHERE RouteID = {routeid} ORDER BY StepID"
+        query = f"SELECT * FROM RouteSteps WHERE RouteID = '{routeid}' ORDER BY StepID"
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
     def getcompletedstep(self, routeid: int):
-        query = f"SELECT CompletedStep FROM RouteAssignments WHERE RouteID = {routeid}"
+        query = f"SELECT CompletedStep FROM RouteAssignments WHERE RouteID = '{routeid}'"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
     
     def markstep(self, username: str):
         userID = self.getuserid(username)
-        routeid = self.getrouteid(userid)
+        routeid = self.getrouteid(userID)
         completedstep = self.getcompletedstep(routeid)
-        query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = {routeid}"
+        query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = '{routeid}'"
         self.cursor.execute(query)
         self.connection.commit()
         return completedstep + 1
@@ -420,6 +418,51 @@ class DatabaseObject:
     
     def getallnodeids(self):
         query = "SELECT node_id FROM Nodes"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getusers(self):
+        query = "SELECT * FROM users"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getdeliveryvolunteers(self):
+        query = "SELECT * FROM DeliveryVolunteers"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def getresources(self):
+        query = "SELECT * FROM resources"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getcartentries(self):
+        query = "SELECT * FROM CartEntries"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getgeneralusers(self):
+        query = "SELECT * FROM GeneralUsers"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getrouteassignments(self):
+        query = "SELECT * FROM RouteAssignments"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getclusters(self):
+        query = "SELECT * FROM clusters"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+    def getnodes(self):
+        query = "SELECT * FROM Nodes"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+    
+    def getroutesteps(self):
+        query = "SELECT * FROM RouteSteps"
         self.cursor.execute(query)
         return self.cursor.fetchall()
     
