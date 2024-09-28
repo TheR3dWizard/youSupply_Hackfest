@@ -168,24 +168,23 @@ def serveassortment():
     for i, path in enumerate(formatted_paths):
         path_details = []
         for node in path["nodes"]:
-            node_obj = databaseobject.getNodeObject(node["nodeid"])
+            node_obj = databaseobject.getNode(node["nodeid"])[0]
+            # [('4352412b-bfb2-4988-8960-1ba8219f2787', '2', 'cluster1', 10, 'john_doe', Decimal('10.99141700'), Decimal('77.00431300'), 'FREE', 'PICKUP')]
+            print(node_obj)
             path_details.append({
                 "id":node["nodeid"],
-                "itemtype": node_obj.item,
-                "quantity": node_obj.quantity,
-                "latitude": node_obj.x_pos,
-                "longitude": node_obj.y_pos
+                "itemtype": node_obj[1].rstrip(),
+                "quantity": node_obj[3],
+                "latitude": float(node_obj[5]),
+                "longitude": float(node_obj[6])
             })
-        output["paths"][str(i)] = path_details
+        output["paths"][str(i)] = {
+            "path_details": path_details,
+            "nodeids": [node["nodeid"] for node in path["nodes"]]
+        }
 
     return json.dumps(output, indent=4)
-
-    return json.dumps(formatted_paths, indent=4)
-
-    
-
-
-    
+  
 
 @app.route("/path/lookup", methods=["GET"])
 def getpath():
@@ -206,7 +205,6 @@ def getpath():
         output["completed"] = databaseobject.getcompletedstep(route_id)
 
     return output
-
 
 @app.route("/path/accept", methods=["POST"])
 def acceptpath():
@@ -229,7 +227,8 @@ def acceptpath():
 
     step = 0
     for nodeid in nodeids:
-        databaseobject.create_route_step(routeid=routeid,nodeid=nodeid,step_id=step)
+        databaseobject.create_route_step(route_id=routeid,node_id=nodeid,step_id=step)
+        step += 1
     return "Worked"
 
 @app.route("/path/markstep",methods=["POST"])
@@ -243,13 +242,10 @@ def markstep():
     step = databaseobject.markstep(body["userid"])
     return step
 
-
-@app.route("/sample/paths", methods=["GET"])
+@app.route("/sample/paths", methods=["GET", "POST"])
 def getpaths():
-    body = request.get_json()
-    return read_json_file("samplepaths.json")
-
-
+    fd = open("./samplepaths.json")
+    return fd.read()
 
 @app.route("/get/stats")
 def stats():
@@ -264,7 +260,41 @@ def dbstats():
 def allchroma():
     return chromadbagent.getallvectors()
 
+@app.route('/config/database/get/users')
+def getusers():
+    return databaseobject.getusers()
 
+@app.route('/config/database/get/deliveryvolunteers')
+def getdeliveryvolunteers():
+    return databaseobject.getdeliveryvolunteers()
+
+@app.route('/config/database/get/resources')
+def getresources():
+    return databaseobject.getresources()
+
+@app.route('/config/database/get/cartentries')
+def getcartentries():
+    return databaseobject.getcartentries()
+
+@app.route('/config/database/get/generalusers')
+def getgeneralusers():
+    return databaseobject.getgeneralusers()
+
+@app.route('/config/database/get/routeassignments')
+def getrouteassignments():
+    return databaseobject.getrouteassignments()
+
+@app.route('/config/database/get/clusters')
+def getclusters():
+    return databaseobject.getclusters()
+
+@app.route('/config/database/get/nodes')
+def getnodes():
+    return databaseobject.getnodes()
+
+@app.route('/config/database/get/routesteps')
+def getroutesteps():
+    return databaseobject.getroutesteps()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=4160)
