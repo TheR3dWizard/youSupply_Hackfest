@@ -541,7 +541,7 @@ class GoogleAPI:
         if response.status_code != 200:
             raise Exception(f"Error making request: {response.status_code}")
 
-        return response.json()['results'][0]['formatted_address'][:26]
+        return response.json()['results'][0]['formatted_address']
 
 class MathFunctions:
     def __init__(self) -> None:

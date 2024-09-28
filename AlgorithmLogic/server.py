@@ -1,7 +1,7 @@
 from flask import Flask
 from algorithm import System, Path, Node, PathComputationObject, Cluster
 from flask import request
-from services import DatabaseObject, ChromaDBAgent
+from services import DatabaseObject, ChromaDBAgent, GoogleAPI
 import json
 import uuid
 from pprint import pprint
@@ -19,7 +19,7 @@ chromadbagent = ChromaDBAgent()
 masterpathlist: List[Path] = list()
 centralsystemobject.addrequest(Node(x_pos=40.646984, y_pos=-73.789450, item="Flashlight", quantity=1))
 centralsystemobject.addrequest(Node(x_pos=42.646984, y_pos=-73.789450, item="Flashlight", quantity=-1))
-
+gmagent = GoogleAPI()
 app = Flask(__name__)
 
 def getNodeObject(self, nodeid: str):
@@ -170,13 +170,14 @@ def serveassortment():
         for node in path["nodes"]:
             node_obj = databaseobject.getNode(node["nodeid"])[0]
             # [('4352412b-bfb2-4988-8960-1ba8219f2787', '2', 'cluster1', 10, 'john_doe', Decimal('10.99141700'), Decimal('77.00431300'), 'FREE', 'PICKUP')]
-            print(node_obj)
+            
             path_details.append({
                 "id":node["nodeid"],
                 "itemtype": node_obj[1].rstrip(),
                 "quantity": node_obj[3],
                 "latitude": float(node_obj[5]),
-                "longitude": float(node_obj[6])
+                "longitude": float(node_obj[6]),
+                "inwords": gmagent.geocodecoordinatestoaddress([float(node_obj[5]), float(node_obj[6])])
             })
         output["paths"][str(i)] = {
             "path_details": path_details,
