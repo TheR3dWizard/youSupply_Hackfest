@@ -1,7 +1,7 @@
 from flask import Flask
 from algorithm import System, Path, Node, PathComputationObject, Cluster
 from flask import request
-from services import DatabaseObject, ChromaDBAgent, GoogleAPI
+from services import DatabaseObject, ChromaDBAgent, GoogleAPI, Random
 import json
 import uuid
 from pprint import pprint
@@ -26,6 +26,7 @@ centralsystemobject.addrequest(
     Node(x_pos=42.646984, y_pos=-73.789450, item="Flashlight", quantity=-1)
 )
 gmagent = GoogleAPI()
+randomagent = Random()
 app = Flask(__name__)
 
 
@@ -93,6 +94,7 @@ def addrequest():
         latitude = node["xposition"]
         longitude = node["yposition"]
         action = "PICKUP" if quantity > 0 else "DROP"
+        worddesc = gmagent.geocodecoordinatestoaddress([latitude, longitude])
         databaseobject.create_node(
             node_id=randomid,
             resource_id=resource_id,
@@ -101,6 +103,7 @@ def addrequest():
             latitude=latitude,
             longitude=longitude,
             action=action,
+            inwords=worddesc
         )
 
         centralsystemobject.addrequest(node_obj)
@@ -184,9 +187,7 @@ def serveassortment():
                     "quantity": node_obj[3],
                     "latitude": float(node_obj[5]),
                     "longitude": float(node_obj[6]),
-                    "inwords": gmagent.geocodecoordinatestoaddress(
-                        [float(node_obj[5]), float(node_obj[6])]
-                    ),
+                    "inwords": databaseobject.getworddescription(node["nodeid"]).rstrip(),
                 }
             )
         output["paths"][str(i)] = {
@@ -261,6 +262,51 @@ def getpaths():
     return fd.read()
 
 
+@app.route("/config/database/set/schema", methods=["GET"])
+def setdatabase():
+    try:
+        databaseobject.setdatbase()
+        return 'database set', 200
+    except Exception as e:
+        return e
+
+@app.route("/config/database/set/random", methods=["GET"])
+def setrandom():
+    body = request.get_json()
+    quantity, username = body["quantity"], body["username"]
+    listofnodes = randomagent.getrandomnodes(quantity, username)
+    for node in listofnodes:
+        randomid = str(uuid.uuid4())
+        node_obj = Node(
+            identifier=randomid,
+            x_pos=node["xposition"],
+            y_pos=node["yposition"],
+            item=node["itemid"],
+            quantity=node["quantity"],
+        )
+
+        chromadbagent.insertnodeobject(randomid, node_obj)
+        resource_id = databaseobject.getresourceid(node["itemid"])
+        quantity = node["quantity"]
+        username = node["username"]
+        latitude = node["xposition"]
+        longitude = node["yposition"]
+        action = "PICKUP" if quantity > 0 else "DROP"
+        worddesc = gmagent.geocodecoordinatestoaddress([latitude, longitude])
+        databaseobject.create_node(
+            node_id=randomid,
+            resource_id=resource_id,
+            quantity=quantity,
+            username=username,
+            latitude=latitude,
+            longitude=longitude,
+            action=action,
+            inwords=worddesc
+        )
+
+        centralsystemobject.addrequest(node_obj)
+    
+
 @app.route("/get/stats")
 def stats():
     return centralsystemobject.stats()
@@ -319,6 +365,10 @@ def getnodes():
 @app.route("/config/database/get/routesteps")
 def getroutesteps():
     return databaseobject.getroutesteps()
+
+@app.route("/config/database/get/latlong")
+def getlatlong():
+    return databaseobject.getlatitudelongitude()
 
 
 if __name__ == "__main__":

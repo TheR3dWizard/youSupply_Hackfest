@@ -5,6 +5,8 @@ import os
 from pprint import pprint
 from math import sin, cos, sqrt, atan2, radians
 import psycopg2
+import random
+import uuid
 
 load_dotenv()
 
@@ -32,6 +34,7 @@ class DatabaseObject:
         )
         self.cursor = self.connection.cursor()
 
+    def setdatbase(self):
         initliaize = """
             CREATE TYPE userrole AS ENUM ('delagent', 'client');
             CREATE TYPE routestatus AS ENUM ('ASSIGNED', 'COMPLETED');
@@ -99,6 +102,7 @@ class DatabaseObject:
                 username VARCHAR(50),
                 latitude DECIMAL(10, 8),
                 longitude DECIMAL(11, 8),
+                inwords CHAR(255),
                 status node_status DEFAULT 'FREE',
                 action action DEFAULT 'PICKUP',
                 FOREIGN KEY (resource_id) REFERENCES resources(resource_id),
@@ -142,7 +146,8 @@ class DatabaseObject:
 
             SELECT * FROM resources;
             """
-        # self.cursor.execute(initliaize)
+        self.cursor.execute(initliaize)
+        self.connection.commit()
 
     def create_user(
         self,
@@ -212,13 +217,14 @@ class DatabaseObject:
         username: str,
         latitude: float,
         longitude: float,
+        inwords: str = None,
         status: str = "FREE",
         action: str = "PICKUP",
         cluster_id: str = "cluster1",
     ):
         query = """
-        INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action, inwords)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         print(
             (
@@ -230,7 +236,7 @@ class DatabaseObject:
                 latitude,
                 longitude,
                 status,
-                action,
+                action
             )
         )
         self.cursor.execute(
@@ -245,6 +251,7 @@ class DatabaseObject:
                 longitude,
                 status,
                 action,
+                inwords
             ),
         )
         self.connection.commit()
@@ -256,6 +263,13 @@ class DatabaseObject:
         """
         self.cursor.execute(query, (route_id, step_id, node_id))
         self.connection.commit()
+
+    def getworddescription(self, nodeid):
+        query = """
+        SELECT inwords FROM nodes WHERE node_id=%s
+        """
+        self.cursor.execute(query, (nodeid,))
+        return self.cursor.fetchone()[0]
 
     def getNode(self, nodeid: str):
         query = f"SELECT * FROM nodes WHERE node_id='{nodeid}'"
@@ -373,6 +387,10 @@ class DatabaseObject:
         self.cursor.execute(query)
         self.connection.commit()
 
+    def loadnodesfromnodeslist(self, nodeslist: List[dict]):
+        for node in nodeslist:
+            self.create_node(str(uuid.uuid4()), self.getresourceid(node["itemid"]), node["quantity"], node["username"], node["xposition"], node["yposition"], "PICKUP" if node["quantity"] > 0 else "DROP")
+    
     def create_delivery_volunteer(
         self, userid: int, cur_latitude: float, cur_longitude: float
     ):
@@ -502,6 +520,15 @@ class DatabaseObject:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
+    def getlatitudelongitude(self):
+        query = f"SELECT latitude, longitude FROM nodes"
+        returnlist = list()
+        self.cursor.execute(query)
+        res = self.cursor.fetchall()
+        
+        for coord in res:
+            returnlist.extend(coord)
+        return returnlist
 
 class GoogleAPI:
     def __init__(self):
@@ -581,6 +608,7 @@ class GoogleAPI:
         if response.status_code != 200:
             raise Exception(f"Error making request: {response.status_code}")
 
+        print(f"response is {response.json()}")
         return response.json()["results"][0]["formatted_address"]
 
 
@@ -652,6 +680,37 @@ class ChromaDBAgent:
 
     def whatallclienthas(self):
         return dir(self.client)
+
+
+class Random:
+    def __init__(self) -> None:
+        self.regionboundary = {
+            "topleft": [11.025692, 76.934398],
+            "topright": [11.028895, 77.026408],
+            "bottomleft": [10.962681, 76.945122],
+            "bottomright": [10.965884, 77.037132],
+        }
+        
+        pass
+    
+    def generatenodes(self, numberofnodes, username):
+        returndata = {
+            "nodelist": []
+        }
+        
+        for iter in range(numberofnodes):
+            quantity = random.randint(-10, 10)
+            if quantity == 0:
+                quantity = 1
+            returndata["nodelist"].append({
+                "xposition": random.uniform(self.regionboundary["bottomleft"][0], self.regionboundary["topleft"][0]),
+                "yposition": random.uniform(self.regionboundary["bottomleft"][1], self.regionboundary["bottomright"][1]),
+                "itemid": random.choice(["food","clothes"]),
+                "quantity": quantity,
+                "username": username
+            })
+        
+        return returndata
 
 
 if __name__ == "__main__":
