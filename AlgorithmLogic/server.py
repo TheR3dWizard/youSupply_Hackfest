@@ -255,6 +255,47 @@ def markstep():
     step = databaseobject.markstep(body["userid"])
     return step
 
+@app.route("/user/signUp", methods=["POST"])
+def createuser():
+    query = """
+        INSERT INTO users (username, contact_number, password, userrole, latitude, longitude)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING UserID
+        """
+
+    body = request.get_json()
+    '''
+    {
+        "username": "JohnDoe",
+        "contact_number": "123456789",
+        "password": "password",
+        "userrole": "deliveryvolunteer",
+        "latitude": 1,
+        "longitude": 1
+    }
+    '''
+    UserID = databaseobject.create_user(
+        body["username"],
+        body["contact_number"],
+        body["password"],
+        body["userrole"],
+        body["latitude"],
+        body["longitude"]
+    )
+    return UserID
+
+@app.route("/user/login", methods=["POST"])
+def login():
+    body = request.get_json()
+    '''
+    {
+        "username": "JohnDoe",
+        "password": "password"
+    }
+    '''
+    UserID = databaseobject.isUser(body["username"], body["password"])
+    return UserID
+
 
 @app.route("/sample/paths", methods=["GET", "POST"])
 def getpaths():
