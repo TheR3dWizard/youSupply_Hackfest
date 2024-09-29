@@ -274,7 +274,7 @@ def setdatabase():
 def setrandom():
     body = request.get_json()
     quantity, username = body["quantity"], body["username"]
-    listofnodes = randomagent.getrandomnodes(quantity, username)
+    listofnodes = randomagent.generatenodes(quantity, username)
     for node in listofnodes:
         randomid = str(uuid.uuid4())
         node_obj = Node(
