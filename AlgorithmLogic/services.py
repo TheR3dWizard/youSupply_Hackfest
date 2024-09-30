@@ -169,11 +169,25 @@ class DatabaseObject:
         self.connection.commit()
         return self.cursor.fetchone()[0]
 
-    def isUser(self, username: str, password: str):
+    def findUser(self, username: str, password: str):
         query = """
         SELECT * FROM users WHERE username=%s AND password=%s;
         """
         self.cursor.execute(query, (username, password))
+        return True if self.cursor.fetchone() else False
+
+    def isGeneraluser(self, username: str):
+        query = """
+        SELECT * FROM GeneralUsers WHERE UserID=(SELECT UserID FROM users WHERE username=%s);
+        """
+        self.cursor.execute(query, (username,))
+        return True if self.cursor.fetchone() else False
+    
+    def isDeliveryVolunteer(self, username: str):
+        query = """
+        SELECT * FROM DeliveryVolunteers WHERE UserID=(SELECT UserID FROM users WHERE username=%s);
+        """
+        self.cursor.execute(query, (username,))
         return True if self.cursor.fetchone() else False
 
     def create_resource(self, resource_id: str, resource_name: str, resource_type: str):

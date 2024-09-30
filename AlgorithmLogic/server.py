@@ -111,7 +111,7 @@ def addrequest():
     return "Worked"
 
 
-@app.route("/path/get", methods=["GET"])
+@app.route("/path/get", methods=["POST"])
 def serveassortment():
     example = """
         {
@@ -198,7 +198,7 @@ def serveassortment():
     return json.dumps(output, indent=4)
 
 
-@app.route("/path/lookup", methods=["GET"])
+@app.route("/path/lookup", methods=["POST"])
 def getpath():
     exampleinput = """
     {
@@ -206,7 +206,7 @@ def getpath():
     }
     """
     body = request.get_json()
-    route_id = databaseobject.getrouteid(body["userid"])
+    route_id = databaseobject.getrouteid(body["username"])
     steps = databaseobject.getsteps(route_id)
     output = {}
     output["nodes"] = []
@@ -290,11 +290,24 @@ def login():
     '''
     {
         "username": "JohnDoe",
-        "password": "password"
+        "password": "password",
+        "role": "Client" or "Delivery Agent"
     }
     '''
-    UserID = databaseobject.isUser(body["username"], body["password"])
-    return UserID
+
+    UserID = databaseobject.getuserid(body['username'])
+    if UserID == None:
+        return {},404
+    if body['role'] == 'Client':
+        userExists = databaseobject.isGeneraluser(body['username'])
+        if not userExists:
+            return {},404
+    else:
+        userExists = databaseobject.isDeliveryVolunteer(body['username'])
+        if not userExists:
+            return {},404
+    
+    return {},200
 
 
 @app.route("/sample/paths", methods=["GET", "POST"])
