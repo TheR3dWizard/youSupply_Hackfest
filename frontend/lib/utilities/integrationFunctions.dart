@@ -61,8 +61,6 @@ Future<File> get _localFile async {
   return file;
 }
 
-
-
 Future<void> savePathData() async {
   final file = await _localFile;
   var url = Uri.parse('$baseUrl/path/get');
