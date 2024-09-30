@@ -80,7 +80,6 @@ Future<void> savePathData() async {
   }
 }
 
-
 Future<void> acceptPath(Int16 pathid) async {
   final file = await _localFile;
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
@@ -100,6 +99,8 @@ Future<void> acceptPath(Int16 pathid) async {
 
   if (response.statusCode == 200) {
     await savePathData();
+  }
+}
 
 Future<List<Map<String, dynamic>>> getAllPaths() async {
   final file = await _localFile;
