@@ -78,6 +78,7 @@ Future<void> savePathData() async {
     var body = jsonDecode(response.body);
     Map<String,dynamic> jsonFile = jsonDecode(await file.readAsString());
     jsonFile['curpaths'] = body;
+    await file.writeAsString(jsonEncode(jsonFile));
   }
 
 }
