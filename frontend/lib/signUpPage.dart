@@ -154,27 +154,6 @@ class SignUpPage extends StatelessWidget {
                         controller: confirmPasswordController,
                       ),
                       // Additional fields for delivery agents
-                      ValueListenableBuilder<String>(
-                        valueListenable: typeNotifier,
-                        builder: (context, value, child) {
-                          if (value == "Delivery Agent") {
-                            return Column(
-                              children: [
-                                LabelledTextField.readable(
-                                  label: "Vehicle Registration Number",
-                                  controller: vehicleTypeController,
-                                ),
-                                LabelledTextField.readable(
-                                  label: "License Number",
-                                  controller: licenseNumberController,
-                                ),
-                              ],
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        },
-                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
