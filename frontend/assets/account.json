@@ -1,6 +1,6 @@
 {
-    "username":"",
-    "loggedin":false,
+    "username":"john_doe",
+    "loggedin":true,
     "role":"",
     "location":{
         "xpos": 0,

@@ -33,7 +33,7 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               children: [
                 LabelledTextField.readable(
@@ -54,9 +54,9 @@ class LoginPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: ToggleSwitch(
                     activeFgColor: Colors.black,
-                    customTextStyles: [TextStyle(fontWeight: FontWeight.bold)],
+                    customTextStyles: const [TextStyle(fontWeight: FontWeight.bold)],
                     inactiveFgColor: Colors.black,
-                    borderColor: [Colors.black45],
+                    borderColor: const [Colors.black45],
                     borderWidth: 1.5,
                     minWidth: 140,
                     minHeight: 50,

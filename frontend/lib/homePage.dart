@@ -16,7 +16,7 @@ class homePage extends StatelessWidget {
             children:  <Widget>[
               TextButton(
                 onPressed: () {},
-                child: Icon(
+                child: const Icon(
                   Icons.menu,
                   size: 40,
                   color: Color.fromRGBO(0, 224, 255, 1),
@@ -26,10 +26,10 @@ class homePage extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
+          children: <Widget>[
             Text(
               'Welcome to youSupply!',
             ),

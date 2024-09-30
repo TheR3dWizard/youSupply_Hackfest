@@ -7,7 +7,7 @@ import 'package:frontend/utilities/customWidgets.dart';
 enum GUMenu { History, Settings, ProfileView, Logout }
 
 class homePageGU extends StatelessWidget {
-  const homePageGU({Key? key}) : super(key: key);
+  const homePageGU({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class homePageGU extends StatelessWidget {
                       break;
                     case GUMenu.Settings:
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => settings()));
+                          MaterialPageRoute(builder: (context) => const settings()));
                       // Navigate to '/settings' or perform related action
                       break;
                     case GUMenu.ProfileView:
@@ -77,7 +77,7 @@ class homePageGU extends StatelessWidget {
                     ),
                   ),
                 ],
-                child: Icon(
+                child: const Icon(
                   Icons.menu,
                   size: 40,
                   color: Color.fromRGBO(0, 224, 255, 1),
@@ -96,7 +96,7 @@ class homePageGU extends StatelessWidget {
               child: Container(
                 width: 200,
                 height: 200,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 0, 225, 255),
                   shape: BoxShape.circle,
                 ),
@@ -110,7 +110,7 @@ class homePageGU extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 100),
+            const SizedBox(height: 100),
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -123,7 +123,7 @@ class homePageGU extends StatelessWidget {
                     },
                     route: '/request',
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Select(
                     label: 'Provide',
                     icon: Icons.volunteer_activism_rounded,
@@ -132,7 +132,7 @@ class homePageGU extends StatelessWidget {
                       Navigator.pushNamed(context, '/provide');
                     },
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Select(
                     label: 'Cart',
                     icon: Icons.card_travel,
@@ -144,7 +144,7 @@ class homePageGU extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 7),
+            const SizedBox(height: 7),
           ],
         ),
       ),

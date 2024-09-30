@@ -117,7 +117,7 @@ class _PasswordFieldState extends State<PasswordField> {
                 gapPadding: 5.0,
               ),
               labelText: label1,
-              labelStyle: TextStyle(
+              labelStyle: const TextStyle(
                 color: Colors.white70, // White label text color
               ),
               suffixIcon: IconButton(
@@ -266,7 +266,7 @@ class Option extends StatelessWidget {
   final String label;
   final String route;
 
-  Option({super.key, required this.label, required this.route});
+  const Option({super.key, required this.label, required this.route});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -297,7 +297,7 @@ class Option extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 20,
                     letterSpacing: 1.5,
@@ -309,7 +309,7 @@ class Option extends StatelessWidget {
             Padding(
                 padding: const EdgeInsets.fromLTRB(0, 0, 5, 0),
                 child: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     size: 30,
                     Icons.arrow_right_outlined,
                     color: Colors.black87,
@@ -331,7 +331,7 @@ class Select extends StatelessWidget {
   final IconData icon;
   final Function onpressed;
 
-  Select(
+  const Select(
       {super.key,
       required this.label,
       required this.route,
@@ -341,7 +341,7 @@ class Select extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(
+      constraints: const BoxConstraints(
         maxHeight: 250,
         maxWidth: 500,
         // minWidth: 250,
@@ -370,7 +370,7 @@ class Select extends StatelessWidget {
                   icon: Icon(
                     icon,
                     size: 70,
-                    color: Color.fromARGB(255, 0, 225, 255),
+                    color: const Color.fromARGB(255, 0, 225, 255),
                   ),
                   onPressed: () {
                     Navigator.pushNamed(context, route);
@@ -380,7 +380,7 @@ class Select extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(5, 10, 5, 30),
               child: Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 25,
                   //fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -400,7 +400,7 @@ class Item extends StatelessWidget {
   final String label2;
   final String route;
 
-  Item({
+  const Item({
     super.key,
     required this.label1,
     required this.label2,
@@ -438,7 +438,7 @@ class Item extends StatelessWidget {
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
                       label1,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 17,
                         letterSpacing: 1,
                         color: Color.fromARGB(255, 0, 225, 255),
@@ -449,7 +449,7 @@ class Item extends StatelessWidget {
                     padding: const EdgeInsets.all(4.0),
                     child: Text(
                       label2,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         letterSpacing: 1,
                         color: Colors.white,

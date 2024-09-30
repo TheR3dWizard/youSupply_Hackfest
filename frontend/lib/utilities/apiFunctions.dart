@@ -91,7 +91,7 @@ Future<List<String>> getCoords() async {
 }
 
 List<double> getrandomCoords() {
-  Random random = new Random();
+  Random random = Random();
   double x = random.nextDouble() * 100;
   double y = random.nextDouble() * 100;
   return [x, y];
@@ -120,6 +120,13 @@ Future<void> setLoggedIn(bool value, String username) async {
   json['loggedin'] = value;
   json['username'] = username;
 
+  await file.writeAsString(jsonEncode(json));
+}
+
+Future<void> setRole(String role) async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['userrole'] = role;
   await file.writeAsString(jsonEncode(json));
 }
 
@@ -204,20 +211,6 @@ Future<bool> register(String username, String password, String phone,
   return response.statusCode == 200;
 }
 
-Future<bool> addnode(String itemtype, int quantity) async {
-  var url = Uri.parse('$baseUrl/add/request');
-  List<String> coords = await getCoords();
-  var response = await http.post(url, body: {
-    'xposition': coords[0],
-    'yposition': coords[1],
-    'itemtype': itemtype,
-    'quantity': quantity,
-  }, headers: {
-    "Content-Type": "application/json"
-  });
-
-  return response.statusCode == 200;
-}
 
 //sends all nodes in cart to backend
 Future<void> sendcart() async {
@@ -235,6 +228,10 @@ Future<void> sendcart() async {
   }
   Map<String, dynamic> payload = {'nodelist': nodelist};
   print(jsonEncode(payload));
+  var url = Uri.parse('$basealgoUrl/add/node');
+  var response = await http.post(url,
+      body: jsonEncode(payload),
+      headers: {"Content-Type": "application/json"});
 }
 
 Future<Map<String, dynamic>> loadPaths() async {
@@ -274,9 +271,9 @@ Future<List<LatLng>> loadLocations(int index) async {
 
 Future<Set<Marker>> setMarkers(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
-  Set<Marker> _markers = {};
+  Set<Marker> markers = {};
   for (int i = 0; i < coordinates.length; i++) {
-    _markers.add(
+    markers.add(
       Marker(
         markerId: MarkerId('marker_$i'),
         position: coordinates[i],
@@ -284,7 +281,7 @@ Future<Set<Marker>> setMarkers(int index) async {
     );
   }
 
-  return _markers;
+  return markers;
 }
 
 Future<List<String>> loadResourcesToCollect(int index) async {
@@ -394,19 +391,19 @@ Future<String> getAddress(double lat, double lng) async {
 
 Future<Set<Polyline>> setPolylines(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
-  Set<Polyline> _polylines = {};
+  Set<Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   for (int i = 0; i < coordinates.length; i++) {
     polylineCoordinates.add(coordinates[i]);
   }
-  _polylines.add(Polyline(
+  polylines.add(Polyline(
     polylineId: PolylineId('polyline_$index'),
     color: Colors.blue,
     points: polylineCoordinates,
     width: 5,
   ));
 
-  return _polylines;
+  return polylines;
 }
 
 Future<Map<String, dynamic>> createNodeList() async {
@@ -468,7 +465,7 @@ Future<void> sendPathAcceptRequest(List<String> nodeIds) async {
   try {
     // Send POST request
     final response = await http.post(
-      Uri.parse(basealgoUrl + '/path/accept'),
+      Uri.parse('$basealgoUrl/path/accept'),
       headers: {
         "Content-Type": "application/json",
       },

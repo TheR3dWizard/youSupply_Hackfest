@@ -7,9 +7,9 @@ class ClaimedRoutes extends StatefulWidget {
   final int pathIndex;
 
   const ClaimedRoutes({
-    Key? key,
+    super.key,
     required this.pathIndex,
-  }) : super(key: key);
+  });
 
   @override
   _ClaimedRoutesState createState() => _ClaimedRoutesState();
@@ -43,7 +43,7 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
           MaterialPageRoute(
             builder: (context) {
               markStep();
-              return CompletedRoutes();
+              return const CompletedRoutes();
             },
           ),
         );
@@ -56,7 +56,7 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           'Claimed Routes',
           style: TextStyle(
             letterSpacing: 1.5,
@@ -70,11 +70,11 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
         future: _pathTuplesFuture,
         builder: (BuildContext context, AsyncSnapshot<List<Tuple>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           } else {
             List<Tuple> pathTuples = snapshot.data!;
 
@@ -101,29 +101,29 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                             children: [
                               Text(
                                 currentTuple.startLoc,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                   color: Colors.white70,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
                                 currentTuple.resources,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.white60,
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Align(
                                 alignment: Alignment.bottomRight,
                                 child: isCompleted
                                     ? Container(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 5),
-                                        child: Text(
+                                        child: const Text(
                                           'Completed',
                                           style: TextStyle(
                                             color: Colors.white,
@@ -148,11 +148,11 @@ class _ClaimedRoutesState extends State<ClaimedRoutes> {
                         ? _markNextAsCompleted
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 0, 255, 255),
+                      backgroundColor: const Color.fromARGB(255, 0, 255, 255),
                       padding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                          const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                     ),
-                    child: Text(
+                    child: const Text(
                       'Mark as Completed',
                       style: TextStyle(
                         color: Colors.black87,
