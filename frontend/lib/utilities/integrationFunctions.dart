@@ -80,6 +80,7 @@ Future<void> savePathData() async {
   }
 }
 
+
 Future<void> acceptPath(Int16 pathid) async {
   final file = await _localFile;
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
@@ -99,5 +100,37 @@ Future<void> acceptPath(Int16 pathid) async {
 
   if (response.statusCode == 200) {
     await savePathData();
+
+Future<List<Map<String, dynamic>>> getAllPaths() async {
+  final file = await _localFile;
+  var url = Uri.parse('$baseUrl/path/get');
+
+  // HTTP request to get paths from the server
+  var response = await http.post(url,
+      body: json.encode({
+        "username": getUsername(),
+      }),
+      headers: {"Content-Type": "application/json"});
+
+  if (response.statusCode == 200) {
+    // Parse response body
+    var body = jsonDecode(response.body);
+
+    // Update local file with the new paths
+    Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+    jsonFile['curpaths'] = body;
+    await file.writeAsString(jsonEncode(jsonFile));
+
+    // Extract and return the relevant path data (startloc and distance)
+    List<Map<String, dynamic>> paths = [];
+    for (var path in body) {
+      paths.add({
+        'startloc': path['startloc'],
+        'distance': path['distance'],
+      });
+    }
+    return paths;
+  } else {
+    throw Exception("Failed to load paths");
   }
 }
