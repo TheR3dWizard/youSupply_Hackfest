@@ -156,7 +156,7 @@ def serveassortment():
 def getpath():
     exampleinput='''
     {
-        userid:
+        username:
     }
     '''
     body = request.get_json()
