@@ -1,4 +1,5 @@
 import "dart:convert";
+import "dart:ffi";
 import "dart:io";
 import "package:flutter/services.dart";
 import "package:frontend/utilities/apiFunctions.dart";
@@ -78,6 +79,27 @@ Future<void> savePathData() async {
     await file.writeAsString(jsonEncode(jsonFile));
   }
 }
+
+
+Future<void> acceptPath(Int16 pathid) async {
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+
+  var curpathsfromfile = jsonFile['curpaths']['paths'];
+
+  var targetpath = curpathsfromfile[pathid];
+
+  var listofnodes = targetpath["nodeids"];
+
+  jsonFile['accroutes'] = targetpath;
+
+  var url = Uri.parse('$baseUrl/path/accept');
+  var response = await http.post(url,
+      body: json.encode({"username": getUsername(), "nodeids": listofnodes}),
+      headers: {"Content-Type": "application/json"});
+
+  if (response.statusCode == 200) {
+    await savePathData();
 
 Future<List<Map<String, dynamic>>> getAllPaths() async {
   final file = await _localFile;
