@@ -88,7 +88,7 @@ Future<List<String>> getCoords() async {
 }
 
 List<double> getrandomCoords() {
-  Random random = new Random();
+  Random random = Random();
   double x = random.nextDouble() * 100;
   double y = random.nextDouble() * 100;
   return [x,y];

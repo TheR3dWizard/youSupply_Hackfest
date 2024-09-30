@@ -9,7 +9,7 @@ class settings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           'Settings',
           style: TextStyle(
             letterSpacing: 1.5,
@@ -21,18 +21,18 @@ class settings extends StatelessWidget {
       body: Container(
         color: Colors.black,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 30, 20, 0),
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Center(
+              const Center(
                 child: CircleAvatar(
                   radius: 60,
                   backgroundImage: AssetImage('assets/profile.png'),
                 ),
               ),
-              SizedBox(height: 20),
-              Center(
+              const SizedBox(height: 20),
+              const Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min, // Center the Row content
                   children: <Widget>[
@@ -56,14 +56,14 @@ class settings extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
-              Divider(color: Colors.grey),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
+              const Divider(color: Colors.grey),
+              const SizedBox(height: 10),
 
               // Add settings options
               ListTile(
-                leading: Icon(Icons.location_on, color: Colors.white70),
-                title: Text(
+                leading: const Icon(Icons.location_on, color: Colors.white70),
+                title: const Text(
                   'Change Location',
                   style: TextStyle(color: Colors.white70),
                 ),
@@ -72,8 +72,8 @@ class settings extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.notifications, color: Colors.white70),
-                title: Text(
+                leading: const Icon(Icons.notifications, color: Colors.white70),
+                title: const Text(
                   'Notification Settings',
                   style: TextStyle(color: Colors.white70),
                 ),
@@ -82,8 +82,8 @@ class settings extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.help, color: Colors.white70),
-                title: Text(
+                leading: const Icon(Icons.help, color: Colors.white70),
+                title: const Text(
                   'Help',
                   style: TextStyle(color: Colors.white70),
                 ),
@@ -92,8 +92,8 @@ class settings extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.lock, color: Colors.white70),
-                title: Text(
+                leading: const Icon(Icons.lock, color: Colors.white70),
+                title: const Text(
                   'Change Password',
                   style: TextStyle(color: Colors.white70),
                 ),

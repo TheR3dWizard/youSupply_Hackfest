@@ -3,7 +3,7 @@ import 'package:frontend/utilities.dart';
 import 'package:frontend/utilities/apiFunctions.dart';
 
 class requestPage extends StatelessWidget {
-  requestPage({Key? key}) : super(key: key);
+  requestPage({super.key});
 
   final List<dynamic> items = [
     ['Water Bottle', 'assets/water.jpg'],
@@ -21,12 +21,12 @@ class requestPage extends StatelessWidget {
           onPressed: () {
             Navigator.pushNamed(context, '/cartstatic');
           },
-          child: SizedBox(
+          child: const SizedBox(
             width: 100,
             height: 50,
             child: Row(
               children: [
-                const Icon(Icons.shopping_cart_checkout_outlined,
+                Icon(Icons.shopping_cart_checkout_outlined,
                     color: Colors.black),
                 Text('View Cart', style: TextStyle(color: Colors.black)),
               ],
@@ -35,7 +35,7 @@ class requestPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.grey[850],
         centerTitle: true,
-        title: Text(
+        title: const Text(
           'Request Resources',
           style: TextStyle(
             fontSize: 30,
@@ -71,7 +71,7 @@ class requestPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Column(
                 children: items
                     .map((item) => Item(
@@ -99,11 +99,11 @@ class Item extends StatefulWidget {
   final Image image;
 
   const Item({
-    Key? key,
+    super.key,
     required this.label1,
     required this.label2,
     required this.image,
-  }) : super(key: key);
+  });
 
   @override
   _ItemState createState() => _ItemState();
@@ -160,42 +160,42 @@ class _ItemState extends State<Item> {
                 children: [
                   Text(
                     widget.label1,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       letterSpacing: 1.5,
                       fontWeight: FontWeight.bold,
                       color: Color.fromARGB(255, 0, 225, 255),
                     ),
                   ),
-                  SizedBox(height: 3),
+                  const SizedBox(height: 3),
                   Text(
                     widget.label2,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 12,
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         width: 60,
                       ),
                       IconButton(
-                          icon: Icon(Icons.remove),
+                          icon: const Icon(Icons.remove),
                           onPressed: _decrement,
                           color: Colors.white),
                       Text(
                         '$_count',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Color.fromARGB(255, 0, 225, 255),
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.add),
+                        icon: const Icon(Icons.add),
                         onPressed: _increment,
                         color: Colors.white,
                       ),
@@ -227,11 +227,11 @@ class _ItemState extends State<Item> {
                           fixedSize: const Size(120, 30),
                           shadowColor: Colors.black,
                           foregroundColor: Colors.black,
-                          backgroundColor: Color.fromARGB(255, 0, 225, 255),
+                          backgroundColor: const Color.fromARGB(255, 0, 225, 255),
                         ),
                         child: const Text('Request'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       OutlinedButton(
                         onPressed: () async {
                           _clear();

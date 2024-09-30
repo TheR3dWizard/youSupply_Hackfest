@@ -12,7 +12,7 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 enum DeliveryMenu { History, Settings, ProfileView, Logout }
 
 class homePageDel extends StatelessWidget {
-  homePageDel({Key? key}) : super(key: key);
+  homePageDel({super.key});
 
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
@@ -44,7 +44,7 @@ class homePageDel extends StatelessWidget {
                       break;
                     case DeliveryMenu.Settings:
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => settings()));
+                          MaterialPageRoute(builder: (context) => const settings()));
                     case DeliveryMenu.ProfileView:
                       Navigator.pushNamed(context, '/profile');
                       break;
@@ -86,7 +86,7 @@ class homePageDel extends StatelessWidget {
                     ),
                   ),
                 ],
-                child: Icon(
+                child: const Icon(
                   Icons.menu,
                   size: 40,
                   color: Color.fromRGBO(0, 224, 255, 1),
@@ -114,7 +114,7 @@ class homePageDel extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Option(label: 'Available Routes', route: '/available'),
                 Option(label: 'Accepted Route', route: '/accepted'),
                 Option(label: 'Completed Routes', route: '/completed_routes'),

@@ -91,7 +91,7 @@ Future<List<String>> getCoords() async {
 }
 
 List<double> getrandomCoords() {
-  Random random = new Random();
+  Random random = Random();
   double x = random.nextDouble() * 100;
   double y = random.nextDouble() * 100;
   return [x, y];
@@ -274,9 +274,9 @@ Future<List<LatLng>> loadLocations(int index) async {
 
 Future<Set<Marker>> setMarkers(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
-  Set<Marker> _markers = {};
+  Set<Marker> markers = {};
   for (int i = 0; i < coordinates.length; i++) {
-    _markers.add(
+    markers.add(
       Marker(
         markerId: MarkerId('marker_$i'),
         position: coordinates[i],
@@ -284,7 +284,7 @@ Future<Set<Marker>> setMarkers(int index) async {
     );
   }
 
-  return _markers;
+  return markers;
 }
 
 Future<List<String>> loadResourcesToCollect(int index) async {
@@ -394,19 +394,19 @@ Future<String> getAddress(double lat, double lng) async {
 
 Future<Set<Polyline>> setPolylines(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
-  Set<Polyline> _polylines = {};
+  Set<Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   for (int i = 0; i < coordinates.length; i++) {
     polylineCoordinates.add(coordinates[i]);
   }
-  _polylines.add(Polyline(
+  polylines.add(Polyline(
     polylineId: PolylineId('polyline_$index'),
     color: Colors.blue,
     points: polylineCoordinates,
     width: 5,
   ));
 
-  return _polylines;
+  return polylines;
 }
 
 Future<Map<String, dynamic>> createNodeList() async {
@@ -468,7 +468,7 @@ Future<void> sendPathAcceptRequest(List<String> nodeIds) async {
   try {
     // Send POST request
     final response = await http.post(
-      Uri.parse(basealgoUrl + '/path/accept'),
+      Uri.parse('$basealgoUrl/path/accept'),
       headers: {
         "Content-Type": "application/json",
       },

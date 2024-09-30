@@ -17,10 +17,10 @@ class DeliveryDetailsWidget extends StatelessWidget {
   final int pathIndex;
 
   const DeliveryDetailsWidget({
-    Key? key,
+    super.key,
     required this.deliveryDetails,
     required this.pathIndex,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +39,17 @@ class DeliveryDetailsWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: <Widget>[
-                      Icon(
+                      const Icon(
                         Icons.location_pin,
                         color: Colors.red,
                         size: 25,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           deliveryDetails.fromLoc,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 18,
                           ),
@@ -57,16 +57,16 @@ class DeliveryDetailsWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.directions,
                         color: Colors.blue,
                         size: 25,
                       ),
-                      SizedBox(width: 10),
-                      Text(
+                      const SizedBox(width: 10),
+                      const Text(
                         'Pickup within ',
                         style: TextStyle(
                           color: Colors.white70,
@@ -75,7 +75,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
                       ),
                       Text(
                         '${deliveryDetails.distanceFromDelAgent} km',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 18,
                         ),
@@ -96,13 +96,13 @@ class DeliveryDetailsWidget extends StatelessWidget {
               },
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.black87,
-                backgroundColor: Color.fromARGB(255, 0, 225, 255),
+                backgroundColor: const Color.fromARGB(255, 0, 225, 255),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
                 ),
-                minimumSize: Size(30, 35),
+                minimumSize: const Size(30, 35),
               ),
-              child: Text(
+              child: const Text(
                 'View',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
@@ -115,7 +115,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
 }
 
 class Available extends StatefulWidget {
-  const Available({Key? key}) : super(key: key);
+  const Available({super.key});
 
   @override
   State<Available> createState() => _AvailableState();
@@ -128,7 +128,7 @@ class _AvailableState extends State<Available> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           'Available Routes',
           style: TextStyle(
             letterSpacing: 1.5,
@@ -144,11 +144,11 @@ class _AvailableState extends State<Available> {
           builder: (BuildContext context,
               AsyncSnapshot<List<List<String>>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No data available'));
+              return const Center(child: Text('No data available'));
             } else {
               List<DeliveryDetails> deliveryDetailsList = snapshot.data!
                   .map((path) => DeliveryDetails(
@@ -173,7 +173,7 @@ class _AvailableState extends State<Available> {
                             ),
                           ),
                         )
-                        .toList(),
+                        ,
                   ],
                 ),
               );
