@@ -111,7 +111,7 @@ def addrequest():
     return "Worked"
 
 
-@app.route("/path/get", methods=["GET"])
+@app.route("/path/get", methods=["POST"])
 def serveassortment():
     example = """
         {
@@ -198,7 +198,7 @@ def serveassortment():
     return json.dumps(output, indent=4)
 
 
-@app.route("/path/lookup", methods=["GET"])
+@app.route("/path/lookup", methods=["POST"])
 def getpath():
     exampleinput = """
     {
