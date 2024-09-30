@@ -22,12 +22,12 @@
 
 - use the key to find a specific path
 - return type:
-    {
-        [
+    [
+        {
             loc
             action
-        ]
-    }
+        }
+    ]
 - have button to do 1.3
 
 ## 1.3 accept path
