@@ -123,6 +123,13 @@ Future<void> setLoggedIn(bool value, String username) async {
   await file.writeAsString(jsonEncode(json));
 }
 
+Future<void> setRole(String role) async {
+  final file = await _localFile;
+  Map<String, dynamic> json = jsonDecode(await file.readAsString());
+  json['userrole'] = role;
+  await file.writeAsString(jsonEncode(json));
+}
+
 Future<List<Map<String, dynamic>>> readCart() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
@@ -204,20 +211,6 @@ Future<bool> register(String username, String password, String phone,
   return response.statusCode == 200;
 }
 
-Future<bool> addnode(String itemtype, int quantity) async {
-  var url = Uri.parse('$baseUrl/add/request');
-  List<String> coords = await getCoords();
-  var response = await http.post(url, body: {
-    'xposition': coords[0],
-    'yposition': coords[1],
-    'itemtype': itemtype,
-    'quantity': quantity,
-  }, headers: {
-    "Content-Type": "application/json"
-  });
-
-  return response.statusCode == 200;
-}
 
 //sends all nodes in cart to backend
 Future<void> sendcart() async {
@@ -235,6 +228,10 @@ Future<void> sendcart() async {
   }
   Map<String, dynamic> payload = {'nodelist': nodelist};
   print(jsonEncode(payload));
+  var url = Uri.parse('$basealgoUrl/add/node');
+  var response = await http.post(url,
+      body: jsonEncode(payload),
+      headers: {"Content-Type": "application/json"});
 }
 
 Future<Map<String, dynamic>> loadPaths() async {
