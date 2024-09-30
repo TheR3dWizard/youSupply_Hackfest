@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import "package:frontend/utilities/fileFunctions.dart";
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -111,17 +112,7 @@ Future<bool> isLoggedIn() async {
   return json['loggedin'];
 }
 
-Future<void> setLoggedIn(bool value, String username) async {
-  final file = await _localFile;
-  print("File is: ${await file.readAsString()}");
-  Map<String, dynamic> json = jsonDecode(await file.readAsString());
-  print("Hello CUrrent");
 
-  json['loggedin'] = value;
-  json['username'] = username;
-
-  await file.writeAsString(jsonEncode(json));
-}
 
 Future<void> setRole(String role) async {
   final file = await _localFile;
