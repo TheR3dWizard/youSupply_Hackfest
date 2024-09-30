@@ -33,7 +33,7 @@
 ## 1.3 accept path
 
 - find specific path under curpath
-- add path to accpath
+- add path to accrote
 - get nodeids from path
 - send nodeids using /path/accept
 
