@@ -74,7 +74,6 @@ Future<void> addToCart(String item, int quantity) async {
   await file.writeAsString(jsonEncode(json));
   print("File after adding: ");
   printFile();
-
 }
 
 //empties the cart
@@ -92,10 +91,10 @@ Future<List<String>> getCoords() async {
 }
 
 List<double> getrandomCoords() {
-  Random random = new Random();
+  Random random = Random();
   double x = random.nextDouble() * 100;
   double y = random.nextDouble() * 100;
-  return [x,y];
+  return [x, y];
 }
 
 Future<void> removeFromCart(String item) async {
@@ -137,19 +136,16 @@ Future<List<Map<String, dynamic>>> readCart() async {
   return cart;
 }
 
-
 Future<String> getUsername() async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
   return json['username'];
 }
 
-
 // Backend Functions
 
 String baseUrl = 'https://hackfest.akashshanmugaraj.com';
 String basealgoUrl = 'https://algorithm.akashshanmugaraj.com';
-
 
 //item id and item name map
 
@@ -166,7 +162,6 @@ List<String> items = [
   'First Aid Kit',
   'Water Bottle',
   'water bottle',
-
   'Blanket',
   'Flashlight',
   'Food Packages'
@@ -256,11 +251,7 @@ Future<Map<String, dynamic>> loadPaths() async {
 Future<Map<String, dynamic>> loadNewPaths() async {
   var url = Uri.parse('https://algorithm.akashshanmugaraj.com/get/paths');
   var response = await http.post(url,
-      body: jsonEncode(
-          {
-    "xposition": 42.989979,
-    "yposition": 53.004152
-      }),
+      body: jsonEncode({"xposition": 42.989979, "yposition": 53.004152}),
       headers: {"Content-Type": "application/json"});
   Map<String, dynamic> json = jsonDecode(response.body);
   print(json);
@@ -268,7 +259,6 @@ Future<Map<String, dynamic>> loadNewPaths() async {
 }
 
 Future<List<LatLng>> loadLocations(int index) async {
-
   Map<String, dynamic> paths = await loadPaths();
   List<LatLng> toLocations = [];
   paths.forEach((key, value) {
@@ -280,14 +270,13 @@ Future<List<LatLng>> loadLocations(int index) async {
   });
 
   return toLocations;
-  
 }
 
 Future<Set<Marker>> setMarkers(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
-  Set<Marker> _markers = {};
+  Set<Marker> markers = {};
   for (int i = 0; i < coordinates.length; i++) {
-    _markers.add(
+    markers.add(
       Marker(
         markerId: MarkerId('marker_$i'),
         position: coordinates[i],
@@ -295,7 +284,7 @@ Future<Set<Marker>> setMarkers(int index) async {
     );
   }
 
-  return _markers;
+  return markers;
 }
 
 Future<List<String>> loadResourcesToCollect(int index) async {
@@ -344,7 +333,8 @@ Future<List<Tuple>> loadPathsTuple(int index) async {
   Map<String, dynamic> paths = await loadPaths();
   List<Tuple> pathList = [];
   List<dynamic> pathDynamic = paths[index.toString()];
-  List<Map<String, dynamic>> path = pathDynamic.map((item) => item as Map<String, dynamic>).toList();
+  List<Map<String, dynamic>> path =
+      pathDynamic.map((item) => item as Map<String, dynamic>).toList();
   for (int i = 1; i < path.length; i++) {
     print("Here");
     // String startLoc = await getAddress(path[i - 1]['latitude'], path[i - 1]['longitude']);
@@ -353,9 +343,10 @@ Future<List<Tuple>> loadPathsTuple(int index) async {
     String resources;
     if (path[i - 1]['quantity'] < 0) {
       resources =
-          "${-1 * path[i-1]['quantity']}  ${path[i-1]['itemtype']} to deliver";
+          "${-1 * path[i - 1]['quantity']}  ${path[i - 1]['itemtype']} to deliver";
     } else {
-      resources = "${path[i-1]['quantity']}  ${path[i-1]['itemtype']} to collect";
+      resources =
+          "${path[i - 1]['quantity']}  ${path[i - 1]['itemtype']} to collect";
     }
     pathList.add(Tuple(startLoc, endLoc, resources));
   }
@@ -391,31 +382,32 @@ Future<List<List<String>>> loadPathsNames() async {
   return pathNames;
 }
 
-
-Future<String> getAddress(double lat,double lng) async {
-  List<Placemark> placemarks = await placemarkFromCoordinates(lat,lng);
+Future<String> getAddress(double lat, double lng) async {
+  List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
   Placemark place = placemarks[0];
-  return place.name ?? place.locality ?? place.subLocality ?? place.administrativeArea ?? "Unknown";
+  return place.name ??
+      place.locality ??
+      place.subLocality ??
+      place.administrativeArea ??
+      "Unknown";
 }
 
 Future<Set<Polyline>> setPolylines(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
-  Set<Polyline> _polylines = {};
+  Set<Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   for (int i = 0; i < coordinates.length; i++) {
     polylineCoordinates.add(coordinates[i]);
   }
-  _polylines.add(Polyline(
+  polylines.add(Polyline(
     polylineId: PolylineId('polyline_$index'),
     color: Colors.blue,
     points: polylineCoordinates,
     width: 5,
   ));
 
-  return _polylines;
+  return polylines;
 }
-
-
 
 Future<Map<String, dynamic>> createNodeList() async {
   List<Map<String, dynamic>> nodeList = [];
@@ -445,7 +437,7 @@ Future<Map<String, dynamic>> createNodeList() async {
 
 Future<bool> addNodeRequest() async {
   final url = Uri.parse('$basealgoUrl/add/node');
-  Map<String, dynamic> requestBody= await createNodeList();
+  Map<String, dynamic> requestBody = await createNodeList();
 
   try {
     final response = await http.post(
@@ -467,19 +459,16 @@ Future<bool> addNodeRequest() async {
   }
 }
 
-Future<void> sendPathAcceptRequest(String userId, List<String> nodeIds) async {
+Future<void> sendPathAcceptRequest(List<String> nodeIds) async {
   // The API endpoint URL
-
+  String userID = await getUsername();
   // Create the request body
-  Map<String, dynamic> requestBody = {
-    "userid": userId,
-    "nodes": nodeIds
-  };
+  Map<String, dynamic> requestBody = {"userid": userID, "nodes": nodeIds};
 
   try {
     // Send POST request
     final response = await http.post(
-      Uri.parse(basealgoUrl + '/path/accept'),
+      Uri.parse('$basealgoUrl/path/accept'),
       headers: {
         "Content-Type": "application/json",
       },
@@ -509,7 +498,7 @@ Future<Map<String, dynamic>> markStep() async {
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseBody = json.decode(response.body);
-      return responseBody; // Return the response from the API
+      return responseBody;
     } else {
       print('Failed to mark step. Status Code: ${response.statusCode}');
       return {"error": "Failed to mark step"};

@@ -8,7 +8,7 @@ class CompletedRoutes extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           'Completed Routes',
           style: TextStyle(
             letterSpacing: 1.5,
@@ -19,7 +19,7 @@ class CompletedRoutes extends StatelessWidget {
       ),
       backgroundColor: Colors.black,
       body: ListView(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         children: [
           routeCard(
             coordinates: '11.025155757439432,77.0025...',
@@ -45,24 +45,24 @@ class CompletedRoutes extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.location_pin, color: Colors.red),
-                    SizedBox(width: 8),
+                    const Icon(Icons.location_pin, color: Colors.red),
+                    const SizedBox(width: 8),
                     Text(
                       coordinates,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.directions, color: Colors.blue),
-                    SizedBox(width: 8),
+                    const Icon(Icons.directions, color: Colors.blue),
+                    const SizedBox(width: 8),
                     Text(
                       'Pickup within $distance',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                       ),
                     ),
@@ -81,7 +81,7 @@ class CompletedRoutes extends StatelessWidget {
               onPressed: () {
                 // Add your onPressed code here!
               },
-              child: Text(
+              child: const Text(
                 'Done',
                 style: TextStyle(
                   color: Colors.black,

@@ -2,6 +2,7 @@ CREATE TYPE userrole AS ENUM ('delagent', 'client');
 CREATE TYPE routestatus AS ENUM ('ASSIGNED', 'COMPLETED');
 CREATE TYPE node_status AS ENUM ('FREE', 'INPATH', 'SATISFIED');
 CREATE TYPE action AS ENUM ('PICKUP', 'DROP');
+
 CREATE TABLE users (
     UserID SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -18,6 +19,7 @@ CREATE TABLE DeliveryVolunteers(
     cur_longitude DECIMAL(11, 8),
     FOREIGN KEY (UserID) REFERENCES users(UserID)
 );
+
 
 
 CREATE TABLE resources (
@@ -44,7 +46,7 @@ CREATE TABLE GeneralUsers(
 
 CREATE TABLE RouteAssignments(
     UserID INT,
-    RouteID INT PRIMARY KEY,
+    RouteID CHAR(36) PRIMARY KEY,
     RouteStatus routestatus DEFAULT 'ASSIGNED',
     CompletedStep INT,
     FOREIGN KEY (UserID) REFERENCES DeliveryVolunteers(UserID)
@@ -72,7 +74,7 @@ CREATE TABLE Nodes (
 );
 
 create TABLE RouteSteps(
-    RouteID INT,
+    RouteID CHAR(36),
     StepID INT,
     NodeID CHAR(36),
     PRIMARY KEY (RouteID, StepID),
@@ -80,28 +82,28 @@ create TABLE RouteSteps(
     FOREIGN KEY (NodeID) REFERENCES Nodes(node_id)
 );
 
-
 INSERT INTO users (username, contact_number, password, userrole, latitude, longitude) VALUES
-('john_doe', '1234567890', 'password123', 'client', 40.712776, -74.005974),
+('john_doe', '123456789', 'password123', 'client', 40.712776, -74.005974),
 ('jane_smith', '0987654321', 'password456', 'delagent', 34.052235, -118.243683),
-('alice_jones', '5555555555', 'password789', 'client', 37.774929, -122.419418);
+('alice_jones', '5555555555', 'password789', 'client', 37.774929, -122.419418),
+('bob_brown', '123456789', 'password123', 'client', 40.712776, -74.005974),
 
 INSERT INTO DeliveryVolunteers (UserID, cur_latitude, cur_longitude) VALUES
 ((SELECT UserID FROM users WHERE username = 'jane_smith'), 34.052235, -118.243683);
-
-INSERT INTO GeneralUsers (UserID, cartid) VALUES
-((SELECT UserID FROM users WHERE username = 'john_doe'), NULL),
-((SELECT UserID FROM users WHERE username = 'alice_jones'), NULL);
 
 INSERT INTO resources (resource_id, resource_name, resource_type) VALUES
 ('1', 'food', 'grocery'),
 ('2', 'clothes', 'apparel'),
 ('3', 'toys', 'children');
 
-INSERT INTO clusters (cluster_id, latitude, longitude) VALUES
-('cluster1', 34.052235, -118.243683),
-('cluster2', 34.052240, -118.243680);
+INSERT INTO clusters (cluster_id, latitude, longitude) VALUES ('1', 0, 0);
 
-INSERT INTO Nodes (node_id, resource_id, cluster_id, quantity, username, latitude, longitude, status, action) VALUES
-('node1', '1', 'cluster1', 10, 'jane_smith', 34.052235, -118.243683, 'FREE', 'PICKUP'),
-('node2', '1', 'cluster1', 5, 'jane_smith', 34.052240, -118.243680, 'FREE', 'DROP');
+INSERT INTO CartEntries (CartID, resource_id, quantity, isRequest) VALUES
+(1, '1', 5, TRUE),
+(1, '2', 10, TRUE),
+(2, '3', 2, TRUE);
+
+INSERT INTO GeneralUsers (UserID, cartid) VALUES
+((SELECT UserID FROM users WHERE username = 'john_doe'), 1),
+((SELECT UserID FROM users WHERE username = 'alice_jones'), 2),
+((SELECT UserID FROM users WHERE username = 'bob_brown'), NULL);

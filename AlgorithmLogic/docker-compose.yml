@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  hackfestapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    ports:
+      - "4160:4160"
+    depends_on:
+      - hackfestpostgres
+    restart: unless-stopped
+    environment:
+      DB_HOST: hackfestpostgres
+      DB_USER: rootuser
+      DB_PASSWORD: rootroot
+      DB_NAME: hackfestpgrs
+    volumes:
+      - .:/app
+
+  hackfestpostgres:
+    image: postgres:13
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hackfest
+      POSTGRES_USER: rootuser
+      POSTGRES_PASSWORD: rootroot
+    ports:
+      - "5432:5432"
+    volumes:
+      - hackfestpostgres:/var/lib/postgresql/data

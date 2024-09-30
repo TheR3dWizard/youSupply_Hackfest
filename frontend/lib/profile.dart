@@ -32,10 +32,10 @@ class profile extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              Center(
+              const Center(
                 child: Row(
                   mainAxisSize: MainAxisSize.min, // Center the Row content
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
                       'Sreeraghavan',
                       style: TextStyle(

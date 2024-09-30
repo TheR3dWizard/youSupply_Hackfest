@@ -8,7 +8,7 @@ class accepted extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text(
+        title: const Text(
           'Accepted Routes',
           style: TextStyle(
             letterSpacing: 1.5,

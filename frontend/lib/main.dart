@@ -23,6 +23,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -62,18 +64,18 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/login': (context) => LoginPage(),
         '/signup': (context) => SignUpPage(),
-        '/homegu': (context) => homePageGU(),
+        '/homegu': (context) => const homePageGU(),
         '/homedel': (context) => homePageDel(),
         '/provide': (context) => providePage(),
         '/request': (context) => requestPage(),
-        '/history': (context) => history(),
-        '/settings': (context) => settings(),
-        '/profile': (context) => profile(),
-        '/accepted': (context) => accepted(),
-        '/available': (context) => Available(),
-        '/cartstatic': (context) => cartPage(),
-        '/cart': (context) => cartPage(),
-        '/completed_routes': (context) => CompletedRoutes(),
+        '/history': (context) => const history(),
+        '/settings': (context) => const settings(),
+        '/profile': (context) => const profile(),
+        '/accepted': (context) => const accepted(),
+        '/available': (context) => const Available(),
+        '/cartstatic': (context) => const cartPage(),
+        '/cart': (context) => const cartPage(),
+        '/completed_routes': (context) => const CompletedRoutes(),
       },
       title: 'youSupply',
       theme: ThemeData(

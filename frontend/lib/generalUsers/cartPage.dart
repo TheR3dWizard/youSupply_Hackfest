@@ -207,5 +207,5 @@ class _cartPageState extends State<cartPage> {
 }
 
 void main() {
-  runApp(MaterialApp(home: cartPage()));
+  runApp(const MaterialApp(home: cartPage()));
 }
