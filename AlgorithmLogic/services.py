@@ -131,7 +131,12 @@ class DatabaseObject:
             INSERT INTO resources (resource_id, resource_name, resource_type) VALUES
             ('1', 'food', 'grocery'),
             ('2', 'clothes', 'apparel'),
-            ('3', 'toys', 'children');
+            ('3', 'toys', 'children'),
+            ('4', 'Water Bottle', 'beverage'),
+            ('5', 'Flashlight', 'utility'),
+            ('6', 'Blanket', 'utility'),
+            ('7', 'First Aid Kit', 'medical'),
+            ('8', 'Food Packages', 'grocery');
 
             INSERT INTO clusters (cluster_id, latitude, longitude) VALUES ('1', 0, 0);
             INSERT INTO clusters (cluster_id, latitude, longitude) VALUES ('cluster1', 0, 0);
