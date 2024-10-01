@@ -65,7 +65,7 @@ Future<File> get _localFile async {
 Future<void> savePathData() async {
   final file = await _localFile;
   var url = Uri.parse('$baseUrl/path/get');
-
+  
   var response = await http.post(url,
       body: json.encode({
         "username": getUsername(),
@@ -108,23 +108,24 @@ Future<void> acceptPath(int pathid) async {
 Future<List<Map<String, dynamic>>> getAllPaths() async {
   final file = await _localFile;
   var url = Uri.parse('$baseUrl/path/get');
+  String username = await getUsername();
   var response = await http.post(url,
       body: json.encode({
-        "username": getUsername(),
+        "username": username,
       }),
       headers: {"Content-Type": "application/json"});
-
   if (response.statusCode == 200) {
     var body = jsonDecode(response.body);
     Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
     jsonFile['curpaths'] = body;
     await file.writeAsString(jsonEncode(jsonFile));
     List<Map<String, dynamic>> paths = [];
-    for (var path in body) {
-      paths.add({
-        'startloc': path['startloc'],
-        'distance': path['distance'],
-      });
+    int numpaths = body['numpaths'];
+
+    for (int i = 0; i < numpaths; i++) {
+      print("PATH $i: ${body['paths']["$i"]}");
+      paths.add(body['paths']["$i"]);
+      print("WORKS");
     }
     return paths;
   } else {
