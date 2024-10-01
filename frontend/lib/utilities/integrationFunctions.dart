@@ -65,7 +65,7 @@ Future<File> get _localFile async {
 Future<void> savePathData() async {
   final file = await _localFile;
   var url = Uri.parse('$baseUrl/path/get');
-  
+
   var response = await http.post(url,
       body: json.encode({
         "username": getUsername(),
@@ -143,4 +143,30 @@ class RouteStep {
   void printData() {
     print("Location: $Location, Action: $action, Resources: $resources");
   }
+}
+
+Future<List<RouteStep>> viewSpecificPath(String key) async {
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['curpaths'];
+
+  int numpaths = curpath['numpaths'];
+  Map<String, dynamic> paths = curpath['paths'];
+  List<RouteStep> result = [];
+
+  if (paths.containsKey(key)) {
+    var pathDetails = paths[key]['path_details'];
+
+    for (var path in pathDetails) {
+      String inwords = path['inwords'];
+      String itemtype = path['itemtype'];
+      int quantity = path['quantity'];
+      String action = (quantity > 0) ? 'pickup' : 'deliver';
+      String resources = 'Item Type: $itemtype, Quantity: $quantity';
+      RouteStep step = RouteStep(inwords, action, resources);
+      result.add(step);
+    }
+  }
+
+  return result;
 }
