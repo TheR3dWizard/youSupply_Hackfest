@@ -309,6 +309,17 @@ def login():
     
     return {},200
 
+@app.route("/resource/get",methods=["POST"])
+def getresource():
+    body = request.get_json()
+    '''
+    {
+        "resourceid":"2"
+    }
+    '''
+    resource = databaseobject.getresourcename(body['resourceid'])
+    return resource
+
 
 @app.route("/sample/paths", methods=["GET", "POST"])
 def getpaths():
