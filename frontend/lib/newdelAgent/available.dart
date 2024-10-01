@@ -48,7 +48,7 @@ class DeliveryDetailsWidget extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          deliveryDetails.fromLoc,
+                          "Starts at ${deliveryDetails.fromLoc}",
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Colors.white70,
@@ -159,7 +159,7 @@ class _AvailableState extends State<Available> {
             } else {
               List<DeliveryDetails> deliveryDetailsList = snapshot.data!
                   .map((path) => DeliveryDetails(
-                      fromLoc: path['inwords'] ?? 'Unknown Location',
+                      fromLoc: path['path_details'][0]['inwords'] ?? 'Unknown Location',
                       distanceFromDelAgent: path['nodeids']!.length.toDouble()))
                   .toList();
               return SingleChildScrollView(
