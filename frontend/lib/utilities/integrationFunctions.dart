@@ -132,3 +132,15 @@ Future<List<Map<String, dynamic>>> getAllPaths() async {
     throw Exception("Failed to load paths");
   }
 }
+
+class RouteStep {
+  String Location;
+  String resources;
+  String action;
+
+  RouteStep(this.Location, this.action, this.resources);
+
+  void printData() {
+    print("Location: $Location, Action: $action, Resources: $resources");
+  }
+}
