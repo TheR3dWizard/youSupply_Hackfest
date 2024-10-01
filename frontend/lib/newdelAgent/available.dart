@@ -68,14 +68,14 @@ class DeliveryDetailsWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       const Text(
-                        'Pickup within ',
+                        'Contains ',
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 18,
                         ),
                       ),
                       Text(
-                        '${deliveryDetails.distanceFromDelAgent} km',
+                        '${deliveryDetails.distanceFromDelAgent.toInt()} Location',
                         style: const TextStyle(
                           color: Colors.white70,
                           fontSize: 18,
@@ -159,8 +159,8 @@ class _AvailableState extends State<Available> {
             } else {
               List<DeliveryDetails> deliveryDetailsList = snapshot.data!
                   .map((path) => DeliveryDetails(
-                      fromLoc: path['startloc'],
-                      distanceFromDelAgent: path['distance'].toDouble()))
+                      fromLoc: path['inwords'] ?? 'Unknown Location',
+                      distanceFromDelAgent: path['nodeids']!.length.toDouble()))
                   .toList();
               return SingleChildScrollView(
                 child: Column(
