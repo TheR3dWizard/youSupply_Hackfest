@@ -170,3 +170,24 @@ Future<List<RouteStep>> viewSpecificPath(String key) async {
 
   return result;
 }
+
+Future<List<RouteStep>> viewAcceptedPath(String key) async {
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['accroutes'];
+  List<RouteStep> result = [];
+
+  var pathDetails = curpath['path_details'];
+
+  for (var path in pathDetails) {
+    String inwords = path['inwords'];
+    String itemtype = path['itemtype'];
+    int quantity = path['quantity'];
+    String action = (quantity > 0) ? 'pickup' : 'deliver';
+    String resources = 'Item Type: $itemtype, Quantity: $quantity';
+    RouteStep step = RouteStep(inwords, action, resources);
+    result.add(step);
+  }
+
+  return result;
+}
