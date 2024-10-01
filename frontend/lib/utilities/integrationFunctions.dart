@@ -80,33 +80,34 @@ Future<void> savePathData() async {
   }
 }
 
-Future<void> acceptPath(Int16 pathid) async {
+Future<void> acceptPath(int pathid) async {
   final file = await _localFile;
-  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
 
   var curpathsfromfile = jsonFile['curpaths']['paths'];
-
   var targetpath = curpathsfromfile[pathid];
 
   var listofnodes = targetpath["nodeids"];
+  String username = await getUsername();
 
   jsonFile['accroutes'] = targetpath;
 
   var url = Uri.parse('$baseUrl/path/accept');
   var response = await http.post(url,
-      body: json.encode({"username": getUsername(), "nodeids": listofnodes}),
+      body: json.encode({"username": username, "nodeids": listofnodes}),
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
     await savePathData();
+  } else {
+    print('Failed to accept path with status code: ${response.statusCode}');
   }
 }
 
 Future<List<Map<String, dynamic>>> getAllPaths() async {
   final file = await _localFile;
   var url = Uri.parse('$baseUrl/path/get');
-
-  // HTTP request to get paths from the server
   var response = await http.post(url,
       body: json.encode({
         "username": getUsername(),
@@ -114,15 +115,10 @@ Future<List<Map<String, dynamic>>> getAllPaths() async {
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
-    // Parse response body
     var body = jsonDecode(response.body);
-
-    // Update local file with the new paths
     Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
     jsonFile['curpaths'] = body;
     await file.writeAsString(jsonEncode(jsonFile));
-
-    // Extract and return the relevant path data (startloc and distance)
     List<Map<String, dynamic>> paths = [];
     for (var path in body) {
       paths.add({
