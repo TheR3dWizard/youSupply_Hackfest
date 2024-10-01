@@ -59,9 +59,9 @@ class _MapViewState extends State<MapView> {
         backgroundColor: Colors.grey[850],
       ),
       backgroundColor: Colors.black,
-      body: FutureBuilder<List<Tuple>>(
-        future: _pathTuplesFuture,
-        builder: (BuildContext context, AsyncSnapshot<List<Tuple>> snapshot) {
+      body: FutureBuilder<List<RouteStep>>(
+        future: viewSpecificPath(widget.pathIndex.toString()),
+        builder: (BuildContext context, AsyncSnapshot<List<RouteStep>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
@@ -70,7 +70,7 @@ class _MapViewState extends State<MapView> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            List<Tuple> pathTuples = snapshot.data!;
+            List<RouteStep> pathTuples = snapshot.data!;
             _completedStatus = List<bool>.filled(pathTuples.length, false);
 
             return Column(
