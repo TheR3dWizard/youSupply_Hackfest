@@ -241,6 +241,7 @@ def acceptpath():
 
     step = 0
     for nodeid in nodeids:
+        databaseobject.marknodeasinpath(nodeid)
         databaseobject.create_route_step(route_id=routeid, node_id=nodeid, step_id=step)
         step += 1
     return "Worked"
