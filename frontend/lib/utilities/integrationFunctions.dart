@@ -83,18 +83,19 @@ Future<bool> acceptPath(int pathid) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-
   var curpathsfromfile = jsonFile['curpaths']['paths'];
-  var targetpath = curpathsfromfile[pathid];
+  print("CURPATHS: $curpathsfromfile");
+  print("PATHID: $pathid");
+  var targetpath = curpathsfromfile['$pathid'];
+  print("TARGETPATH: $targetpath");
 
   var listofnodes = targetpath["nodeids"];
   String username = await getUsername();
-
   jsonFile['accroutes'] = targetpath;
 
   var url = Uri.parse('$baseUrl/path/accept');
   var response = await http.post(url,
-      body: json.encode({"username": username, "nodeids": listofnodes}),
+      body: json.encode({"username": username, "nodes": listofnodes}),
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
