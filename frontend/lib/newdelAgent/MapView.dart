@@ -163,24 +163,13 @@ class _MapViewState extends State<MapView> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (await acceptPath(widget.pathIndex)) {
-                          setState(() {
-                            _acceptPressed =
-                                true; // Disable button after acceptance
-                          });
-                          // You can navigate to ClaimedRoutes here if necessary
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  homePageDel()
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Failed to accept path')),
-                          );
-                        }
+                        await acceptPath(widget.pathIndex);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => homePageDel(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
