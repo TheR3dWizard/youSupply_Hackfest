@@ -199,7 +199,6 @@ class DatabaseObject:
         query = f"UPDATE Nodes SET status='INPATH' WHERE node_id='{nodeid}'"
         self.cursor.execute(query)
         self.connection.commit()
-        ChromaDBAgent().deletevector(nodeid)
 
     def create_resource(self, resource_id: str, resource_name: str, resource_type: str):
         query = """
