@@ -187,6 +187,7 @@ def serveassortment():
                     "quantity": node_obj[3],
                     "latitude": float(node_obj[5]),
                     "longitude": float(node_obj[6]),
+                    "itemname": databaseobject.getresourcename(node_obj[1]).rstrip(),
                     "inwords": databaseobject.getworddescription(node["nodeid"]).rstrip(),
                 }
             )
@@ -308,6 +309,17 @@ def login():
             return {},404
     
     return {},200
+
+@app.route("/resource/get",methods=["POST"])
+def getresource():
+    body = request.get_json()
+    '''
+    {
+        "resourceid":"2"
+    }
+    '''
+    resource = databaseobject.getresourcename(body['resourceid'])
+    return resource
 
 
 @app.route("/sample/paths", methods=["GET", "POST"])

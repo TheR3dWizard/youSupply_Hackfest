@@ -80,58 +80,114 @@ Future<void> savePathData() async {
   }
 }
 
-Future<void> acceptPath(Int16 pathid) async {
+Future<void> acceptPath(int pathid) async {
   final file = await _localFile;
-  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
 
   var curpathsfromfile = jsonFile['curpaths']['paths'];
-
   var targetpath = curpathsfromfile[pathid];
 
   var listofnodes = targetpath["nodeids"];
+  String username = await getUsername();
 
   jsonFile['accroutes'] = targetpath;
 
   var url = Uri.parse('$baseUrl/path/accept');
   var response = await http.post(url,
-      body: json.encode({"username": getUsername(), "nodeids": listofnodes}),
+      body: json.encode({"username": username, "nodeids": listofnodes}),
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
     await savePathData();
+  } else {
+    print('Failed to accept path with status code: ${response.statusCode}');
   }
 }
 
 Future<List<Map<String, dynamic>>> getAllPaths() async {
   final file = await _localFile;
   var url = Uri.parse('$baseUrl/path/get');
-
-  // HTTP request to get paths from the server
+  String username = await getUsername();
   var response = await http.post(url,
       body: json.encode({
-        "username": getUsername(),
+        "username": username,
       }),
       headers: {"Content-Type": "application/json"});
-
   if (response.statusCode == 200) {
-    // Parse response body
     var body = jsonDecode(response.body);
-
-    // Update local file with the new paths
     Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
     jsonFile['curpaths'] = body;
     await file.writeAsString(jsonEncode(jsonFile));
-
-    // Extract and return the relevant path data (startloc and distance)
     List<Map<String, dynamic>> paths = [];
-    for (var path in body) {
-      paths.add({
-        'startloc': path['startloc'],
-        'distance': path['distance'],
-      });
+    int numpaths = body['numpaths'];
+
+    for (int i = 0; i < numpaths; i++) {
+      print("PATH $i: ${body['paths']["$i"]}");
+      paths.add(body['paths']["$i"]);
+      print("WORKS");
     }
     return paths;
   } else {
     throw Exception("Failed to load paths");
   }
+}
+
+class RouteStep {
+  String Location;
+  String resources;
+  String action;
+
+  RouteStep(this.Location, this.action, this.resources);
+
+  void printData() {
+    print("Location: $Location, Action: $action, Resources: $resources");
+  }
+}
+
+Future<List<RouteStep>> viewSpecificPath(String key) async {
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['curpaths'];
+
+  int numpaths = curpath['numpaths'];
+  Map<String, dynamic> paths = curpath['paths'];
+  List<RouteStep> result = [];
+
+  if (paths.containsKey(key)) {
+    var pathDetails = paths[key]['path_details'];
+
+    for (var path in pathDetails) {
+      String inwords = path['inwords'];
+      String itemtype = path['itemtype'];
+      int quantity = path['quantity'];
+      String action = (quantity > 0) ? 'pickup' : 'deliver';
+      String resources = 'Item Type: $itemtype, Quantity: $quantity';
+      RouteStep step = RouteStep(inwords, action, resources);
+      result.add(step);
+    }
+  }
+
+  return result;
+}
+
+Future<List<RouteStep>> viewAcceptedPath(String key) async {
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['accroutes'];
+  List<RouteStep> result = [];
+
+  var pathDetails = curpath['path_details'];
+
+  for (var path in pathDetails) {
+    String inwords = path['inwords'];
+    String itemtype = path['itemtype'];
+    int quantity = path['quantity'];
+    String action = (quantity > 0) ? 'pickup' : 'deliver';
+    String resources = 'Item Type: $itemtype, Quantity: $quantity';
+    RouteStep step = RouteStep(inwords, action, resources);
+    result.add(step);
+  }
+
+  return result;
 }
