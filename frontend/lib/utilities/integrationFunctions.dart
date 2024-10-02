@@ -207,3 +207,14 @@ Future<int> getCompletedStep() async {
     throw Exception("Failed to load paths");
   }
 }
+
+Future<void> markStep() async{
+  String username = await getUsername();
+  var url = Uri.parse('$baseUrl/path/markstep');
+  var response = await http.post(url,
+      body: json.encode({"userid": username}),
+      headers: {"Content-Type": "application/json"});
+  if (response.statusCode != 200) {
+    throw Exception("Failed to mark step");
+  }
+}
