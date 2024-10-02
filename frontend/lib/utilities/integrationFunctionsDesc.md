@@ -53,6 +53,5 @@
 ## 2.1 Mark as completed
 
 - call path/markstep
-- call path/lookup
-- save to accpath
-- go to 2
+- do a SetState or smtng to rebuild the page (it should automatically have the next path)
+- [ maybe put the api ccall inside the setState]

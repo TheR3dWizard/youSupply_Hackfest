@@ -97,7 +97,7 @@ Future<void> acceptPath(int pathid) async {
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
-    await savePathData();
+    print('Path accepted');
   } else {
     print('Failed to accept path with status code: ${response.statusCode}');
   }
