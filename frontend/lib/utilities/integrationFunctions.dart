@@ -79,7 +79,7 @@ Future<void> savePathData() async {
   }
 }
 
-Future<void> acceptPath(int pathid) async {
+Future<bool> acceptPath(int pathid) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
@@ -99,8 +99,10 @@ Future<void> acceptPath(int pathid) async {
 
   if (response.statusCode == 200) {
     print('Path accepted');
+    return true;
   } else {
     print('Failed to accept path with status code: ${response.statusCode}');
+    return false;
   }
 }
 

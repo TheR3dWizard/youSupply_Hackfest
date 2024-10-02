@@ -88,9 +88,6 @@ class DeliveryDetailsWidget extends StatelessWidget {
             ),
             OutlinedButton(
               onPressed: () async {
-                // Accept the path using the pathIndex
-                await acceptPath(pathIndex);
-
                 // Fetch the routes related to the accepted path
                 Future<List<Tuple>> pathTuples = loadPathsTuple(pathIndex);
 
@@ -159,7 +156,8 @@ class _AvailableState extends State<Available> {
             } else {
               List<DeliveryDetails> deliveryDetailsList = snapshot.data!
                   .map((path) => DeliveryDetails(
-                      fromLoc: path['path_details'][0]['inwords'] ?? 'Unknown Location',
+                      fromLoc: path['path_details'][0]['inwords'] ??
+                          'Unknown Location',
                       distanceFromDelAgent: path['nodeids']!.length.toDouble()))
                   .toList();
               return SingleChildScrollView(
