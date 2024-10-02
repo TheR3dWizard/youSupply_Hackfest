@@ -2,6 +2,7 @@ import "dart:convert";
 import "dart:io";
 import "package:flutter/services.dart";
 import "package:frontend/utilities/apiFunctions.dart";
+import "package:google_maps_flutter/google_maps_flutter.dart";
 import "package:http/http.dart" as http;
 import "package:frontend/utilities/fileFunctions.dart";
 import "package:path_provider/path_provider.dart";
@@ -78,7 +79,7 @@ Future<void> savePathData() async {
   }
 }
 
-Future<void> acceptPath(int pathid) async {
+Future<bool> acceptPath(int pathid) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
@@ -98,8 +99,10 @@ Future<void> acceptPath(int pathid) async {
 
   if (response.statusCode == 200) {
     print('Path accepted');
+    return true;
   } else {
     print('Failed to accept path with status code: ${response.statusCode}');
+    return false;
   }
 }
 
@@ -206,4 +209,29 @@ Future<int> getCompletedStep() async {
   } else {
     throw Exception("Failed to load paths");
   }
+}
+
+Future<void> markStep() async{
+  String username = await getUsername();
+  var url = Uri.parse('$baseUrl/path/markstep');
+  var response = await http.post(url,
+      body: json.encode({"userid": username}),
+      headers: {"Content-Type": "application/json"});
+  if (response.statusCode != 200) {
+    throw Exception("Failed to mark step");
+  }
+}
+
+Future<List<LatLng>> loadLocations(int index) async {
+  Map<String, dynamic> paths = await loadPaths();
+  List<LatLng> toLocations = [];
+  paths.forEach((key, value) {
+    if (key == index.toString()) {
+      value.forEach((element) {
+        toLocations.add(LatLng(element['latitude'], element['longitude']));
+      });
+    }
+  });
+
+  return toLocations;
 }

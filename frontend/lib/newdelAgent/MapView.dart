@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'package:frontend/newdelAgent/homePageDel.dart';
 import 'package:frontend/utilities/apiFunctions.dart';
-import 'package:frontend/utilities/integrationFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/newdelAgent/claimed.dart';
+import 'package:frontend/utilities/integrationFunctions.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -21,15 +22,15 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  late Future<List<Tuple>> _pathTuplesFuture;
+  late Future<List<RouteStep>> _pathStepsFuture;
   late List<bool> _completedStatus;
   bool _acceptPressed = false;
 
   @override
   void initState() {
     super.initState();
-    _pathTuplesFuture =
-        loadPathsTuple(widget.pathIndex); // Load paths from local file
+    // Load path steps when the widget is initialized
+    _pathStepsFuture = viewSpecificPath(widget.pathIndex.toString());
   }
 
   final Completer<GoogleMapController> _controller =
@@ -60,42 +61,43 @@ class _MapViewState extends State<MapView> {
       ),
       backgroundColor: Colors.black,
       body: FutureBuilder<List<RouteStep>>(
-        future: viewSpecificPath(widget.pathIndex.toString()),
-        builder: (BuildContext context, AsyncSnapshot<List<RouteStep>> snapshot) {
+        future: _pathStepsFuture,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<RouteStep>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            print(snapshot.error);
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            List<RouteStep> pathTuples = snapshot.data!;
-            _completedStatus = List<bool>.filled(pathTuples.length, false);
+            List<RouteStep> pathSteps = snapshot.data!;
+            _completedStatus = List<bool>.filled(pathSteps.length, false);
 
             return Column(
               children: [
                 // Map Container
                 FutureBuilder<Set<Marker>>(
                   future: setMarkers(widget.pathIndex),
-                  builder: (context, snapshot) {
-                    return FutureBuilder(
+                  builder: (context, markerSnapshot) {
+                    return FutureBuilder<Set<Polyline>>(
                       future: setPolylines(widget.pathIndex),
-                      builder: (context, snapshot2) {
-                        if (snapshot.connectionState ==
+                      builder: (context, polylineSnapshot) {
+                        if (markerSnapshot.connectionState ==
                                 ConnectionState.waiting ||
-                            snapshot2.connectionState ==
+                            polylineSnapshot.connectionState ==
                                 ConnectionState.waiting) {
                           return const Center(
                               child: CircularProgressIndicator());
-                        } else if (snapshot.hasError || snapshot2.hasError) {
-                          print(snapshot.error);
-                          print(snapshot2.error);
+                        } else if (markerSnapshot.hasError ||
+                            polylineSnapshot.hasError) {
                           return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        } else if (!snapshot.hasData || !snapshot2.hasData) {
+                              child: Text('Error: ${markerSnapshot.error}'));
+                        } else if (!markerSnapshot.hasData ||
+                            !polylineSnapshot.hasData) {
                           return const Center(child: Text('No data available'));
                         }
+
                         return SizedBox(
                           height: 200,
                           child: GoogleMap(
@@ -104,8 +106,8 @@ class _MapViewState extends State<MapView> {
                             onMapCreated: (GoogleMapController controller) {
                               _controller.complete(controller);
                             },
-                            markers: snapshot.data ?? {},
-                            polylines: snapshot2.data!,
+                            markers: markerSnapshot.data ?? {},
+                            polylines: polylineSnapshot.data ?? {},
                           ),
                         );
                       },
@@ -116,88 +118,57 @@ class _MapViewState extends State<MapView> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: pathTuples.length,
-                            itemBuilder: (context, index) {
-                              Tuple currentTuple = pathTuples[index];
-                              bool isCompleted = _completedStatus[index];
+                    child: ListView.builder(
+                      itemCount: pathSteps.length,
+                      itemBuilder: (context, index) {
+                        RouteStep currentStep = pathSteps[index];
+                        bool isCompleted = _completedStatus[index];
 
-                              return Container(
-                                padding: const EdgeInsets.all(10.0),
-                                margin: const EdgeInsets.only(bottom: 16.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[850],
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      currentTuple.startLoc,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Colors.white70,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      currentTuple.resources,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white60,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                  ],
-                                ),
-                              );
-                            },
+                        return Container(
+                          padding: const EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.only(bottom: 16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[850],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        ),
-                      ],
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                currentStep.Location,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.white70,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                currentStep.resources,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white60,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
                 if (!_acceptPressed)
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Confirm Acceptance'),
-                              content: const Text(
-                                  'Are you sure you want to accept?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('Cancel'),
-                                ),
-                                // TextButton(
-                                //   onPressed: () {
-                                //     Navigator.of(context).pop();
-                                //     Navigator.push(
-                                //       context,
-                                //       MaterialPageRoute(
-                                //         builder: (context) => ClaimedRoutes(
-                                //             pathIndex: widget.pathIndex),
-                                //       ),
-                                //     );
-                                //   },
-                                //   child: const Text('Accept'),
-                                // ),
-                              ],
-                            );
-                          },
+                      onPressed: () async {
+                        await acceptPath(widget.pathIndex);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => homePageDel(),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
