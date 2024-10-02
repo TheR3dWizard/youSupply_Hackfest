@@ -2,6 +2,7 @@ import "dart:convert";
 import "dart:io";
 import "package:flutter/services.dart";
 import "package:frontend/utilities/apiFunctions.dart";
+import "package:google_maps_flutter/google_maps_flutter.dart";
 import "package:http/http.dart" as http;
 import "package:frontend/utilities/fileFunctions.dart";
 import "package:path_provider/path_provider.dart";
@@ -217,4 +218,18 @@ Future<void> markStep() async{
   if (response.statusCode != 200) {
     throw Exception("Failed to mark step");
   }
+}
+
+Future<List<LatLng>> loadLocations(int index) async {
+  Map<String, dynamic> paths = await loadPaths();
+  List<LatLng> toLocations = [];
+  paths.forEach((key, value) {
+    if (key == index.toString()) {
+      value.forEach((element) {
+        toLocations.add(LatLng(element['latitude'], element['longitude']));
+      });
+    }
+  });
+
+  return toLocations;
 }
