@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:frontend/newdelAgent/homePageDel.dart';
 import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/newdelAgent/claimed.dart';
@@ -171,7 +172,7 @@ class _MapViewState extends State<MapView> {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  ClaimedRoutes(pathIndex: widget.pathIndex),
+                                  homePageDel()
                             ),
                           );
                         } else {

@@ -234,7 +234,7 @@ def acceptpath():
         ]    
     }
     """
-    userid = body["userid"]
+    userid = databaseobject.getuserid(body["username"])
     nodeids = body["nodes"]
     routeid = str(uuid.uuid4())
     databaseobject.create_route_assignment(userid=userid, routeid=routeid)
@@ -254,7 +254,7 @@ def markstep():
         "userid": "JohnDoe",
     }
     """
-    step = databaseobject.markstep(body["userid"])
+    step = databaseobject.markstep(username=body["userid"])
     return step
 
 @app.route("/user/signUp", methods=["POST"])
