@@ -195,6 +195,12 @@ class DatabaseObject:
         self.cursor.execute(query, (username,))
         return True if self.cursor.fetchone() else False
 
+    def marknodeasinpath(self, nodeid: str):
+        query = f"UPDATE Nodes SET status='INPATH' WHERE node_id='{nodeid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
+        ChromaDBAgent().deletevector(nodeid)
+
     def create_resource(self, resource_id: str, resource_name: str, resource_type: str):
         query = """
         INSERT INTO resources (resource_id, resource_name, resource_type)
