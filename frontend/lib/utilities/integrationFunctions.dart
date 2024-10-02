@@ -1,9 +1,7 @@
 import "dart:convert";
-import "dart:ffi";
 import "dart:io";
 import "package:flutter/services.dart";
 import "package:frontend/utilities/apiFunctions.dart";
-import "package:geolocator/geolocator.dart";
 import "package:http/http.dart" as http;
 import "package:frontend/utilities/fileFunctions.dart";
 import "package:path_provider/path_provider.dart";
@@ -99,7 +97,7 @@ Future<void> acceptPath(int pathid) async {
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
-    await savePathData();
+    print('Path accepted');
   } else {
     print('Failed to accept path with status code: ${response.statusCode}');
   }
@@ -137,8 +135,9 @@ class RouteStep {
   String Location;
   String resources;
   String action;
+  bool? completed;
 
-  RouteStep(this.Location, this.action, this.resources);
+  RouteStep(this.Location, this.action, this.resources, {this.completed});
 
   void printData() {
     print("Location: $Location, Action: $action, Resources: $resources");
@@ -150,7 +149,6 @@ Future<List<RouteStep>> viewSpecificPath(String key) async {
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
   Map<String, dynamic> curpath = jsonFile['curpaths'];
 
-  int numpaths = curpath['numpaths'];
   Map<String, dynamic> paths = curpath['paths'];
   List<RouteStep> result = [];
 
@@ -177,6 +175,8 @@ Future<List<RouteStep>> viewAcceptedPath(String key) async {
   Map<String, dynamic> curpath = jsonFile['accroutes'];
   List<RouteStep> result = [];
 
+  int completedStep = await getCompletedStep();
+  int i = 0;
   var pathDetails = curpath['path_details'];
 
   for (var path in pathDetails) {
@@ -185,9 +185,25 @@ Future<List<RouteStep>> viewAcceptedPath(String key) async {
     int quantity = path['quantity'];
     String action = (quantity > 0) ? 'pickup' : 'deliver';
     String resources = 'Item Type: $itemtype, Quantity: $quantity';
-    RouteStep step = RouteStep(inwords, action, resources);
+    RouteStep step =
+        RouteStep(inwords, action, resources, completed: completedStep >= i);
+    i++;
     result.add(step);
   }
 
   return result;
+}
+
+Future<int> getCompletedStep() async {
+  String username = await getUsername();
+  var url = Uri.parse('$baseUrl/path/lookup');
+  var response = await http.post(url,
+      body: json.encode({"username": username}),
+      headers: {"Content-Type": "application/json"});
+  if (response.statusCode == 200) {
+    var body = jsonDecode(response.body);
+    return body['completed'];
+  } else {
+    throw Exception("Failed to load paths");
+  }
 }
