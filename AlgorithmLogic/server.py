@@ -214,7 +214,7 @@ def getpath():
     output["nodes"] = []
     for step in steps:
         nodeid = step[2]
-        node = databaseobject.getNodeObject(nodeid)
+        node = getNodeObject(nodeid)
         output["nodes"].append(node.export())
         #this line should be in the outer indent, outside the loop i think
     output["completed"] = databaseobject.getcompletedstep(route_id)
