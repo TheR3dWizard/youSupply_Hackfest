@@ -207,7 +207,8 @@ def getpath():
     }
     """
     body = request.get_json()
-    route_id = databaseobject.getrouteid(body["username"])
+    userid = databaseobject.getuserid(body["username"])
+    route_id = databaseobject.getrouteid(userid)
     steps = databaseobject.getsteps(route_id)
     output = {}
     output["nodes"] = []
@@ -216,7 +217,7 @@ def getpath():
         node = databaseobject.getNodeObject(nodeid)
         output["nodes"].append(node.export())
         #this line should be in the outer indent, outside the loop i think
-        output["completed"] = databaseobject.getcompletedstep(route_id)
+    output["completed"] = databaseobject.getcompletedstep(route_id)
 
     return output
 
