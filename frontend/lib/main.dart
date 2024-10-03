@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/newdelAgent/MapView.dart';
 import 'package:frontend/delAgents/accepted.dart';
 import 'package:frontend/newdelAgent/available.dart';
-import 'package:frontend/newdelAgent/claimed.dart';
 import 'package:frontend/newdelAgent/homePageDel.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
 import 'package:frontend/generalUsers/cartPageStatic.dart';
