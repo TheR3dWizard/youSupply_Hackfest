@@ -21,24 +21,20 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
   @override
   void initState() {
     super.initState();
-    // Load accepted path steps when the widget is initialized
     _acceptedPathFuture = viewAcceptedPath();
   }
 
-  // Mark the next step as completed and update the UI
   void _markNextAsCompleted() async {
     setState(() {
       _isLoading = true;
     });
 
-    await markStep(); // Marks the step on the server
+    await markStep();
 
     setState(() {
       if (_completedCount < _completedStatus.length) {
         _completedStatus[_completedCount] = true;
         _completedCount++;
-
-        // If all steps are completed, mark the entire path as completed
         if (_completedCount == _completedStatus.length) {
           _markEntirePathAsCompleted();
         }
@@ -47,10 +43,9 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
     });
   }
 
-  // This method marks the entire path as completed when all steps are done
   void _markEntirePathAsCompleted() {
     for (int i = 0; i < _completedStatus.length; i++) {
-      _completedStatus[i] = true; // Mark all steps as completed
+      _completedStatus[i] = true;
     }
   }
 
@@ -206,8 +201,7 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed:
-                          null, // Disable button once the path is completed
+                      onPressed: null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
                         padding: const EdgeInsets.symmetric(

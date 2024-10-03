@@ -92,6 +92,7 @@ Future<bool> acceptPath(int pathid) async {
   var listofnodes = targetpath["nodeids"];
   String username = await getUsername();
   jsonFile['accroutes'] = targetpath;
+  await file.writeAsString(jsonEncode(jsonFile));
 
   var url = Uri.parse('$baseUrl/path/accept');
   var response = await http.post(url,
@@ -174,6 +175,8 @@ Future<List<RouteStep>> viewSpecificPath(String key) async {
 }
 
 Future<List<RouteStep>> viewAcceptedPath() async {
+  print("acc path func called");
+
   final file = await _localFile;
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
   Map<String, dynamic> curpath = jsonFile['accroutes'];
