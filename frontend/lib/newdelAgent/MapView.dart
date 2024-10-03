@@ -1,12 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:frontend/newdelAgent/homePageDel.dart';
 import 'package:frontend/utilities/apiFunctions.dart';
-import 'package:flutter/material.dart';
 import 'package:frontend/utilities/integrationFunctions.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:http/http.dart' as http;
 
 class MapView extends StatefulWidget {
   final int pathIndex;
@@ -161,12 +163,37 @@ class _MapViewState extends State<MapView> {
                 if (!_acceptPressed)
                   Center(
                     child: ElevatedButton(
-                      onPressed: () async {
-                        await acceptPath(widget.pathIndex);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => homePageDel(),
+                      onPressed: () {
+                        // Show Snackbar for confirmation
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                const Text('Do you want to confirm the path?'),
+                            action: SnackBarAction(
+                              label: 'Confirm',
+                              onPressed: () async {
+                                // Call the acceptPath function and proceed if confirmed
+                                bool accepted =
+                                    await acceptPath(widget.pathIndex);
+                                if (accepted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => homePageDel(),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Failed to accept path')),
+                                  );
+                                }
+                              },
+                            ),
+                            duration:
+                                const Duration(seconds: 5), // Snackbar timeout
+                            behavior: SnackBarBehavior
+                                .floating, // Floating style for Snackbar
                           ),
                         );
                       },
