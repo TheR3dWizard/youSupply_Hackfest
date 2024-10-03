@@ -212,7 +212,7 @@ Future<int> getCompletedStep() async {
   }
 }
 
-Future<void> markStep() async{
+Future<void> markStep() async {
   String username = await getUsername();
   var url = Uri.parse('$baseUrl/path/markstep');
   var response = await http.post(url,
