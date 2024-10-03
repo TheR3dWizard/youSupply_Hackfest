@@ -22,7 +22,7 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
   void initState() {
     super.initState();
     // Load accepted path steps when the widget is initialized
-    _acceptedPathFuture = viewAcceptedPath("1"); // Use key if needed
+    _acceptedPathFuture = viewAcceptedPath();
   }
 
   // Mark the next step as completed and update the UI
@@ -37,9 +37,21 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
       if (_completedCount < _completedStatus.length) {
         _completedStatus[_completedCount] = true;
         _completedCount++;
+
+        // If all steps are completed, mark the entire path as completed
+        if (_completedCount == _completedStatus.length) {
+          _markEntirePathAsCompleted();
+        }
       }
       _isLoading = false;
     });
+  }
+
+  // This method marks the entire path as completed when all steps are done
+  void _markEntirePathAsCompleted() {
+    for (int i = 0; i < _completedStatus.length; i++) {
+      _completedStatus[i] = true; // Mark all steps as completed
+    }
   }
 
   final Completer<GoogleMapController> _controller =
@@ -189,6 +201,27 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
                 if (_isLoading)
                   const Center(
                     child: CircularProgressIndicator(),
+                  ),
+                if (_completedCount == _completedStatus.length && !_isLoading)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed:
+                          null, // Disable button once the path is completed
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 20),
+                      ),
+                      child: const Text(
+                        'All Steps Completed',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ),
               ],
             );

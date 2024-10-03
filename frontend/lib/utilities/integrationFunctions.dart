@@ -173,7 +173,7 @@ Future<List<RouteStep>> viewSpecificPath(String key) async {
   return result;
 }
 
-Future<List<RouteStep>> viewAcceptedPath(String key) async {
+Future<List<RouteStep>> viewAcceptedPath() async {
   final file = await _localFile;
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
   Map<String, dynamic> curpath = jsonFile['accroutes'];
