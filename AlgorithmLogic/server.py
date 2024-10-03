@@ -236,6 +236,10 @@ def acceptpath():
     }
     """
     userid = databaseobject.getuserid(body["username"])
+    isAssigned = databaseobject.isAssigned(userid)
+    if isAssigned:
+        return "Already assigned", 400
+    
     nodeids = body["nodes"]
     routeid = str(uuid.uuid4())
     databaseobject.create_route_assignment(userid=userid, routeid=routeid)
@@ -245,7 +249,7 @@ def acceptpath():
         databaseobject.marknodeasinpath(nodeid)
         databaseobject.create_route_step(route_id=routeid, node_id=nodeid, step_id=step)
         step += 1
-    return "Worked"
+    return "Worked", 200
 
 
 @app.route("/path/markstep", methods=["POST"])
