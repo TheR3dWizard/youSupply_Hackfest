@@ -112,8 +112,6 @@ Future<bool> isLoggedIn() async {
   return json['loggedin'];
 }
 
-
-
 Future<void> setRole(String role) async {
   final file = await _localFile;
   Map<String, dynamic> json = jsonDecode(await file.readAsString());
@@ -202,7 +200,6 @@ Future<bool> register(String username, String password, String phone,
   return response.statusCode == 200;
 }
 
-
 //sends all nodes in cart to backend
 Future<void> sendcart() async {
   final file = await _localFile;
@@ -221,8 +218,7 @@ Future<void> sendcart() async {
   print(jsonEncode(payload));
   var url = Uri.parse('$basealgoUrl/add/node');
   var response = await http.post(url,
-      body: jsonEncode(payload),
-      headers: {"Content-Type": "application/json"});
+      body: jsonEncode(payload), headers: {"Content-Type": "application/json"});
 }
 
 Future<Map<String, dynamic>> loadPaths() async {
@@ -471,28 +467,5 @@ Future<void> sendPathAcceptRequest(List<String> nodeIds) async {
     }
   } catch (e) {
     print('Error sending request: $e');
-  }
-}
-
-Future<Map<String, dynamic>> markStep() async {
-  final url = Uri.parse('$basealgoUrl/path/markstep');
-  String userId = await getUsername();
-  try {
-    final response = await http.post(
-      url,
-      body: json.encode({"userid": userId}),
-      headers: {"Content-Type": "application/json"},
-    );
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody = json.decode(response.body);
-      return responseBody;
-    } else {
-      print('Failed to mark step. Status Code: ${response.statusCode}');
-      return {"error": "Failed to mark step"};
-    }
-  } catch (e) {
-    print('Error occurred: $e');
-    return {"error": e.toString()};
   }
 }

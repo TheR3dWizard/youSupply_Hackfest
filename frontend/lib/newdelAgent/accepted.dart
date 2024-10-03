@@ -1,75 +1,65 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/newdelAgent/homePageDel.dart';
-import 'package:frontend/utilities.dart';
+import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:frontend/utilities/integrationFunctions.dart';
-import 'package:frontend/newdelAgent/completed_routes.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AcceptedRoutes extends StatefulWidget {
-  final int pathIndex;
-
-  const AcceptedRoutes({
-    super.key,
-    required this.pathIndex,
-  });
+  const AcceptedRoutes({super.key});
 
   @override
   _AcceptedRoutesState createState() => _AcceptedRoutesState();
 }
 
 class _AcceptedRoutesState extends State<AcceptedRoutes> {
-  late Future<List<RouteStep>> _acceptedPathStepsFuture;
+  late Future<List<RouteStep>> _acceptedPathFuture;
   late List<bool> _completedStatus;
+  bool _isLoading = false;
   int _completedCount = 0;
 
   @override
   void initState() {
     super.initState();
-    // Load the accepted path steps
-    _acceptedPathStepsFuture =
-        viewAcceptedPath(widget.pathIndex.toString()).then((pathSteps) {
-      _completedStatus = List<bool>.filled(pathSteps.length, false);
-      return pathSteps;
-    });
+    // Load accepted path steps when the widget is initialized
+    _acceptedPathFuture = viewAcceptedPath("1"); // Use key if needed
   }
 
-  void _markNextAsCompleted() {
+  // Mark the next step as completed and update the UI
+  void _markNextAsCompleted() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await markStep(); // Marks the step on the server
+
     setState(() {
       if (_completedCount < _completedStatus.length) {
         _completedStatus[_completedCount] = true;
         _completedCount++;
       }
-
-      if (_completedCount == _completedStatus.length) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) {
-              markStep();
-              return homePageDel();
-            },
-          ),
-        );
-      }
+      _isLoading = false;
     });
   }
+
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(11.025155757439432, 77.00250346910578),
+    zoom: 10.4746,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
-        title: const Text(
-          'Accepted Routes',
-          style: TextStyle(
-            letterSpacing: 1.5,
-            color: Colors.white70,
-          ),
-        ),
+        title: const Text('Accepted Routes'),
         backgroundColor: Colors.grey[850],
       ),
       backgroundColor: Colors.black,
       body: FutureBuilder<List<RouteStep>>(
-        future: _acceptedPathStepsFuture,
+        future: _acceptedPathFuture,
         builder:
             (BuildContext context, AsyncSnapshot<List<RouteStep>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -79,17 +69,54 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            List<RouteStep> acceptedPathSteps = snapshot.data!;
+            List<RouteStep> pathSteps = snapshot.data!;
+            _completedStatus = List<bool>.filled(pathSteps.length, false);
 
             return Column(
               children: [
+                // Map Container
+                FutureBuilder<Set<Marker>>(
+                  future: setMarkers(1), // Load markers if needed
+                  builder: (context, markerSnapshot) {
+                    return FutureBuilder<Set<Polyline>>(
+                      future: setPolylines(1), // Load polylines if needed
+                      builder: (context, polylineSnapshot) {
+                        if (markerSnapshot.connectionState ==
+                                ConnectionState.waiting ||
+                            polylineSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (markerSnapshot.hasError ||
+                            polylineSnapshot.hasError) {
+                          return Center(
+                              child: Text('Error: ${markerSnapshot.error}'));
+                        }
+
+                        return SizedBox(
+                          height: 200,
+                          child: GoogleMap(
+                            mapType: MapType.hybrid,
+                            initialCameraPosition: _kGooglePlex,
+                            onMapCreated: (GoogleMapController controller) {
+                              _controller.complete(controller);
+                            },
+                            markers: markerSnapshot.data ?? {},
+                            polylines: polylineSnapshot.data ?? {},
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                // Routes List
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ListView.builder(
-                      itemCount: acceptedPathSteps.length,
+                      itemCount: pathSteps.length,
                       itemBuilder: (context, index) {
-                        RouteStep currentStep = acceptedPathSteps[index];
+                        RouteStep currentStep = pathSteps[index];
                         bool isCompleted = _completedStatus[index];
 
                         return Container(
@@ -119,20 +146,15 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
                                   color: Colors.white60,
                                 ),
                               ),
-                              const SizedBox(height: 5),
                               Align(
                                 alignment: Alignment.bottomRight,
                                 child: isCompleted
-                                    ? Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 5),
-                                        child: const Text(
-                                          'Completed',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w300,
-                                          ),
+                                    ? const Text(
+                                        'Completed',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
                                         ),
                                       )
                                     : Container(),
@@ -144,26 +166,30 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: _completedCount < _completedStatus.length
-                        ? _markNextAsCompleted
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 0, 255, 255),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 20),
-                    ),
-                    child: const Text(
-                      'Mark as Completed',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
+                if (_completedCount < _completedStatus.length && !_isLoading)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: _markNextAsCompleted,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 20),
+                      ),
+                      child: const Text(
+                        'Mark as Completed',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
-                ),
+                if (_isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  ),
               ],
             );
           }
