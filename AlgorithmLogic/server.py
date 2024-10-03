@@ -30,7 +30,7 @@ randomagent = Random()
 app = Flask(__name__)
 
 
-def getNodeObject(self, nodeid: str):
+def getNodeObject( nodeid: str):
     result = databaseobject.getNode(nodeid)
     if not result:
         return None
