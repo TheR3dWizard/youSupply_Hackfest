@@ -253,6 +253,7 @@ Future<Set<Marker>> setMarkers(int index) async {
       Marker(
         markerId: MarkerId('marker_$i'),
         position: coordinates[i],
+        icon: i == 0 ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen) : BitmapDescriptor.defaultMarker,
       ),
     );
   }

@@ -243,7 +243,6 @@ Future<List<LatLng>> loadLocations(int index) async {
   return toLocations;
 }
 
-
 Future<List<LatLng>> loadAccLocations(int index) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
@@ -257,23 +256,24 @@ Future<List<LatLng>> loadAccLocations(int index) async {
   return toLocations;
 }
 
-Future<Set<Marker>> setAccMarkers() async{
-  // print("markers st");
+Future<Set<Marker>> setAccMarkers() async {
   final file = await _localFile;
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
   Map<String, dynamic> curpath = jsonFile['accroutes'];
   List<dynamic> paths = curpath['path_details'];
-  // print("ACC MARKERS WORKS");
-  // print("PATHS: $paths");
   Set<Marker> markers = {};
-  paths.forEach((element) {
+
+  for (int i = 0; i < paths.length; i++) {
+    var element = paths[i];
     markers.add(Marker(
       markerId: MarkerId(element['id'].toString()),
       position: LatLng(element['latitude'], element['longitude']),
       infoWindow: InfoWindow(title: element['inwords']),
+      icon: i == 0
+          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+          : BitmapDescriptor.defaultMarker,
     ));
-  });
-  // print("markers et");
+  }
   return markers;
 }
 
