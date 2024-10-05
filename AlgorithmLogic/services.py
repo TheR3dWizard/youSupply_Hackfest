@@ -34,6 +34,22 @@ class DatabaseObject:
         )
         self.cursor = self.connection.cursor()
 
+    def resetdatabase(self):
+        query = """
+        DROP TABLE IF EXISTS RouteSteps;
+        DROP TABLE IF EXISTS Nodes;
+        DROP TABLE IF EXISTS clusters;
+        DROP TABLE IF EXISTS RouteAssignments;
+        DROP TABLE IF EXISTS GeneralUsers;
+        DROP TABLE IF EXISTS CartEntries;
+        DROP TABLE IF EXISTS resources;
+        DROP TABLE IF EXISTS DeliveryVolunteers;
+        DROP TABLE IF EXISTS users;
+        """
+        self.setdatbase()
+        self.cursor.execute(query)
+        self.connection.commit()
+
     def setdatbase(self):
         initliaize = """
             CREATE TYPE userrole AS ENUM ('delagent', 'client');

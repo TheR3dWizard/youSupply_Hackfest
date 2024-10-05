@@ -338,6 +338,11 @@ def setdatabase():
     except Exception as e:
         return e
 
+@app.route("/config/database/reset", methods=["GET"])
+def resetdatabase():
+    databaseobject.resetdatabase()
+    return "Database reset"
+
 @app.route("/config/database/set/random", methods=["GET"])
 def setrandom():
     body = request.get_json()
