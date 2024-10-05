@@ -497,7 +497,7 @@ class DatabaseObject:
         return self.cursor.fetchall()
 
     def isAssigned(self,user_id):
-        query = f"SELECT * FROM RouteAssignments WHERE UserID = {user_id}"
+        query = f"SELECT * FROM RouteAssignments WHERE UserID = {user_id} AND RouteStatus = 'ASSIGNED'"
         self.cursor.execute(query)
         return True if self.cursor.fetchone() else False
 
