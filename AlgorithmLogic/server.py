@@ -261,7 +261,7 @@ def markstep():
     }
     """
     step = databaseobject.markstep(username=body["userid"])
-    return step
+    return {"step": step}, 200
 
 @app.route("/user/signUp", methods=["POST"])
 def createuser():
