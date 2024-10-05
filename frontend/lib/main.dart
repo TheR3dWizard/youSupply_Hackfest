@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/newdelAgent/MapView.dart';
-import 'package:frontend/delAgents/accepted.dart';
 import 'package:frontend/newdelAgent/accepted.dart';
 import 'package:frontend/newdelAgent/available.dart';
 import 'package:frontend/newdelAgent/homePageDel.dart';
@@ -82,7 +81,7 @@ class _MyAppState extends State<MyApp> {
         '/history': (context) => const history(),
         '/settings': (context) => const settings(),
         '/profile': (context) => const profile(),
-        '/accepted': (context) => accepted(),
+        '/accepted': (context) => AcceptedRoutes(),
         '/available': (context) => const Available(),
         '/cartstatic': (context) => const cartPage(),
         '/cart': (context) => const cartPage(),
