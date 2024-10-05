@@ -93,7 +93,6 @@ Future<bool> acceptPath(int pathid) async {
   var listofnodes = targetpath["nodeids"];
   String username = await getUsername();
   jsonFile['accroutes'] = targetpath;
-  await file.writeAsString(jsonEncode(jsonFile));
 
   var url = Uri.parse('$baseUrl/path/accept');
   var body = json.encode({"username": username, "nodes": listofnodes});
@@ -104,6 +103,7 @@ Future<bool> acceptPath(int pathid) async {
 
   if (response.statusCode == 200) {
     print('Path accepted');
+    await file.writeAsString(jsonEncode(jsonFile));
     return true;
   } else {
     print('Failed to accept path with status code: ${response.statusCode}');
@@ -248,7 +248,7 @@ Future<List<LatLng>> loadAccLocations(int index) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  List<Map<String, dynamic>> paths = jsonFile['accroute']['path_details'];
+  List<dynamic> paths = jsonFile['accroute']['path_details'];
    
   List<LatLng> toLocations = [];
   paths.forEach((element) {
@@ -261,7 +261,7 @@ Future<Set<Marker>> setAccMarkers() async{
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  List<Map<String, dynamic>> paths = jsonFile['accroute']['path_details'];
+  List<dynamic> paths = jsonFile['accroute']['path_details'];
   Set<Marker> markers = {};
   paths.forEach((element) {
     markers.add(Marker(
