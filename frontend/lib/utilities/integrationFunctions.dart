@@ -95,8 +95,10 @@ Future<bool> acceptPath(int pathid) async {
   await file.writeAsString(jsonEncode(jsonFile));
 
   var url = Uri.parse('$baseUrl/path/accept');
+  var body = json.encode({"username": username, "nodes": listofnodes});
+  print("BODY: $body");
   var response = await http.post(url,
-      body: json.encode({"username": username, "nodes": listofnodes}),
+      body: body,
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
