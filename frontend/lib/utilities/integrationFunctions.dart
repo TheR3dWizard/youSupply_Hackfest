@@ -229,7 +229,11 @@ Future<void> markStep() async {
 }
 
 Future<List<LatLng>> loadLocations(int index) async {
-  Map<String, dynamic> paths = await loadPaths();
+  final file = await _localFile;
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
+  Map<String, dynamic> paths = jsonFile['curpaths']['paths'];
+   
   List<LatLng> toLocations = [];
   paths.forEach((key, value) {
     if (key == index.toString()) {
@@ -240,4 +244,41 @@ Future<List<LatLng>> loadLocations(int index) async {
   });
 
   return toLocations;
+}
+
+
+Future<List<LatLng>> loadAccLocations(int index) async {
+  final file = await _localFile;
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
+  Map<String, dynamic> paths = jsonFile['accroute'];
+   
+  List<LatLng> toLocations = [];
+  paths.forEach((key, value) {
+    if (key == index.toString()) {
+      value.forEach((element) {
+        toLocations.add(LatLng(element['latitude'], element['longitude']));
+      });
+    }
+  });
+
+  return toLocations;
+}
+
+Future<Set<Marker>> setAccMarkers() async{
+  final file = await _localFile;
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
+  Map<String, dynamic> paths = jsonFile['accroute'];
+  Set<Marker> markers = {};
+  paths.forEach((key, value) {
+    value.forEach((element) {
+      markers.add(Marker(
+        markerId: MarkerId(element['nodeid'].toString()),
+        position: LatLng(element['latitude'], element['longitude']),
+        infoWindow: InfoWindow(title: element['inwords']),
+      ));
+    });
+  });
+  return markers;
 }

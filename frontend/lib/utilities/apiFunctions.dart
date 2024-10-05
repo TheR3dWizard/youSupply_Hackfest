@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import "package:frontend/utilities/fileFunctions.dart";
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:frontend/utilities/integrationFunctions.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:http/http.dart' as http;
@@ -242,19 +243,7 @@ Future<Map<String, dynamic>> loadNewPaths() async {
   return json;
 }
 
-Future<List<LatLng>> loadLocations(int index) async {
-  Map<String, dynamic> paths = await loadPaths();
-  List<LatLng> toLocations = [];
-  paths.forEach((key, value) {
-    if (key == index.toString()) {
-      value.forEach((element) {
-        toLocations.add(LatLng(element['latitude'], element['longitude']));
-      });
-    }
-  });
 
-  return toLocations;
-}
 
 Future<Set<Marker>> setMarkers(int index) async {
   List<LatLng> coordinates = await loadLocations(index);
