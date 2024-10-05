@@ -85,10 +85,10 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
               children: [
                 // Map Container
                 FutureBuilder<Set<Marker>>(
-                  future: setMarkers(1), // Load markers if needed
+                  future: setAccMarkers(), // Load markers if needed
                   builder: (context, markerSnapshot) {
                     return FutureBuilder<Set<Polyline>>(
-                      future: setPolylines(1), // Load polylines if needed
+                      future: setAccPolylines(), // Load polylines if needed
                       builder: (context, polylineSnapshot) {
                         if (markerSnapshot.connectionState ==
                                 ConnectionState.waiting ||

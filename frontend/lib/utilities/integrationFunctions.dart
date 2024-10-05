@@ -258,10 +258,13 @@ Future<List<LatLng>> loadAccLocations(int index) async {
 }
 
 Future<Set<Marker>> setAccMarkers() async{
+  // print("markers st");
   final file = await _localFile;
-  String fileContents = await file.readAsString();
-  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  List<dynamic> paths = jsonFile['accroute']['path_details'];
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['accroutes'];
+  List<dynamic> paths = curpath['path_details'];
+  // print("ACC MARKERS WORKS");
+  // print("PATHS: $paths");
   Set<Marker> markers = {};
   paths.forEach((element) {
     markers.add(Marker(
@@ -270,14 +273,18 @@ Future<Set<Marker>> setAccMarkers() async{
       infoWindow: InfoWindow(title: element['inwords']),
     ));
   });
+  // print("markers et");
   return markers;
 }
 
-Future<Set<Polyline>> setAccPolyline() async{
+Future<Set<Polyline>> setAccPolylines() async{
+  print("polyline st");
   final file = await _localFile;
-  String fileContents = await file.readAsString();
-  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  List<Map<String, dynamic>> paths = jsonFile['accroute']['path_details'];
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['accroutes'];
+  List<dynamic> paths = curpath['path_details'];
+  print("PATHS IN POLYLINE: $paths");
+
   List<LatLng> points = [];
   paths.forEach((element) {
     points.add(LatLng(element['latitude'], element['longitude']));
