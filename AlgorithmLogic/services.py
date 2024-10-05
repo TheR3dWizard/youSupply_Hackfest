@@ -496,6 +496,11 @@ class DatabaseObject:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
+    def isAssigned(self,user_id):
+        query = f"SELECT * FROM RouteAssignments WHERE UserID = {user_id}"
+        self.cursor.execute(query)
+        return True if self.cursor.fetchone() else False
+
     def getcompletedstep(self, routeid: int):
         query = (
             f"SELECT CompletedStep FROM RouteAssignments WHERE RouteID = '{routeid}'"
