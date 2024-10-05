@@ -26,6 +26,7 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
 
   void _markNextAsCompleted() async {
     setState(() {
+       print('Marking next step as completed');
       _isLoading = true;
     });
 
@@ -39,6 +40,7 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
           _markEntirePathAsCompleted();
         }
       }
+      print('Marked next step as completed');
       _isLoading = false;
     });
   }
@@ -184,7 +186,7 @@ class _AcceptedRoutesState extends State<AcceptedRoutes> {
                             vertical: 15, horizontal: 20),
                       ),
                       child: const Text(
-                        'Mark as Completed',
+                        'Completed a Step',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
