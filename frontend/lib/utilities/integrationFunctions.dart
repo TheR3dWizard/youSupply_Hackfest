@@ -1,5 +1,6 @@
 import "dart:convert";
 import "dart:io";
+import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:frontend/utilities/apiFunctions.dart";
 import "package:google_maps_flutter/google_maps_flutter.dart";
@@ -232,15 +233,11 @@ Future<List<LatLng>> loadLocations(int index) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  Map<String, dynamic> paths = jsonFile['curpaths']['paths'];
+  List<dynamic> paths = jsonFile['curpaths']['paths']['$index']['path_details'];
    
   List<LatLng> toLocations = [];
-  paths.forEach((key, value) {
-    if (key == index.toString()) {
-      value.forEach((element) {
-        toLocations.add(LatLng(element['latitude'], element['longitude']));
-      });
-    }
+  paths.forEach((element) {
+    toLocations.add(LatLng(element['latitude'], element['longitude']));
   });
 
   return toLocations;
@@ -251,17 +248,12 @@ Future<List<LatLng>> loadAccLocations(int index) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  Map<String, dynamic> paths = jsonFile['accroute'];
+  List<Map<String, dynamic>> paths = jsonFile['accroute']['path_details'];
    
   List<LatLng> toLocations = [];
-  paths.forEach((key, value) {
-    if (key == index.toString()) {
-      value.forEach((element) {
-        toLocations.add(LatLng(element['latitude'], element['longitude']));
-      });
-    }
+  paths.forEach((element) {
+    toLocations.add(LatLng(element['latitude'], element['longitude']));
   });
-
   return toLocations;
 }
 
@@ -269,16 +261,33 @@ Future<Set<Marker>> setAccMarkers() async{
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-  Map<String, dynamic> paths = jsonFile['accroute'];
+  List<Map<String, dynamic>> paths = jsonFile['accroute']['path_details'];
   Set<Marker> markers = {};
-  paths.forEach((key, value) {
-    value.forEach((element) {
-      markers.add(Marker(
-        markerId: MarkerId(element['nodeid'].toString()),
-        position: LatLng(element['latitude'], element['longitude']),
-        infoWindow: InfoWindow(title: element['inwords']),
-      ));
-    });
+  paths.forEach((element) {
+    markers.add(Marker(
+      markerId: MarkerId(element['id'].toString()),
+      position: LatLng(element['latitude'], element['longitude']),
+      infoWindow: InfoWindow(title: element['inwords']),
+    ));
   });
   return markers;
+}
+
+Future<Set<Polyline>> setAccPolyline() async{
+  final file = await _localFile;
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
+  List<Map<String, dynamic>> paths = jsonFile['accroute']['path_details'];
+  List<LatLng> points = [];
+  paths.forEach((element) {
+    points.add(LatLng(element['latitude'], element['longitude']));
+  });
+  Set<Polyline> polylines = {};
+  polylines.add(Polyline(
+    polylineId: PolylineId('path'),
+    points: points,
+    color: Colors.blue,
+    width: 5,
+  ));
+  return polylines;
 }
