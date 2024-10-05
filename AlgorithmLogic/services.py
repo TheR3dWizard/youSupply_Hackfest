@@ -471,7 +471,7 @@ class DatabaseObject:
         return self.cursor.fetchone()
 
     def getrouteid(self, userid: int):
-        query = f"SELECT RouteID FROM RouteAssignments WHERE UserID = {userid}"
+        query = f"SELECT RouteID FROM RouteAssignments WHERE UserID = {userid} AND RouteStatus = 'ASSIGNED'"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
 
@@ -492,6 +492,9 @@ class DatabaseObject:
         routeid = self.getrouteid(userID)
         completedstep = self.getcompletedstep(routeid)
         query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = '{routeid}'"
+        steps = self.getsteps(routeid)
+        if completedstep + 1 >= len(steps):
+            query = f"UPDATE RouteAssignments SET RouteStatus = 'COMPLETED' WHERE RouteID = '{routeid}'"
         self.cursor.execute(query)
         self.connection.commit()
         return completedstep + 1
