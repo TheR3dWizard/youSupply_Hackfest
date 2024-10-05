@@ -14,7 +14,7 @@ class AcceptedRoutes extends StatefulWidget {
 
 class _AcceptedRoutesState extends State<AcceptedRoutes> {
   late Future<List<RouteStep>> _acceptedPathFuture;
-  late List<bool> _completedStatus;
+  List<bool> _completedStatus = [];
   bool _isLoading = false;
   int _completedCount = 0;
 
