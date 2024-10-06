@@ -81,6 +81,16 @@ class SignUpPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       )),
+                  const Padding(
+                      padding: EdgeInsets.all(1),
+                      child: Text(
+                        "aid and be aided",
+                        style: TextStyle(
+                            color: Colors.white30,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic),
+                      )),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ToggleSwitch(
@@ -190,4 +200,8 @@ class SignUpPage extends StatelessWidget {
       print('Passwords do not match');
     }
   }
+}
+
+void main() {
+  runApp(MaterialApp(home: SignUpPage()));
 }
