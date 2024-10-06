@@ -1,7 +1,9 @@
 import "dart:convert";
 import "dart:io";
+import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:frontend/utilities/apiFunctions.dart";
+import "package:google_maps_flutter/google_maps_flutter.dart";
 import "package:http/http.dart" as http;
 import "package:frontend/utilities/fileFunctions.dart";
 import "package:path_provider/path_provider.dart";
@@ -78,28 +80,34 @@ Future<void> savePathData() async {
   }
 }
 
-Future<void> acceptPath(int pathid) async {
+Future<bool> acceptPath(int pathid) async {
   final file = await _localFile;
   String fileContents = await file.readAsString();
   Map<String, dynamic> jsonFile = jsonDecode(fileContents);
-
   var curpathsfromfile = jsonFile['curpaths']['paths'];
-  var targetpath = curpathsfromfile[pathid];
+  print("CURPATHS: $curpathsfromfile");
+  print("PATHID: $pathid");
+  var targetpath = curpathsfromfile['$pathid'];
+  print("TARGETPATH: $targetpath");
 
   var listofnodes = targetpath["nodeids"];
   String username = await getUsername();
-
   jsonFile['accroutes'] = targetpath;
 
   var url = Uri.parse('$baseUrl/path/accept');
+  var body = json.encode({"username": username, "nodes": listofnodes});
+  print("BODY: $body");
   var response = await http.post(url,
-      body: json.encode({"username": username, "nodeids": listofnodes}),
+      body: body,
       headers: {"Content-Type": "application/json"});
 
   if (response.statusCode == 200) {
     print('Path accepted');
+    await file.writeAsString(jsonEncode(jsonFile));
+    return true;
   } else {
     print('Failed to accept path with status code: ${response.statusCode}');
+    return false;
   }
 }
 
@@ -169,7 +177,9 @@ Future<List<RouteStep>> viewSpecificPath(String key) async {
   return result;
 }
 
-Future<List<RouteStep>> viewAcceptedPath(String key) async {
+Future<List<RouteStep>> viewAcceptedPath() async {
+  print("acc path func called");
+
   final file = await _localFile;
   Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
   Map<String, dynamic> curpath = jsonFile['accroutes'];
@@ -208,7 +218,7 @@ Future<int> getCompletedStep() async {
   }
 }
 
-Future<void> markStep() async{
+Future<void> markStep() async {
   String username = await getUsername();
   var url = Uri.parse('$baseUrl/path/markstep');
   var response = await http.post(url,
@@ -217,4 +227,74 @@ Future<void> markStep() async{
   if (response.statusCode != 200) {
     throw Exception("Failed to mark step");
   }
+}
+
+Future<List<LatLng>> loadLocations(int index) async {
+  final file = await _localFile;
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
+  List<dynamic> paths = jsonFile['curpaths']['paths']['$index']['path_details'];
+   
+  List<LatLng> toLocations = [];
+  paths.forEach((element) {
+    toLocations.add(LatLng(element['latitude'], element['longitude']));
+  });
+
+  return toLocations;
+}
+
+Future<List<LatLng>> loadAccLocations(int index) async {
+  final file = await _localFile;
+  String fileContents = await file.readAsString();
+  Map<String, dynamic> jsonFile = jsonDecode(fileContents);
+  List<dynamic> paths = jsonFile['accroute']['path_details'];
+   
+  List<LatLng> toLocations = [];
+  paths.forEach((element) {
+    toLocations.add(LatLng(element['latitude'], element['longitude']));
+  });
+  return toLocations;
+}
+
+Future<Set<Marker>> setAccMarkers() async {
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['accroutes'];
+  List<dynamic> paths = curpath['path_details'];
+  Set<Marker> markers = {};
+
+  for (int i = 0; i < paths.length; i++) {
+    var element = paths[i];
+    markers.add(Marker(
+      markerId: MarkerId(element['id'].toString()),
+      position: LatLng(element['latitude'], element['longitude']),
+      infoWindow: InfoWindow(title: element['inwords']),
+      icon: i == 0
+          ? BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)
+          : BitmapDescriptor.defaultMarker,
+    ));
+  }
+  return markers;
+}
+
+Future<Set<Polyline>> setAccPolylines() async{
+  print("polyline st");
+  final file = await _localFile;
+  Map<String, dynamic> jsonFile = jsonDecode(await file.readAsString());
+  Map<String, dynamic> curpath = jsonFile['accroutes'];
+  List<dynamic> paths = curpath['path_details'];
+  print("PATHS IN POLYLINE: $paths");
+
+  List<LatLng> points = [];
+  paths.forEach((element) {
+    points.add(LatLng(element['latitude'], element['longitude']));
+  });
+  Set<Polyline> polylines = {};
+  polylines.add(Polyline(
+    polylineId: PolylineId('path'),
+    points: points,
+    color: Colors.blue,
+    width: 5,
+  ));
+  return polylines;
 }

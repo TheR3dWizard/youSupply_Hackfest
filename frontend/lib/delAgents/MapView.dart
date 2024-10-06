@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/delAgents/claimed.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -183,13 +182,13 @@ class _MapViewState extends State<MapView> {
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ClaimedRoutes(
-                                            pathIndex: widget.pathIndex),
-                                      ),
-                                    );
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => ClaimedRoutes(
+                                    //         pathIndex: widget.pathIndex),
+                                    //   ),
+                                    // );
                                   },
                                   child: const Text('Accept'),
                                 ),

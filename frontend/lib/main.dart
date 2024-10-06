@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/newdelAgent/MapView.dart';
-import 'package:frontend/delAgents/accepted.dart';
+import 'package:frontend/newdelAgent/accepted.dart';
 import 'package:frontend/newdelAgent/available.dart';
-import 'package:frontend/newdelAgent/claimed.dart';
 import 'package:frontend/newdelAgent/homePageDel.dart';
 import 'package:frontend/generalUsers/homePageGU.dart';
 import 'package:frontend/generalUsers/cartPageStatic.dart';
@@ -16,9 +15,20 @@ import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:frontend/utilities.dart';
 import 'loginPage.dart';
 import 'signUpPage.dart';
+import 'dart:io';
 import 'package:frontend/newdelAgent/completed_routes.dart';
 
+class MyHttpoverrides extends HttpOverrides{
+  @override 
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+    ..badCertificateCallback = (X509Certificate cert, String host, int port)=>true;
+  }
+}
+
+
 void main() {
+  HttpOverrides.global=new MyHttpoverrides();
   runApp(MyApp());
 }
 
@@ -71,7 +81,7 @@ class _MyAppState extends State<MyApp> {
         '/history': (context) => const history(),
         '/settings': (context) => const settings(),
         '/profile': (context) => const profile(),
-        '/accepted': (context) => const accepted(),
+        '/accepted': (context) => AcceptedRoutes(),
         '/available': (context) => const Available(),
         '/cartstatic': (context) => const cartPage(),
         '/cart': (context) => const cartPage(),

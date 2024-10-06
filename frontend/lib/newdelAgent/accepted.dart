@@ -1,37 +1,54 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/newdelAgent/homePageDel.dart';
 import 'package:frontend/utilities/apiFunctions.dart';
 import 'package:frontend/utilities/integrationFunctions.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:http/http.dart' as http;
 
-class MapView extends StatefulWidget {
-  final int pathIndex;
-
-  const MapView({
-    super.key,
-    required this.pathIndex,
-  });
+class AcceptedRoutes extends StatefulWidget {
+  const AcceptedRoutes({super.key});
 
   @override
-  _MapViewState createState() => _MapViewState();
+  _AcceptedRoutesState createState() => _AcceptedRoutesState();
 }
 
-class _MapViewState extends State<MapView> {
-  late Future<List<RouteStep>> _pathStepsFuture;
-  late List<bool> _completedStatus;
-  bool _acceptPressed = false;
+class _AcceptedRoutesState extends State<AcceptedRoutes> {
+  late Future<List<RouteStep>> _acceptedPathFuture;
+  List<bool> _completedStatus = [];
+  bool _isLoading = false;
+  int _completedCount = 0;
 
   @override
   void initState() {
     super.initState();
-    // Load path steps when the widget is initialized
-    _pathStepsFuture = viewSpecificPath(widget.pathIndex.toString());
+    _acceptedPathFuture = viewAcceptedPath();
+  }
+
+  void _markNextAsCompleted() async {
+    setState(() {
+       print('Marking next step as completed');
+      _isLoading = true;
+    });
+
+    await markStep();
+
+    setState(() {
+      if (_completedCount < _completedStatus.length) {
+        _completedStatus[_completedCount] = true;
+        _completedCount++;
+        if (_completedCount == _completedStatus.length) {
+          _markEntirePathAsCompleted();
+        }
+      }
+      print('Marked next step as completed');
+      _isLoading = false;
+    });
+  }
+
+  void _markEntirePathAsCompleted() {
+    for (int i = 0; i < _completedStatus.length; i++) {
+      _completedStatus[i] = true;
+    }
   }
 
   final Completer<GoogleMapController> _controller =
@@ -42,27 +59,16 @@ class _MapViewState extends State<MapView> {
     zoom: 10.4746,
   );
 
-  PolylinePoints polylinePoints = PolylinePoints();
-  final List<Polyline> polyline = [];
-  List<LatLng> routeCoords = [];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
-        title: const Text(
-          'Map View',
-          style: TextStyle(
-            letterSpacing: 1.5,
-            color: Colors.white70,
-          ),
-        ),
+        title: const Text('Accepted Routes'),
         backgroundColor: Colors.grey[850],
       ),
       backgroundColor: Colors.black,
       body: FutureBuilder<List<RouteStep>>(
-        future: _pathStepsFuture,
+        future: _acceptedPathFuture,
         builder:
             (BuildContext context, AsyncSnapshot<List<RouteStep>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -79,10 +85,10 @@ class _MapViewState extends State<MapView> {
               children: [
                 // Map Container
                 FutureBuilder<Set<Marker>>(
-                  future: setMarkers(widget.pathIndex),
+                  future: setAccMarkers(), // Load markers if needed
                   builder: (context, markerSnapshot) {
                     return FutureBuilder<Set<Polyline>>(
-                      future: setPolylines(widget.pathIndex),
+                      future: setAccPolylines(), // Load polylines if needed
                       builder: (context, polylineSnapshot) {
                         if (markerSnapshot.connectionState ==
                                 ConnectionState.waiting ||
@@ -94,9 +100,6 @@ class _MapViewState extends State<MapView> {
                             polylineSnapshot.hasError) {
                           return Center(
                               child: Text('Error: ${markerSnapshot.error}'));
-                        } else if (!markerSnapshot.hasData ||
-                            !polylineSnapshot.hasData) {
-                          return const Center(child: Text('No data available'));
                         }
 
                         return SizedBox(
@@ -152,7 +155,19 @@ class _MapViewState extends State<MapView> {
                                   color: Colors.white60,
                                 ),
                               ),
-                              const SizedBox(height: 5),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: isCompleted
+                                    ? const Text(
+                                        'Completed',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      )
+                                    : Container(),
+                              ),
                             ],
                           ),
                         );
@@ -160,52 +175,42 @@ class _MapViewState extends State<MapView> {
                     ),
                   ),
                 ),
-                if (!_acceptPressed)
-                  Center(
+                if (_completedCount < _completedStatus.length && !_isLoading)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Show Snackbar for confirmation
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                                const Text('Do you want to confirm the path?'),
-                            action: SnackBarAction(
-                              label: 'Confirm',
-                              onPressed: () async {
-                                // Call the acceptPath function and proceed if confirmed
-                                bool accepted =
-                                    await acceptPath(widget.pathIndex);
-                                if (accepted) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => homePageDel(),
-                                    ),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Failed to accept path')),
-                                  );
-                                }
-                              },
-                            ),
-                            duration:
-                                const Duration(seconds: 5), // Snackbar timeout
-                            behavior: SnackBarBehavior
-                                .floating, // Floating style for Snackbar
-                          ),
-                        );
-                      },
+                      onPressed: _markNextAsCompleted,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         padding: const EdgeInsets.symmetric(
-                            vertical: 15, horizontal: 30),
-                        shape: const ContinuousRectangleBorder(),
-                        minimumSize: const Size(450, 25),
+                            vertical: 15, horizontal: 20),
                       ),
                       child: const Text(
-                        'Accept',
+                        'Completed a Step',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                if (_completedCount == _completedStatus.length && !_isLoading)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 20),
+                      ),
+                      child: const Text(
+                        'All Steps Completed',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -221,26 +226,4 @@ class _MapViewState extends State<MapView> {
       ),
     );
   }
-}
-
-Completer<AndroidMapRenderer?>? _initializedRendererCompleter;
-
-Future<AndroidMapRenderer?> initializeMapRenderer() async {
-  if (_initializedRendererCompleter != null) {
-    return _initializedRendererCompleter!.future;
-  }
-
-  final Completer<AndroidMapRenderer?> completer =
-      Completer<AndroidMapRenderer?>();
-  _initializedRendererCompleter = completer;
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final GoogleMapsFlutterPlatform platform = GoogleMapsFlutterPlatform.instance;
-  unawaited((platform as GoogleMapsFlutterAndroid)
-      .initializeWithRenderer(AndroidMapRenderer.latest)
-      .then((AndroidMapRenderer initializedRenderer) =>
-          completer.complete(initializedRenderer)));
-
-  return completer.future;
 }

@@ -34,6 +34,22 @@ class DatabaseObject:
         )
         self.cursor = self.connection.cursor()
 
+    def resetdatabase(self):
+        query = """
+        DROP TABLE IF EXISTS RouteSteps;
+        DROP TABLE IF EXISTS Nodes;
+        DROP TABLE IF EXISTS clusters;
+        DROP TABLE IF EXISTS RouteAssignments;
+        DROP TABLE IF EXISTS GeneralUsers;
+        DROP TABLE IF EXISTS CartEntries;
+        DROP TABLE IF EXISTS resources;
+        DROP TABLE IF EXISTS DeliveryVolunteers;
+        DROP TABLE IF EXISTS users;
+        """
+        self.setdatbase()
+        self.cursor.execute(query)
+        self.connection.commit()
+
     def setdatbase(self):
         initliaize = """
             CREATE TYPE userrole AS ENUM ('delagent', 'client');
@@ -194,6 +210,11 @@ class DatabaseObject:
         """
         self.cursor.execute(query, (username,))
         return True if self.cursor.fetchone() else False
+
+    def marknodeasinpath(self, nodeid: str):
+        query = f"UPDATE Nodes SET status='INPATH' WHERE node_id='{nodeid}'"
+        self.cursor.execute(query)
+        self.connection.commit()
 
     def create_resource(self, resource_id: str, resource_name: str, resource_type: str):
         query = """
@@ -466,7 +487,7 @@ class DatabaseObject:
         return self.cursor.fetchone()
 
     def getrouteid(self, userid: int):
-        query = f"SELECT RouteID FROM RouteAssignments WHERE UserID = {userid}"
+        query = f"SELECT RouteID FROM RouteAssignments WHERE UserID = {userid} AND RouteStatus = 'ASSIGNED'"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
 
@@ -474,6 +495,11 @@ class DatabaseObject:
         query = f"SELECT * FROM RouteSteps WHERE RouteID = '{routeid}' ORDER BY StepID"
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def isAssigned(self,user_id):
+        query = f"SELECT * FROM RouteAssignments WHERE UserID = {user_id} AND RouteStatus = 'ASSIGNED'"
+        self.cursor.execute(query)
+        return True if self.cursor.fetchone() else False
 
     def getcompletedstep(self, routeid: int):
         query = (
@@ -487,6 +513,9 @@ class DatabaseObject:
         routeid = self.getrouteid(userID)
         completedstep = self.getcompletedstep(routeid)
         query = f"UPDATE RouteAssignments SET CompletedStep = {completedstep + 1} WHERE RouteID = '{routeid}'"
+        steps = self.getsteps(routeid)
+        if completedstep + 1 >= len(steps):
+            query = f"UPDATE RouteAssignments SET RouteStatus = 'COMPLETED' WHERE RouteID = '{routeid}'"
         self.cursor.execute(query)
         self.connection.commit()
         return completedstep + 1

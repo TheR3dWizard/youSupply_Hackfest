@@ -30,7 +30,7 @@ randomagent = Random()
 app = Flask(__name__)
 
 
-def getNodeObject(self, nodeid: str):
+def getNodeObject( nodeid: str):
     result = databaseobject.getNode(nodeid)
     if not result:
         return None
@@ -207,16 +207,17 @@ def getpath():
     }
     """
     body = request.get_json()
-    route_id = databaseobject.getrouteid(body["username"])
+    userid = databaseobject.getuserid(body["username"])
+    route_id = databaseobject.getrouteid(userid)
     steps = databaseobject.getsteps(route_id)
     output = {}
     output["nodes"] = []
     for step in steps:
         nodeid = step[2]
-        node = databaseobject.getNodeObject(nodeid)
+        node = getNodeObject(nodeid)
         output["nodes"].append(node.export())
         #this line should be in the outer indent, outside the loop i think
-        output["completed"] = databaseobject.getcompletedstep(route_id)
+    output["completed"] = databaseobject.getcompletedstep(route_id)
 
     return output
 
@@ -234,16 +235,21 @@ def acceptpath():
         ]    
     }
     """
-    userid = body["userid"]
+    userid = databaseobject.getuserid(body["username"])
+    isAssigned = databaseobject.isAssigned(userid)
+    if isAssigned:
+        return "Already assigned", 400
+    
     nodeids = body["nodes"]
     routeid = str(uuid.uuid4())
     databaseobject.create_route_assignment(userid=userid, routeid=routeid)
 
     step = 0
     for nodeid in nodeids:
+        databaseobject.marknodeasinpath(nodeid)
         databaseobject.create_route_step(route_id=routeid, node_id=nodeid, step_id=step)
         step += 1
-    return "Worked"
+    return "Worked", 200
 
 
 @app.route("/path/markstep", methods=["POST"])
@@ -254,8 +260,8 @@ def markstep():
         "userid": "JohnDoe",
     }
     """
-    step = databaseobject.markstep(body["userid"])
-    return step
+    step = databaseobject.markstep(username=body["userid"])
+    return {"step": step}, 200
 
 @app.route("/user/signUp", methods=["POST"])
 def createuser():
@@ -336,6 +342,11 @@ def setdatabase():
         return 'database set', 200
     except Exception as e:
         return e
+
+@app.route("/config/database/reset", methods=["GET"])
+def resetdatabase():
+    databaseobject.resetdatabase()
+    return "Database reset"
 
 @app.route("/config/database/set/random", methods=["GET"])
 def setrandom():
